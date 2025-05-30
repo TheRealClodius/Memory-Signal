@@ -50,10 +50,10 @@ cd memoryos
 
 ### Basic Usage
 
-The `example_2.py` file provides a simple demonstration:
+The `example.py` file provides a simple demonstration:
 
 ```python
-# example_2.py - Simple MemoryOS Basic Demo
+# example.py - Simple MemoryOS Basic Demo
 
 import os
 from memoryos import Memoryos
