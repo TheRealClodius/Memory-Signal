@@ -1,6 +1,6 @@
 # MemoryOS
 
-**MemoryOS** is a Python library designed to provide conversational AI agents with a multi-layered memory system, enabling more coherent, personalized, and context-aware interactions. Inspired by the human memory model, it incorporates short-term, mid-term, and long-term persona Memory components to manage and retrieve information effectively.
+**MemoryOS** is a Python library designed to provide conversational AI agents with a with a memory operation system, enabling more coherent, personalized, and context-aware interactions. To achieve comprehensive and efficient memory management for AI agents. Inspired by the memory management principles in operating systems, MemoryOS designs a hierarchical storage architecture and consists of four key modules: memory Storage, Updating, Retrieval, and Generation.
 
 ## Latest News
 
@@ -20,6 +20,22 @@
 *   **Modular Design:** Consists of distinct modules for memory storage (`ShortTermMemory`, `MidTermMemory`, `LongTermMemory`), memory processing (`Updater`), and information retrieval (`Retriever`).
 *   **Flexible Configuration:** Allows customization of memory capacities, update thresholds, and LLM models.
 *   **OpenAI Integration:** Utilizes OpenAI's language models for tasks like personality analysis, profile updates, and response generation.
+
+## Project Structure
+
+```
+memoryos/
+├── __init__.py            # Initializes the MemoryOS package
+├── __pycache__/           # Python cache directory (auto-generated)
+├── long_term.py           # Manages long-term persona memory (user profile, knowledge)
+├── memoryos.py            # Main class for MemoryOS, orchestrating all components
+├── mid_term.py            # Manages mid-term memory, consolidating short-term interactions
+├── prompts.py             # Contains prompts used for LLM interactions (e.g., summarization, analysis)
+├── retriever.py           # Retrieves relevant information from all memory layers
+├── short_term.py          # Manages short-term memory for recent interactions
+├── updater.py             # Processes memory updates, including promoting information between layers
+└── utils.py               # Utility functions used across the library
+```
 
 ## How It Works
 
@@ -94,18 +110,8 @@ def simple_demo():
         user_input="Hi! I'm Tom, I work as a data scientist in San Francisco.",
         agent_response="Hello Tom! Nice to meet you. Data science is such an exciting field. What kind of data do you work with?"
     )
-    
-    memo.add_memory(
-        user_input="I mainly work with e-commerce data. I also love playing guitar in my free time.",
-        agent_response="That's a great combination! E-commerce analytics must provide fascinating insights into consumer behavior. How long have you been playing guitar?"
-    )
-    
-    memo.add_memory(
-        user_input="I've been playing for about 5 years. I really enjoy blues and rock music.",
-        agent_response="Five years is a solid foundation! Blues and rock are fantastic genres for guitar. Do you have a favorite artist or song you like to play?"
-    )
-    
-    test_query = "What do you remember about my job and hobbies?"
+     
+    test_query = "What do you remember about my job?"
     print(f"User: {test_query}")
     
     response = memo.get_response(
@@ -127,4 +133,15 @@ To run the example:
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.
+
+## Citation
+
+If you find this project useful, please consider citing our paper:
+
+```bibtex
+```
+
+## License
+
+This project is licensed under the Apache-2.0 License.
 
