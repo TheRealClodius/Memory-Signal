@@ -141,7 +141,3 @@ If you find this project useful, please consider citing our paper:
 ```bibtex
 ```
 
-## License
-
-This project is licensed under the Apache-2.0 License.
-
