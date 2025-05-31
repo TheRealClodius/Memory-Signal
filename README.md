@@ -1,5 +1,5 @@
 # MemoryOS
-
+![111](百家公众号.jpg)
 **MemoryOS** is a Python library designed to provide conversational AI agents with a with a memory operation system, enabling more coherent, personalized, and context-aware interactions. To achieve comprehensive and efficient memory management for AI agents. Inspired by the memory management principles in operating systems, MemoryOS designs a hierarchical storage architecture and consists of four key modules: memory Storage, Updating, Retrieval, and Generation.
 
 ## Latest News
