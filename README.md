@@ -9,21 +9,6 @@
 
 *   **[2025-05-30]**: Initial version of MemoryOS launched! Featuring short-term, mid-term, and long-term persona Memory with automated user profile and knowledge updating.
 
-## Features
-
-*   **Multi-Layered Memory:**
-    *   **Short-Term Memory:** Captures the most recent interactions, providing immediate context for ongoing conversations.
-    *   **Mid-Term Memory:** Stores significant conversation segments, analyzed and consolidated from short-term memory. It uses a "heat" metric to identify important topics for potential promotion to long-term storage.
-    *   **Long-Term Persona Memory:**
-        *   **User Profile:** Gradually builds a profile of the user, including preferences, facts, and personality traits.
-        *   **User Knowledge:** Stores specific pieces of information provided by the user.
-        *   **Assistant Knowledge:** Stores knowledge relevant to the assistant's domain or specific user needs, allowing for more informed responses.
-*   **Dynamic Profile & Knowledge Updates:** Automatically analyzes "hot" topics in mid-term memory to update the user's profile and knowledge base, as well as the assistant's knowledge.
-*   **Contextual Retrieval:** Retrieves relevant information from all memory layers to provide rich context for generating responses.
-*   **Modular Design:** Consists of distinct modules for memory storage (`ShortTermMemory`, `MidTermMemory`, `LongTermMemory`), memory processing (`Updater`), and information retrieval (`Retriever`).
-*   **Flexible Configuration:** Allows customization of memory capacities, update thresholds, and LLM models.
-*   **OpenAI Integration:** Utilizes OpenAI's language models for tasks like personality analysis, profile updates, and response generation.
-
 ## Project Structure
 
 ```
