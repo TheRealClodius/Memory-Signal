@@ -7,7 +7,7 @@
     <img src="https://img.shields.io/badge/Arxiv-paper-red" alt="Mem0 Discord">
   </a>
   <a href="">
-    <img src="https://img.shields.io/badge/QQ-2457516191" alt="Mem0 PyPI - Downloads">
+    <img src="https://img.shields.io/badge/QQ群-522592424-yellow" alt="Mem0 PyPI - Downloads">
   </a>
   <a href="" target="blank">
     <img src="https://img.shields.io/badge/Demo-Video-red" alt="Npm package">
