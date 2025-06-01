@@ -4,9 +4,9 @@
 </div>
 <p align="center">
   <a href="https://www.cnblogs.com/singerw/p/14127815.html">
-    <img src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2" alt="Mem0 Discord">
+    <img src="https://img.shields.io/badge/Arxiv-paper-red" alt="Mem0 Discord">
   </a>
-  <a href="https://pepy.tech/project/mem0ai">
+  <a href="">
     <img src="https://img.shields.io/badge/QQ-2457516191" alt="Mem0 PyPI - Downloads">
   </a>
   <a href="" target="blank">
