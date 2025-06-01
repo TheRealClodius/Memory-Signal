@@ -18,8 +18,8 @@
   <a href="https://www.npmjs.com/package/mem0ai" target="blank">
     <img src="https://img.shields.io/badge/NPM%20Version-1.2.3-red" alt="Npm package">
   </a>
-  <a href="https://www.ycombinator.com/companies/mem0">
-    <img src="https://img.shields.io/badge/Y%20Combinator-S24-orange" alt="Y Combinator S24">
+  <a href="https://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/badge/License-MIT-blue" alt="Y Combinator S24">
   </a>
 </p>
 
