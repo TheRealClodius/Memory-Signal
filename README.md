@@ -7,16 +7,10 @@
     <img src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2" alt="Mem0 Discord">
   </a>
   <a href="https://pepy.tech/project/mem0ai">
-    <img src="https://img.shields.io/badge/PyPI%20Downloads-10k%2Fmonth-brightgreen" alt="Mem0 PyPI - Downloads">
+    <img src="https://img.shields.io/badge/QQ-2457516191" alt="Mem0 PyPI - Downloads">
   </a>
-  <a href="https://github.com/mem0ai/mem0">
-    <img src="https://img.shields.io/badge/Commits-Active-blue" alt="GitHub commit activity">
-  </a>
-  <a href="https://pypi.org/project/mem0ai" target="blank">
-    <img src="https://img.shields.io/badge/PyPI%20Version-1.2.3-success" alt="Package version">
-  </a>
-  <a href="https://www.npmjs.com/package/mem0ai" target="blank">
-    <img src="https://img.shields.io/badge/NPM%20Version-1.2.3-red" alt="Npm package">
+  <a href="" target="blank">
+    <img src="https://img.shields.io/badge/Demo-Video-red" alt="Npm package">
   </a>
   <a href="https://opensource.org/licenses/MIT">
     <img src="https://img.shields.io/badge/License-MIT-blue" alt="Y Combinator S24">
