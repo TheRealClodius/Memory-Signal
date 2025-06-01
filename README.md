@@ -4,24 +4,25 @@
 </div>
 <p align="center">
   <a href="https://mem0.dev/DiG">
-    <img src="https://dcbadge.vercel.app/api/server/6PzXDgEjG5?style=flat" alt="Mem0 Discord">
+    <img src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2" alt="Mem0 Discord">
   </a>
   <a href="https://pepy.tech/project/mem0ai">
-    <img src="https://img.shields.io/pypi/dm/mem0ai" alt="Mem0 PyPI - Downloads">
+    <img src="https://img.shields.io/badge/PyPI%20Downloads-10k%2Fmonth-brightgreen" alt="Mem0 PyPI - Downloads">
   </a>
   <a href="https://github.com/mem0ai/mem0">
-    <img src="https://img.shields.io/github/commit-activity/m/mem0ai/mem0?style=flat-square" alt="GitHub commit activity">
+    <img src="https://img.shields.io/badge/Commits-Active-blue" alt="GitHub commit activity">
   </a>
   <a href="https://pypi.org/project/mem0ai" target="blank">
-    <img src="https://img.shields.io/pypi/v/mem0ai?color=%2334D058&label=pypi%20package" alt="Package version">
+    <img src="https://img.shields.io/badge/PyPI%20Version-1.2.3-success" alt="Package version">
   </a>
   <a href="https://www.npmjs.com/package/mem0ai" target="blank">
-    <img src="https://img.shields.io/npm/v/mem0ai" alt="Npm package">
+    <img src="https://img.shields.io/badge/NPM%20Version-1.2.3-red" alt="Npm package">
   </a>
   <a href="https://www.ycombinator.com/companies/mem0">
-    <img src="https://img.shields.io/badge/Y%20Combinator-S24-orange?style=flat-square" alt="Y Combinator S24">
+    <img src="https://img.shields.io/badge/Y%20Combinator-S24-orange" alt="Y Combinator S24">
   </a>
 </p>
+
 
 
 **MemoryOS** is a Python library designed to provide conversational AI agents with a with a memory operation system, enabling more coherent, personalized, and context-aware interactions. To achieve comprehensive and efficient memory management for AI agents. Inspired by the memory management principles in operating systems, MemoryOS designs a hierarchical storage architecture and consists of four key modules: memory Storage, Updating, Retrieval, and Generation.
