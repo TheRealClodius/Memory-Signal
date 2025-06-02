@@ -6,8 +6,8 @@
   <a href="https://www.cnblogs.com/singerw/p/14127815.html">
     <img src="https://img.shields.io/badge/Arxiv-paper-red" alt="Mem0 Discord">
   </a>
-  <a href="">
-    <img src="https://img.shields.io/badge/QQ-522592424-yellow" alt="Mem0 PyPI - Downloads">
+  <a href="./wechat.png">
+    <img src="https://img.shields.io/badge/Wechat-群二维码-green" alt="Mem0 PyPI - Downloads">
   </a>
   <a href="" target="blank">
     <img src="https://img.shields.io/badge/Demo-Video-red" alt="Npm package">
