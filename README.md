@@ -1,6 +1,6 @@
 # MemoryOS
 <div align="center">
-  <img src="logo.png" alt="logo" width="300"/>
+  <img src="logo.png" alt="logo" width="400"/>
 </div>
 <p align="center">
   <a href="https://www.cnblogs.com/singerw/p/14127815.html">
