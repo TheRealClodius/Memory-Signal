@@ -12,9 +12,6 @@
   <a href="" target="blank">
     <img src="https://img.shields.io/badge/Demo-Video-red" alt="Npm package">
   </a>
-  <a href="https://opensource.org/licenses/MIT">
-    <img src="https://img.shields.io/badge/License-MIT-blue" alt="Y Combinator S24">
-  </a>
 </p>
 
 
