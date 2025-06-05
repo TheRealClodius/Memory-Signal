@@ -9,7 +9,7 @@
   <a href="./Wechat.png">
     <img src="https://img.shields.io/badge/Wechat-群二维码-green" alt="Mem0 PyPI - Downloads">
   </a>
-  <a href="" target="blank">
+  <a href="./demo_video.mp4" target="blank">
     <img src="https://img.shields.io/badge/Demo-Video-red" alt="Npm package">
   </a>
 </p>
