@@ -6,7 +6,7 @@
   <a href="https://www.cnblogs.com/singerw/p/14127815.html">
     <img src="https://img.shields.io/badge/Arxiv-paper-red" alt="Mem0 Discord">
   </a>
-  <a href="https://youtu.be/y9Igs0FnX_M">
+  <a href="./Wechat.png">
     <img src="https://img.shields.io/badge/Wechat-群二维码-green" alt="Mem0 PyPI - Downloads">
   </a>
   <a href="https://youtu.be/y9Igs0FnX_M" target="blank">
