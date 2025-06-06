@@ -17,7 +17,8 @@
 **MemoryOS**  is designed to provide a memory operation system for conversational AI agents, enabling more coherent, personalized, and context-aware interactions. To achieve comprehensive and efficient memory management, MemoryOS draws inspiration from memory management principles in operating systems, adopting a hierarchical storage architecture and comprising four key modules: Storage, Updating, Retrieval, and Generation.
 
 ## Demo
-[![Watch the video](https://img.youtube.com/vi/ItJv9gHwSOw/maxresdefault.jpg)](https://www.youtube.com/watch?v=ItJv9gHwSOw&t=8s)
+[![Watch the video](https://img.youtube.com/vi/y9Igs0FnX_M/maxresdefault.jpg)](https://youtu.be/y9Igs0FnX_M)
+
 
 
 ## Latest News
