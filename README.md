@@ -6,7 +6,7 @@
   <a href="https://www.cnblogs.com/singerw/p/14127815.html">
     <img src="https://img.shields.io/badge/Arxiv-paper-red" alt="Mem0 Discord">
   </a>
-  <a href="./Wechat.png">
+  <a href="https://youtu.be/y9Igs0FnX_M">
     <img src="https://img.shields.io/badge/Wechat-群二维码-green" alt="Mem0 PyPI - Downloads">
   </a>
   <a href="./demo_video.mp4" target="blank">
@@ -14,7 +14,7 @@
   </a>
 </p>
 
-**MemoryOS**  is designed to provide a memory operation system for conversational AI agents, enabling more coherent, personalized, and context-aware interactions. To achieve comprehensive and efficient memory management, MemoryOS draws inspiration from memory management principles in operating systems, adopting a hierarchical storage architecture and comprising four key modules: Storage, Updating, Retrieval, and Generation.
+**MemoryOS** is designed to provide a memory operating system for personalized AI agents, enabling more coherent, personalized, and context-aware interactions. Drawing inspiration from memory management principles in operating systems, it adopts a hierarchical storage architecture with four core modules: Storage, Updating, Retrieval, and Generation, to achieve comprehensive and efficient memory management. On the LoCoMo benchmark, the model achieved average improvements of **49.11%** and **46.18%** in F1 and BLEU-1 scores.
 
 ## Demo
 [![Watch the video](https://img.youtube.com/vi/y9Igs0FnX_M/maxresdefault.jpg)](https://youtu.be/y9Igs0FnX_M)
