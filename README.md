@@ -12,6 +12,9 @@
   <a href="https://youtu.be/y9Igs0FnX_M" target="blank">
     <img src="https://img.shields.io/badge/Demo-Video-red" alt="Npm package">
   </a>
+    <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">
+    <img src="https://img.shields.io/badge/License-Apache_2.0-blue" alt="License: Apache 2.0">
+  </a>
 </p>
 
 **MemoryOS** is designed to provide a memory operating system for personalized AI agents, enabling more coherent, personalized, and context-aware interactions. Drawing inspiration from memory management principles in operating systems, it adopts a hierarchical storage architecture with four core modules: Storage, Updating, Retrieval, and Generation, to achieve comprehensive and efficient memory management. On the LoCoMo benchmark, the model achieved average improvements of **49.11%** and **46.18%** in F1 and BLEU-1 scores.
