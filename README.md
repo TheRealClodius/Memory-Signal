@@ -62,7 +62,7 @@ memoryos/
 ### Prerequisites
 
 *   Python >= 3.10
-*   pip install -i https://pypi.org/simple/ MemoryOS-BaiLab
+*   pip install -i https://pypi.org/simple/ MemoryOS-BaiJia
 
 ### Installation
 
@@ -131,10 +131,6 @@ if __name__ == "__main__":
     simple_demo()
 ```
 
-To run the example:
-
-1.  Ensure you have your OpenAI API key set in `example.py`.
-2.  Execute the script: `python example.py`
 
 
 ## Contributing
