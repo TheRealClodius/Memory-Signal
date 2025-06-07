@@ -69,7 +69,7 @@ memoryos/
 ```bash
 conda create -n MemoryOS python=3.10
 conda activate MemoryOS
-pip install -i https://pypi.org/simple/ MemoryOS-BaiLab
+pip install -i https://pypi.org/simple/ MemoryOS-BaiJia
 ```
 
 ### Basic Usage
