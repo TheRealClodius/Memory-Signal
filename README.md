@@ -141,10 +141,12 @@ if __name__ == "__main__":
 Contributions are welcome! Please feel free to submit issues or pull requests.
 
 ## Citation
+If you want to read more details, please click here: [Read the Full Paper](./Paper-MemoryOS.pdf)
 
 If you find this project useful, please consider citing our paper:
 
 ```bibtex
+The 'Memory OS of AI Agent' paper will be published on arXiv soon.
 ```
 ## Contact us
 百家AI是北京邮电大学白婷副教授指导的研究小组, 致力于为硅基人类打造情感饱满、记忆超凡的大脑。
