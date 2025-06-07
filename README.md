@@ -3,7 +3,7 @@
   <img src="logo_1.png" alt="logo" width="400"/>
 </div>
 <p align="center">
-  <a href="https://www.cnblogs.com/singerw/p/14127815.html">
+  <a href="./Paper-MemoryOS.pdf">
     <img src="https://img.shields.io/badge/Arxiv-paper-red" alt="Mem0 Discord">
   </a>
   <a href="./Wechat.png">
