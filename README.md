@@ -62,21 +62,19 @@ memoryos/
 ### Prerequisites
 
 *   Python >= 3.10
-*   pip install -r requirements.txt
+*   pip install -i https://pypi.org/simple/ MemoryOS-BaiLab
 
 ### Installation
 
 ```bash
-git clone https://github.com/your_username/memoryos.git  
-cd memoryos
+conda create -n MemoryOS python=3.10
+conda activate MemoryOS
+pip install -i https://pypi.org/simple/ MemoryOS-BaiLab
 ```
 
 ### Basic Usage
 
-The `example.py` file provides a simple demonstration:
-
 ```python
-# example.py - Simple MemoryOS Basic Demo
 
 import os
 from memoryos import Memoryos
@@ -84,8 +82,8 @@ from memoryos import Memoryos
 # --- Basic Configuration ---
 USER_ID = "demo_user"
 ASSISTANT_ID = "demo_assistant"
-OPENAI_API_KEY = "YOUR_OPENAI_API_KEY"  # Replace with your key
-OPENAI_BASE_URL = ""  # Optional: if using a custom OpenAI endpoint
+API_KEY = "YOUR_OPENAI_API_KEY"  # Replace with your key
+BASE_URL = ""  # Optional: if using a custom OpenAI endpoint
 DATA_STORAGE_PATH = "./simple_demo_data"
 LLM_MODEL = "gpt-4o-mini"
 
@@ -97,13 +95,15 @@ def simple_demo():
     try:
         memo = Memoryos(
             user_id=USER_ID,
-            openai_api_key=OPENAI_API_KEY,
-            openai_base_url=OPENAI_BASE_URL,
+            openai_api_key=API_KEY,
+            openai_base_url=BASE_URL,
             data_storage_path=DATA_STORAGE_PATH,
             llm_model=LLM_MODEL,
             assistant_id=ASSISTANT_ID,
             short_term_capacity=7,  
             mid_term_heat_threshold=5,  
+            retrieval_queue_capacity=7,
+            long_term_knowledge_capacity=100
         )
         print("MemoryOS initialized successfully!\n")
     except Exception as e:
