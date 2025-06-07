@@ -1,4 +1,4 @@
-![5077fbf43e59919a5dc960faf8da998](https://github.com/user-attachments/assets/4a8fb922-6f48-42dd-be81-507216b1236f)# MemoryOS
+# MemoryOS
 <div align="center">
   <img src="logo_1.png" alt="logo" width="400"/>
 </div>
@@ -146,6 +146,5 @@ If you find this project useful, please consider citing our paper:
 ## Contact us
 百家AI是北京邮电大学白婷副教授指导的研究小组, 致力于为硅基人类打造情感饱满、记忆超凡的大脑。
 合作与建议：baiting@bupt.edu.cn
-欢迎关注，百家Agent公众号
 ![5077fbf43e59919a5dc960faf8da998](https://github.com/user-attachments/assets/42651f49-f1f7-444d-9455-718e13ed75e9)
 
