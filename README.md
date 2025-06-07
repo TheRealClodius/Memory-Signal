@@ -146,10 +146,11 @@ If you want to read more details, please click here: [Read the Full Paper](./Pap
 If you find this project useful, please consider citing our paper:
 
 ```bibtex
-The 'Memory OS of AI Agent' paper will be published on arXiv soon.
+The 'Memory OS of AI Agent' paper will be available on arXiv soon.
 ```
 ## Contact us
-百家AI是北京邮电大学白婷副教授指导的研究小组, 致力于为硅基人类打造情感饱满、记忆超凡的大脑。
-合作与建议：baiting@bupt.edu.cn
+百家AI是北京邮电大学白婷副教授指导的研究小组, 致力于为硅基人类打造情感饱满、记忆超凡的大脑。<br>
+合作与建议：baiting@bupt.edu.cn<br>
+欢迎关注百家Agent公众号<br>
 ![5077fbf43e59919a5dc960faf8da998](https://github.com/user-attachments/assets/42651f49-f1f7-444d-9455-718e13ed75e9)
 
