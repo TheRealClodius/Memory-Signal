@@ -3,7 +3,7 @@
   <img src="logo_1.png" alt="logo" width="400"/>
 </div>
 <p align="center">
-  <a href="./Paper-MemoryOS.pdf">
+  <a href="https://arxiv.org/abs/2506.06326">
     <img src="https://img.shields.io/badge/Arxiv-paper-red" alt="Mem0 Discord">
   </a>
   <a href="https://github.com/user-attachments/assets/d195e740-1249-4eb1-962a-2c0d99a38c39">
