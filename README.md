@@ -146,7 +146,15 @@ If you want to read more details, please click here: [Read the Full Paper](./Pap
 If you find this project useful, please consider citing our paper:
 
 ```bibtex
-The 'Memory OS of AI Agent' paper will be available on arXiv soon.
+@misc{kang2025memoryosaiagent,
+      title={Memory OS of AI Agent}, 
+      author={Jiazheng Kang and Mingming Ji and Zhe Zhao and Ting Bai},
+      year={2025},
+      eprint={2506.06326},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2506.06326}, 
+}
 ```
 ## Contact us
 百家AI是北京邮电大学白婷副教授指导的研究小组, 致力于为硅基人类打造情感饱满、记忆超凡的大脑。<br>
