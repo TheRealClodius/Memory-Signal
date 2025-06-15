@@ -190,7 +190,7 @@ Contributions are welcome! Please feel free to submit issues or pull requests.
 ## Citation
 If you want to read more details, please click here: [Read the Full Paper](https://arxiv.org/abs/2506.06326)
 
-📣 If you find this project useful, please consider citing our paper:
+📣 **If you find this project useful, please consider citing our paper:**
 
 ```bibtex
 @misc{kang2025memoryosaiagent,
