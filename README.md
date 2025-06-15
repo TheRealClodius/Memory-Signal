@@ -22,16 +22,24 @@
 **MemoryOS** is designed to provide a memory operating system for personalized AI agents, enabling more coherent, personalized, and context-aware interactions. Drawing inspiration from memory management principles in operating systems, it adopts a hierarchical storage architecture with four core modules: Storage, Updating, Retrieval, and Generation, to achieve comprehensive and efficient memory management. On the LoCoMo benchmark, the model achieved average improvements of **49.11%** and **46.18%** in F1 and BLEU-1 scores.
 
 
-
-
-
-
-
 ## 📣 Latest News
 *   *<mark>[new]</mark>* 🔥  **[2025-06-15]**:🛠️ Open-sourced **MemoryOS-MCP** released! Now configurable on agent clients for seamless integration and customization. [👉 MemoryOS-MCP](#memoryos_mcp-getting-started)
 *   **[2025-05-30]**: 📄 Paper-**Memory OS of AI Agent** is available on arXiv: https://arxiv.org/abs/2506.06326.
 *   **[2025-05-30]**: Initial version of **MemoryOS** launched! Featuring short-term, mid-term, and long-term persona Memory with automated user profile and knowledge updating.
+# MemoryOS Support List
 
+| Type | Name | Open Source | Support | Configuration | Description |
+|------|------|-------------|---------|---------------|-------------|
+| **Agent Client** | Claude Desktop | ❌ | ✅ | `claude_desktop_config.json` | Anthropic official client |
+| **Agent Client** | Cline | ✅ | ✅ | VS Code settings | VS Code extension |
+| **Agent Client** | Cursor | ❌ | ✅ | Settings panel | AI code editor |
+| **Model Provider** | OpenAI | ❌ | ✅ | `OPENAI_API_KEY` | GPT-4, GPT-3.5, etc. |
+| **Model Provider** | Anthropic | ❌ | ✅ | `ANTHROPIC_API_KEY` | Claude series |
+| **Model Provider** | Deepseek | ✅ | ✅ | `DEEPSEEK_API_KEY` | Chinese large model |
+| **Model Provider** | Qwen | ✅ | ✅ | `QWEN_API_KEY` | Alibaba Qwen |
+| **Model Provider** | vLLM | ✅ | ✅ | Local deployment | Local model inference |
+| **Model Provider** | Llama_factory | ✅ | ✅ | Local deployment | Local fine-tuning deployment |
+All model calls use the OpenAI API interface; you must supply the API key and base URL.
 ## Demo
 [![Watch the video](https://img.youtube.com/vi/y9Igs0FnX_M/maxresdefault.jpg)](https://youtu.be/y9Igs0FnX_M)
 
