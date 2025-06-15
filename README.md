@@ -28,6 +28,7 @@
 
 ## 📣 Latest News
 *   *<mark>[new]</mark>* 🔥  **[2025-06-15]**:🛠️ Open-sourced **MemoryOS-MCP** released! Now configurable on agent clients for seamless integration and customization. [👉 查看](#memoryos_mcp-getting-started)
+*   **[2025-05-30]**: 📄 Paper-**Memory OS of AI Agent** is available on arXiv: https://arxiv.org/abs/2506.06326.
 *   **[2025-05-30]**: Initial version of **MemoryOS** launched! Featuring short-term, mid-term, and long-term persona Memory with automated user profile and knowledge updating.
 
 ## Demo
@@ -188,8 +189,6 @@ command": "/root/miniconda3/envs/memos/bin/python"
 Contributions are welcome! Please feel free to submit issues or pull requests.
 
 ## Citation
-If you want to read more details, please click here: [Read the Full Paper](https://arxiv.org/abs/2506.06326)
-
 📣 **If you find this project useful, please consider citing our paper:**
 
 ```bibtex
