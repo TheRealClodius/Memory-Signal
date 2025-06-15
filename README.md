@@ -24,7 +24,7 @@
 
 
 ## 📣 Latest News
-*   🔥 **[2025-06-15]**:🛠️ Open-sourced **MemoryOS-MCP** released! Now configurable on agent clients for seamless integration and customization. [👉 查看](#memoryos_mcp-getting-started)
+*   🔥 *<mark>new</mark>*  **[2025-06-15]**:🛠️ Open-sourced **MemoryOS-MCP** released! Now configurable on agent clients for seamless integration and customization. [👉 查看](#memoryos_mcp-getting-started)
 *   **[2025-05-30]**: Initial version of **MemoryOS** launched! Featuring short-term, mid-term, and long-term persona Memory with automated user profile and knowledge updating.
 
 ## Demo
