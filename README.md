@@ -19,17 +19,19 @@
 
 **MemoryOS** is designed to provide a memory operating system for personalized AI agents, enabling more coherent, personalized, and context-aware interactions. Drawing inspiration from memory management principles in operating systems, it adopts a hierarchical storage architecture with four core modules: Storage, Updating, Retrieval, and Generation, to achieve comprehensive and efficient memory management. On the LoCoMo benchmark, the model achieved average improvements of **49.11%** and **46.18%** in F1 and BLEU-1 scores.
 
-## Demo
-[![Watch the video](https://img.youtube.com/vi/y9Igs0FnX_M/maxresdefault.jpg)](https://youtu.be/y9Igs0FnX_M)
+
 
 
 
 ## Latest News
-*   **[2025-06-15]**: Open-sourced MCP version released! Now configurable on agent clients for seamless integration and customization.
-*   **[2025-05-30]**: Initial version of MemoryOS launched! Featuring short-term, mid-term, and long-term persona Memory with automated user profile and knowledge updating.
+*   🔥🔥🔥**[2025-06-15]**: Open-sourced MemoryOS_MCP released! Now configurable on agent clients for seamless integration and customization. [👉 查看](#memoryos_mcp-getting-started)
+*   🔥🔥🔥**[2025-05-30]**: Initial version of MemoryOS launched! Featuring short-term, mid-term, and long-term persona Memory with automated user profile and knowledge updating.
+
+## Demo
+[![Watch the video](https://img.youtube.com/vi/y9Igs0FnX_M/maxresdefault.jpg)](https://youtu.be/y9Igs0FnX_M)
+
 ## 	System Architecture
 ![image](https://github.com/user-attachments/assets/09200494-03a9-4b7d-9ffa-ef646d9d51f0)
-
 
 ## Project Structure
 
