@@ -168,7 +168,7 @@ python test_comprehensive.py
 ```
 ### 5.配置到Cline等客户端
 把mcp.json复制过去，注意文件的路径要对
-```mcp.json
+```bash
 command": "/root/miniconda3/envs/memos/bin/python"
 #这里要改成自己虚拟环境所在的python解释器
 ```
