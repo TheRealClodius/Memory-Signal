@@ -25,7 +25,7 @@
 
 
 ## Latest News
-
+*   **[2025-06-15]**: Open-sourced MCP version released! Now configurable on agent clients for seamless integration and customization.
 *   **[2025-05-30]**: Initial version of MemoryOS launched! Featuring short-term, mid-term, and long-term persona Memory with automated user profile and knowledge updating.
 ## 	System Architecture
 ![image](https://github.com/user-attachments/assets/09200494-03a9-4b7d-9ffa-ef646d9d51f0)
