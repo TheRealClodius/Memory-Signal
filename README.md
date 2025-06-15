@@ -39,6 +39,7 @@
 | **Model Provider** | Qwen | ✅ | ✅ | `QWEN_API_KEY` | Alibaba Qwen |
 | **Model Provider** | vLLM | ✅ | ✅ | Local deployment | Local model inference |
 | **Model Provider** | Llama_factory | ✅ | ✅ | Local deployment | Local fine-tuning deployment |
+
 All model calls use the OpenAI API interface; you must supply the API key and base URL.
 ## Demo
 [![Watch the video](https://img.youtube.com/vi/y9Igs0FnX_M/maxresdefault.jpg)](https://youtu.be/y9Igs0FnX_M)
