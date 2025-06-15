@@ -208,6 +208,9 @@ If you find this project useful, please consider citing our paper:
 合作与建议：baiting@bupt.edu.cn<br>
 欢迎关注百家Agent公众号<br>
 ![5077fbf43e59919a5dc960faf8da998](https://github.com/user-attachments/assets/42651f49-f1f7-444d-9455-718e13ed75e9)<br>
+<div>
+ <img src="https://github.com/user-attachments/assets/6b15a873-9e9a-44ee-b0b3-64f488fbd5d8" alt="wechat" width="300"/>
+</div>
 欢迎对此开源项目感兴趣的加入微信群里，共同交流！<br>
 <div>
  <img src="https://github.com/user-attachments/assets/6b15a873-9e9a-44ee-b0b3-64f488fbd5d8" alt="wechat" width="300"/>
