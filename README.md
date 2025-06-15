@@ -134,20 +134,26 @@ if __name__ == "__main__":
     simple_demo()
 ```
 ## MemoryOS_MCP Getting Started
+### 🔧 Core Tools
 
-### 1. 安装依赖
+#### 1. `add_memory`
+Saves the content of the conversation between the user and the AI assistant into the memory system, for the purpose of building a persistent dialogue history and contextual record.
+
+#### 2. `retrieve_memory`
+Retrieves related historical dialogues, user preferences, and knowledge information from the memory system based on a query, helping the AI assistant understand the user’s needs and background.
+
+#### 3. `get_user_profile`
+Obtains a user profile generated from the analysis of historical dialogues, including the user’s personality traits, interest preferences, and relevant knowledge background.
+
+
+### 1. Install dependencies
 ```bash
 cd memoryos-mcp
 pip install -r requirements.txt
 ```
-### 2. 配置
+### 2. configuration
 
-复制配置模板：
-```bash
-cp config.example.json config.json
-```
-
-编辑 `config.json`：
+Edit `config.json`：
 ```json
 {
   "user_id": "你的用户ID",
@@ -158,19 +164,19 @@ cp config.example.json config.json
   "llm_model": "gpt-4o-mini"
 }
 ```
-### 3. 启动服务器
+### 3. Start the server
 ```bash
 python server_new.py --config config.json
 ```
-### 4. 测试
+### 4. Test
 ```bash
 python test_comprehensive.py
 ```
-### 5.配置到Cline等客户端
-把mcp.json复制过去，注意文件的路径要对
+### 5.Configure it on Cline and other clients
+Copy the mcp.json file over, and make sure the file path is correct.
 ```bash
 command": "/root/miniconda3/envs/memos/bin/python"
-#这里要改成自己虚拟环境所在的python解释器
+#This should be changed to the Python interpreter of your virtual environment
 ```
 ## Contributing
 
