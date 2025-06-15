@@ -60,7 +60,7 @@ memoryos/
     *   The `Retriever` module fetches relevant context from short-term history, mid-term memory segments, the user's profile & knowledge, and the assistant's knowledge base.
     *   This comprehensive context is then used, along with the user's query, to generate a coherent and informed response via an LLM.
 
-## Getting Started
+## MemoryOS_PYPI Getting Started
 
 ### Prerequisites
 
@@ -133,7 +133,7 @@ def simple_demo():
 if __name__ == "__main__":
     simple_demo()
 ```
-
+## MemoryOS_MCP Getting Started
 
 
 ## Contributing
