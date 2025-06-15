@@ -135,7 +135,43 @@ if __name__ == "__main__":
 ```
 ## MemoryOS_MCP Getting Started
 
+### 1. 安装依赖
+```bash
+cd memoryos-mcp
+pip install -r requirements.txt
+```
+### 2. 配置
 
+复制配置模板：
+```bash
+cp config.example.json config.json
+```
+
+编辑 `config.json`：
+```json
+{
+  "user_id": "你的用户ID",
+  "openai_api_key": "你的OpenAI API密钥",
+  "openai_base_url": "https://api.openai.com/v1",
+  "data_storage_path": "./memoryos_data",
+  "assistant_id": "assistant_id",
+  "llm_model": "gpt-4o-mini"
+}
+```
+### 3. 启动服务器
+```bash
+python server_new.py --config config.json
+```
+### 4. 测试
+```bash
+python test_comprehensive.py
+```
+### 5.配置到Cline等客户端
+把mcp.json复制过去，注意文件的路径要对
+```mcp.json
+command": "/root/miniconda3/envs/memos/bin/python"
+#这里要改成自己虚拟环境所在的python解释器
+```
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.
