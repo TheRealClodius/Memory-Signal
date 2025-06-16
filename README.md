@@ -40,7 +40,7 @@
   </thead>
   <tbody>
     <tr>
-      <td rowspan="3"><strong>Agent Client</strong></td>
+      <td rowspan="3">Agent Client</td>
       <td><strong>Claude Desktop</strong></td>
       <td>❌</td>
       <td>✅</td>
@@ -62,7 +62,7 @@
       <td>AI code editor</td>
     </tr>
     <tr>
-      <td rowspan="6"><strong>Model Provider</strong></td>
+      <td rowspan="6">Model Provider</td>
       <td><strong>OpenAI</strong></td>
       <td>❌</td>
       <td>✅</td>
