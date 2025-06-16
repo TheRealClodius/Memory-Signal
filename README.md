@@ -27,18 +27,87 @@
 *   **[2025-05-30]**: 📄 Paper-**Memory OS of AI Agent** is available on arXiv: https://arxiv.org/abs/2506.06326.
 *   **[2025-05-30]**: Initial version of **MemoryOS** launched! Featuring short-term, mid-term, and long-term persona Memory with automated user profile and knowledge updating.
 ## MemoryOS Support List
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Name</th>
+      <th>Open&nbsp;Source</th>
+      <th>Support</th>
+      <th>Configuration</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="3"><strong>Agent Client</strong></td>
+      <td><strong>Claude Desktop</strong></td>
+      <td>❌</td>
+      <td>✅</td>
+      <td>claude_desktop_config.json</td>
+      <td>Anthropic official client</td>
+    </tr>
+    <tr>
+      <td><strong>Cline</strong></td>
+      <td>✅</td>
+      <td>✅</td>
+      <td>VS Code settings</td>
+      <td>VS Code extension</td>
+    </tr>
+    <tr>
+      <td><strong>Cursor</strong></td>
+      <td>❌</td>
+      <td>✅</td>
+      <td>Settings panel</td>
+      <td>AI code editor</td>
+    </tr>
+    <tr>
+      <td rowspan="6"><strong>Model Provider</strong></td>
+      <td><strong>OpenAI</strong></td>
+      <td>❌</td>
+      <td>✅</td>
+      <td>OPENAI_API_KEY</td>
+      <td>GPT-4, GPT-3.5, etc.</td>
+    </tr>
+    <tr>
+      <td><strong>Anthropic</strong></td>
+      <td>❌</td>
+      <td>✅</td>
+      <td>ANTHROPIC_API_KEY</td>
+      <td>Claude series</td>
+    </tr>
+    <tr>
+      <td><strong>Deepseek</strong></td>
+      <td>✅</td>
+      <td>✅</td>
+      <td>DEEPSEEK_API_KEY</td>
+      <td>Chinese large model</td>
+    </tr>
+    <tr>
+      <td><strong>Qwen</strong></td>
+      <td>✅</td>
+      <td>✅</td>
+      <td>QWEN_API_KEY</td>
+      <td>Alibaba Qwen</td>
+    </tr>
+    <tr>
+      <td><strong>vLLM</strong></td>
+      <td>✅</td>
+      <td>✅</td>
+      <td>Local deployment</td>
+      <td>Local model inference</td>
+    </tr>
+    <tr>
+      <td><strong>Llama_factory</strong></td>
+      <td>✅</td>
+      <td>✅</td>
+      <td>Local deployment</td>
+      <td>Local fine-tuning deployment</td>
+    </tr>
+  </tbody>
+</table>
 
-| Type | Name | Open Source | Support | Configuration | Description |
-|------|------|-------------|---------|---------------|-------------|
-| **Agent Client** | Claude Desktop | ❌ | ✅ | `claude_desktop_config.json` | Anthropic official client |
-| **Agent Client** | Cline | ✅ | ✅ | VS Code settings | VS Code extension |
-| **Agent Client** | Cursor | ❌ | ✅ | Settings panel | AI code editor |
-| **Model Provider** | OpenAI | ❌ | ✅ | `OPENAI_API_KEY` | GPT-4, GPT-3.5, etc. |
-| **Model Provider** | Anthropic | ❌ | ✅ | `ANTHROPIC_API_KEY` | Claude series |
-| **Model Provider** | Deepseek | ✅ | ✅ | `DEEPSEEK_API_KEY` | Chinese large model |
-| **Model Provider** | Qwen | ✅ | ✅ | `QWEN_API_KEY` | Alibaba Qwen |
-| **Model Provider** | vLLM | ✅ | ✅ | Local deployment | Local model inference |
-| **Model Provider** | Llama_factory | ✅ | ✅ | Local deployment | Local fine-tuning deployment |
+
 
 All model calls use the OpenAI API interface; you must supply the API key and base URL.
 ## Demo
