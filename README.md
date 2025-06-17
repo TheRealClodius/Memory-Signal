@@ -241,8 +241,8 @@ pip install -r requirements.txt
 Edit `config.json`：
 ```json
 {
-  "user_id": "你的用户ID",
-  "openai_api_key": "你的OpenAI API密钥",
+  "user_id": "user ID",
+  "openai_api_key": "OpenAI API key",
   "openai_base_url": "https://api.openai.com/v1",
   "data_storage_path": "./memoryos_data",
   "assistant_id": "assistant_id",
@@ -282,6 +282,9 @@ Contributions are welcome! Please feel free to submit issues or pull requests.
 }
 ```
 ## Contact us
+Baijia AI is a research team guided by Associate Professor Bai Ting from Beijing University of Posts and Telecommunications, dedicated to creating emotionally rich and super-memory brains for AI agents.
+Cooperation and Suggestions: baiting@bupt.edu.cn
+
 百家AI是北京邮电大学白婷副教授指导的研究小组, 致力于为硅基人类打造情感饱满、记忆超凡的大脑。<br>
 合作与建议：baiting@bupt.edu.cn<br>
 欢迎关注百家Agent公众号和微信群，共同交流！  
