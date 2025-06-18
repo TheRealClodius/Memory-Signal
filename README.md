@@ -282,7 +282,7 @@ Contributions are welcome! Please feel free to submit issues or pull requests.
 }
 ```
 ## Contact us
-Baijia AI is a research team guided by Associate Professor Bai Ting from Beijing University of Posts and Telecommunications, dedicated to creating emotionally rich and super-memory brains for AI agents.
+BaiJia AI is a research team guided by Associate Professor Bai Ting from Beijing University of Posts and Telecommunications, dedicated to creating emotionally rich and super-memory brains for AI agents.
 Cooperation and Suggestions: baiting@bupt.edu.cn
 
 百家AI是北京邮电大学白婷副教授指导的研究小组, 致力于为硅基人类打造情感饱满、记忆超凡的大脑。<br>
