@@ -290,6 +290,6 @@ Cooperation and Suggestions: baiting@bupt.edu.cn
 欢迎关注百家Agent公众号和微信群，共同交流！  
 <div style="display: flex; justify-content: center; gap: 20px;">
   <img src="https://github.com/user-attachments/assets/42651f49-f1f7-444d-9455-718e13ed75e9" alt="百家Agent公众号" width="250"/>
-  <img src="https://github.com/user-attachments/assets/6b15a873-9e9a-44ee-b0b3-64f488fbd5d8" alt="微信群二维码" width="300"/>
+  <img src="https://github.com/user-attachments/assets/b72cfa90-cffd-4326-aaff-e55fa13c3326" alt="微信群二维码" width="300"/>
 </div>
 
