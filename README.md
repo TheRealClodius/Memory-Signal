@@ -6,7 +6,7 @@
   <a href="https://arxiv.org/abs/2506.06326">
     <img src="https://img.shields.io/badge/Arxiv-paper-red" alt="Mem0 Discord">
   </a>
-  <a href="# Contact us">
+  <a href="#contact-us">
     <img src="https://img.shields.io/badge/Wechat-群二维码-green" alt="Mem0 PyPI - Downloads">
   </a>
   <a href="https://youtu.be/y9Igs0FnX_M" target="blank">
