@@ -6,7 +6,7 @@
   <a href="https://arxiv.org/abs/2506.06326">
     <img src="https://img.shields.io/badge/Arxiv-paper-red" alt="Mem0 Discord">
   </a>
-  <a href="https://github.com/user-attachments/assets/d195e740-1249-4eb1-962a-2c0d99a38c39">
+  <a href="# Contact us">
     <img src="https://img.shields.io/badge/Wechat-群二维码-green" alt="Mem0 PyPI - Downloads">
   </a>
   <a href="https://youtu.be/y9Igs0FnX_M" target="blank">
@@ -290,6 +290,6 @@ Cooperation and Suggestions: baiting@bupt.edu.cn
 欢迎关注百家Agent公众号和微信群，共同交流！  
 <div style="display: flex; justify-content: center; gap: 20px;">
   <img src="https://github.com/user-attachments/assets/42651f49-f1f7-444d-9455-718e13ed75e9" alt="百家Agent公众号" width="250"/>
-  <img src="https://github.com/user-attachments/assets/b72cfa90-cffd-4326-aaff-e55fa13c3326" alt="微信群二维码" width="300"/>
+  <img src="https://github.com/user-attachments/assets/c9a9a07c-09f9-4ebc-b197-d0b3e5dc54ba" alt="微信群二维码" width="250"/>
 </div>
 
