@@ -109,7 +109,7 @@
 
 
 
-All model calls use the OpenAI API interface; you must supply the API key and base URL.
+All model calls use the OpenAI API interface; you need to supply the API key and base URL.
 ## Demo
 [![Watch the video](https://img.youtube.com/vi/y9Igs0FnX_M/maxresdefault.jpg)](https://youtu.be/y9Igs0FnX_M)
 
