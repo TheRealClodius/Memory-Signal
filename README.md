@@ -9,8 +9,8 @@
   <a href="#contact-us">
     <img src="https://img.shields.io/badge/Wechat-群二维码-green" alt="Mem0 PyPI - Downloads">
   </a>
-  <a href="https://youtu.be/y9Igs0FnX_M" target="blank">
-    <img src="https://img.shields.io/badge/Demo-Video-red" alt="Npm package">
+  <a href="https://www.youtube.com/watch?v=WHQu8fpEOaU" target="blank">
+    <img src="https://img.shields.io/badge/Youtube-Video-red" alt="Npm package">
   </a>
     <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">
     <img src="https://img.shields.io/badge/License-Apache_2.0-blue" alt="License: Apache 2.0">
