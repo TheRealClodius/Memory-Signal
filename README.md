@@ -12,7 +12,10 @@
   <a href="https://www.youtube.com/watch?v=WHQu8fpEOaU" target="blank">
     <img src="https://img.shields.io/badge/Youtube-Video-red" alt="Npm package">
   </a>
-    <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">
+  <a href="https://discord.gg/S38ctNkT" target="_blank">
+    <img src="https://img.shields.io/badge/Discord-Join_us-yellow" alt="Discord">
+  </a>
+  <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">
     <img src="https://img.shields.io/badge/License-Apache_2.0-blue" alt="License: Apache 2.0">
   </a>
 </p>
