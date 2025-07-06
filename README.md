@@ -295,5 +295,8 @@ Cooperation and Suggestions: baiting@bupt.edu.cn
   <img src="https://github.com/user-attachments/assets/42651f49-f1f7-444d-9455-718e13ed75e9" alt="百家Agent公众号" width="250"/> 
   <img src="https://github.com/user-attachments/assets/600b516c-f297-4383-a2e5-183d1867b237" alt="微信群二维码" width="250"/>
 </div>
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=BAI-LAB/MemoryOS&type=Timeline)](https://www.star-history.com/#BAI-LAB/MemoryOS&Timeline)
 
 
