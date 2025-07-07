@@ -1,6 +1,6 @@
 # MemoryOS
 <div align="center">
-  <img src="logo_1.png" alt="logo" width="400"/>
+  <img src="https://github.com/user-attachments/assets/eb3b167b-1ace-476e-89dc-1a7891356e0b" alt="logo" width="400"/>
 </div>
 <p align="center">
   <a href="https://arxiv.org/abs/2506.06326">
