@@ -326,10 +326,13 @@ command": "/root/miniconda3/envs/memos/bin/python"
 
 MemoryOS is continuously evolving! Here's what's coming:
 
-- ⚡ **Parallelization Acceleration**： Parallelism for memory retrieval and model inference to reduce end-to-end latency
+- ⚡ **Parallelization Acceleration**：Parallelism for memory retrieval and model inference to reduce end-to-end latency
 - 🖥️ **Open-Source Web Interface**: Browser-based memory visualization analytics without local deployment
 - 🔧 **More Tool Operation**: Integration with more tool like **modify**, **delete**
 - 🏗️ **Integrated Algorithms & Benchmarks**: Standardized benchmark suite with cross-model performance comparison dashboards
+- 🤝 Other to-do list: From @jowindon: For MacOS, support FAISS-CPU
+
+  
 
 Have ideas or suggestions? Contributions are welcome! Please feel free to submit issues or pull requests! 🚀
 
