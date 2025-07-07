@@ -195,12 +195,6 @@ memoryos/
     *   The `Retriever` module fetches relevant context from short-term history, mid-term memory segments, the user's profile & knowledge, and the assistant's knowledge base.
     *   This comprehensive context is then used, along with the user's query, to generate a coherent and informed response via an LLM.
       
-
-<span id='pipy-mode'/>
-
-## MemoryOS_PYPI Getting Started
-Here is the translated table in English:
-
 ### 📋 **Complete List of 12 Parameters**
 
 | #  | Parameter Name                  | Type  | Default Value                 | Description                             |
@@ -217,6 +211,11 @@ Here is the translated table in English:
 | 10 | `mid_term_heat_threshold`       | float | `5.0`                         | Mid-term memory heat threshold          |
 | 11 | `mid_term_similarity_threshold` | float | `0.6`                         | 🆕 Mid-term memory similarity threshold |
 | 12 | `llm_model`                     | str   | `"gpt-4o-mini"`               | LLM model name                          |
+
+<span id='pipy-mode'/>
+
+## MemoryOS_PYPI Getting Started
+
 
 
 ### Prerequisites
