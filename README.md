@@ -47,7 +47,9 @@
 
 ## 📣 Latest News
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: The Playground of **MemoryOS Platform** has been launched! [👉MemoryOS Platform](https://baijia.online/memoryos/)
-*   *<mark>[new]</mark>* 🔥  **[2025-06-15]**:🛠️ Open-sourced **MemoryOS-MCP** released! Now configurable on agent clients for seamless integration and customization. [👉 MemoryOS-MCP](#memoryos-mcp-getting-started)
+
+    If you need an **Invite Code**, please feel free to reach [Contact US](#community).
+*   *<mark>[new]</mark>* 🔥  **[2025-06-15]**:🛠️ Open-sourced **MemoryOS-MCP** released! Now configurable on agent clients for seamless integration and customization. [👉 MemoryOS-MCP](#memoryos-mcp-getting-started).
 *   **[2025-05-30]**: 📄 Paper-**Memory OS of AI Agent** is available on arXiv: https://arxiv.org/abs/2506.06326.
 *   **[2025-05-30]**: Initial version of **MemoryOS** launched! Featuring short-term, mid-term, and long-term persona Memory with automated user profile and knowledge updating.
 
@@ -144,14 +146,13 @@ All model calls use the OpenAI API interface; you need to supply the API key and
 * <a href='#features'>✨ Features</a>
 * <a href='#news'>🔥 News</a>
 * <a href='#list'>🔍Support Lists </a>
-* <a href='#vedio'>🖥️Instruction Vedio </a>
 * <a href='#structure'> 📁Project Structure</a>
 * <a href='#pipy-mode'>🎯 Quick Start</a>
   * <a href='pipy-mode'>PYPI Install MemoryOS</a>
   * <a href='#MCP-mode'>MemoryOS-MCP</a>
 * <a href='#todo'>☑️ Todo List</a>
-* <a href='#reproduce'>🔬 How To Reproduce the Results in the Paper (Coming soon)</a>
-* <a href='#doc'>📖 Documentation (Coming soon)</a>
+* <a href='#reproduce'>🔬 How to Reproduce the Results in the Paper (Coming soon)</a>
+* <a href='#doc'>📖 Documentation</a>
 * <a href='#cite'>🌟 Cite</a>
 * <a href='#community'>🤝 Join the Community</a>
 
