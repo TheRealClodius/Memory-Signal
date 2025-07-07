@@ -54,7 +54,7 @@
 
 <span id='list'/>
 
-## MemoryOS Support List
+## 🔥 MemoryOS Support List
 <table>
   <thead>
     <tr>
@@ -150,22 +150,22 @@ All model calls use the OpenAI API interface; you need to supply the API key and
   * <a href='#MCP-mode'>MemoryOS-MCP</a>
 * <a href='#todo'>☑️ Todo List</a>
 * <a href='#reproduce'>🔬 How To Reproduce the Results in the Paper (Coming soon)</a>
-* <a href='#doc'>📖 Documentation</a>
+* <a href='#doc'>📖 Documentation (Coming soon)</a>
 * <a href='#cite'>🌟 Cite</a>
 * <a href='#community'>🤝 Join the Community</a>
 
 <span id='vedio'/>
 
-## Demo
-[![Watch the video](https://img.youtube.com/vi/y9Igs0FnX_M/maxresdefault.jpg)](https://youtu.be/y9Igs0FnX_M)
+<!--## Demo-->
+<!--[![Watch the video](https://img.youtube.com/vi/y9Igs0FnX_M/maxresdefault.jpg)](https://youtu.be/y9Igs0FnX_M)-->
 
 
 <span id='structure'/>
 
-## 	System Architecture
+## 🏗️	System Architecture
 ![image](https://github.com/user-attachments/assets/09200494-03a9-4b7d-9ffa-ef646d9d51f0)
 
-## Project Structure
+## 🏗️ Project Structure
 
 ```
 memoryos/
@@ -183,7 +183,7 @@ memoryos/
 
 
 
-## How It Works
+## 📖 How It Works
 
 1.  **Initialization:** `Memoryos` is initialized with user and assistant IDs, API keys, data storage paths, and various capacity/threshold settings. It sets up dedicated storage for each user and assistant.
 2.  **Adding Memories:** User inputs and agent responses are added as QA pairs. These are initially stored in short-term memory.
@@ -196,26 +196,10 @@ memoryos/
     *   The `Retriever` module fetches relevant context from short-term history, mid-term memory segments, the user's profile & knowledge, and the assistant's knowledge base.
     *   This comprehensive context is then used, along with the user's query, to generate a coherent and informed response via an LLM.
       
-### 📋 **Complete List of 12 Parameters**
-
-| #  | Parameter Name                  | Type  | Default Value                 | Description                             |
-| -- | ------------------------------- | ----- | ----------------------------- | --------------------------------------- |
-| 1  | `user_id`                       | str   | ❌Required                     | User ID identifier                      |
-| 2  | `openai_api_key`                | str   | ❌Required                     | OpenAI API key                          |
-| 3  | `data_storage_path`             | str   | ❌Required                     | Data storage path                       |
-| 4  | `openai_base_url`               | str   | `None`                        | API base URL                            |
-| 5  | `assistant_id`                  | str   | `"default_assistant_profile"` | Assistant ID                            |
-| 6  | `short_term_capacity`           | int   | `10`                          | Short-term memory capacity              |
-| 7  | `mid_term_capacity`             | int   | `2000`                        | Mid-term memory capacity                |
-| 8  | `long_term_knowledge_capacity`  | int   | `100`                         | Long-term knowledge capacity            |
-| 9  | `retrieval_queue_capacity`      | int   | `7`                           | Retrieval queue capacity                |
-| 10 | `mid_term_heat_threshold`       | float | `5.0`                         | Mid-term memory heat threshold          |
-| 11 | `mid_term_similarity_threshold` | float | `0.6`                         | 🆕 Mid-term memory similarity threshold |
-| 12 | `llm_model`                     | str   | `"gpt-4o-mini"`               | LLM model name                          |
 
 <span id='pipy-mode'/>
 
-## MemoryOS_PYPI Getting Started
+## 📖MemoryOS_PYPI Getting Started
 
 
 
@@ -293,7 +277,7 @@ if __name__ == "__main__":
 ```
 <span id='MCP-mode'/>
 
-## MemoryOS-MCP Getting Started
+## 📖 MemoryOS-MCP Getting Started
 ### 🔧 Core Tools
 
 #### 1. `add_memory`
@@ -382,13 +366,16 @@ A more detailed documentation is coming soon 🚀, and we will update in the [Do
 
 <span id='community'/>
 
-## Contact us
-BaiJia AI is a research team guided by Associate Professor Bai Ting from Beijing University of Posts and Telecommunications, dedicated to creating emotionally rich and super-memory brains for AI agents.
-Cooperation and Suggestions: baiting@bupt.edu.cn
+## 🎯 Contact us
+BaiJia AI is a research team guided by Associate Professor Bai Ting from Beijing University of Posts and Telecommunications, dedicated to creating emotionally rich and super-memory brains for AI agents. 
+
+🤝 Cooperation and Suggestions: baiting@bupt.edu.cn 
+
+📣Follow our WeChat official account and join the WeChat group to get the latest updates.
 
 <div style="display: flex; justify-content: center; gap: 20px;">
   <img src="https://github.com/user-attachments/assets/42651f49-f1f7-444d-9455-718e13ed75e9" alt="百家Agent公众号" width="250"/> 
-  <img src="https://github.com/user-attachments/assets/600b516c-f297-4383-a2e5-183d1867b237" alt="微信群二维码" width="250"/>
+  <img src="https://github.com/user-attachments/assets/d47572f6-ee4a-4987-bf25-c68ad5bb5153" alt="微信群二维码" width="250"/>
 </div>
 
 ## Star History
