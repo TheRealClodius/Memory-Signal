@@ -199,6 +199,25 @@ memoryos/
 <span id='pipy-mode'/>
 
 ## MemoryOS_PYPI Getting Started
+Here is the translated table in English:
+
+### 📋 **Complete List of 12 Parameters**
+
+| #  | Parameter Name                  | Type  | Default Value                 | Description                             |
+| -- | ------------------------------- | ----- | ----------------------------- | --------------------------------------- |
+| 1  | `user_id`                       | str   | ❌Required                     | User ID identifier                      |
+| 2  | `openai_api_key`                | str   | ❌Required                     | OpenAI API key                          |
+| 3  | `data_storage_path`             | str   | ❌Required                     | Data storage path                       |
+| 4  | `openai_base_url`               | str   | `None`                        | API base URL                            |
+| 5  | `assistant_id`                  | str   | `"default_assistant_profile"` | Assistant ID                            |
+| 6  | `short_term_capacity`           | int   | `10`                          | Short-term memory capacity              |
+| 7  | `mid_term_capacity`             | int   | `2000`                        | Mid-term memory capacity                |
+| 8  | `long_term_knowledge_capacity`  | int   | `100`                         | Long-term knowledge capacity            |
+| 9  | `retrieval_queue_capacity`      | int   | `7`                           | Retrieval queue capacity                |
+| 10 | `mid_term_heat_threshold`       | float | `5.0`                         | Mid-term memory heat threshold          |
+| 11 | `mid_term_similarity_threshold` | float | `0.6`                         | 🆕 Mid-term memory similarity threshold |
+| 12 | `llm_model`                     | str   | `"gpt-4o-mini"`               | LLM model name                          |
+
 
 ### Prerequisites
 
