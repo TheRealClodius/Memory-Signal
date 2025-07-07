@@ -46,9 +46,12 @@
 <span id='news'/>
 
 ## 📣 Latest News
-*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: The Playground of **MemoryOS Platform** has been launched! [👉MemoryOS Platform](https://baijia.online/memoryos/)
-
-    If you need an **Invitation Code**, please feel free to reach [Contact US](#community).
+*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: **5 Times Faster🚀**
+*   The MemoryOS (PIPY) implementation has been upgraded: **5 times faster** (reduction in latency) through parallelization optimizations.
+*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: **R1 models Support Now**
+*   MemoryOS supports configuring and using inference models such as **Deepseek-r1 and Qwen3..**
+*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: **MemoryOS PlayGround Launched**
+*   The Playground of **MemoryOS Platform** has been launched! [👉MemoryOS Platform](https://baijia.online/memoryos/). If you need an **Invitation Code**, please feel free to reach [Contact US](#community).
 *   *<mark>[new]</mark>* 🔥  **[2025-06-15]**:🛠️ Open-sourced **MemoryOS-MCP** released! Now configurable on agent clients for seamless integration and customization. [👉 MemoryOS-MCP](#memoryos-mcp-getting-started).
 *   **[2025-05-30]**: 📄 Paper-**Memory OS of AI Agent** is available on arXiv: https://arxiv.org/abs/2506.06326.
 *   **[2025-05-30]**: Initial version of **MemoryOS** launched! Featuring short-term, mid-term, and long-term persona Memory with automated user profile and knowledge updating.
