@@ -288,9 +288,6 @@ Contributions are welcome! Please feel free to submit issues or pull requests.
 BaiJia AI is a research team guided by Associate Professor Bai Ting from Beijing University of Posts and Telecommunications, dedicated to creating emotionally rich and super-memory brains for AI agents.
 Cooperation and Suggestions: baiting@bupt.edu.cn
 
-百家AI是北京邮电大学白婷副教授指导的研究小组, 致力于为硅基人类打造情感饱满、记忆超凡的大脑。<br>
-合作与建议：baiting@bupt.edu.cn<br>
-欢迎关注百家Agent公众号和微信群，共同交流！  
 <div style="display: flex; justify-content: center; gap: 20px;">
   <img src="https://github.com/user-attachments/assets/42651f49-f1f7-444d-9455-718e13ed75e9" alt="百家Agent公众号" width="250"/> 
   <img src="https://github.com/user-attachments/assets/600b516c-f297-4383-a2e5-183d1867b237" alt="微信群二维码" width="250"/>
