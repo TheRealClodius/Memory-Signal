@@ -111,14 +111,14 @@
       <td>Claude series</td>
     </tr>
     <tr>
-      <td><strong>Deepseek</strong></td>
+      <td><strong>Deepseek-R1</strong></td>
       <td>✅</td>
       <td>✅</td>
       <td>DEEPSEEK_API_KEY</td>
       <td>Chinese large model</td>
     </tr>
     <tr>
-      <td><strong>Qwen</strong></td>
+      <td><strong>Qwen/Qwen3</strong></td>
       <td>✅</td>
       <td>✅</td>
       <td>QWEN_API_KEY</td>
@@ -337,8 +337,8 @@ MemoryOS is continuously evolving! Here's what's coming:
 
 - ⚡ **Parallelization Acceleration**：Parallelism for memory retrieval and model inference to reduce end-to-end latency
 - 🖥️ **Open-Source Web Interface**: Browser-based memory visualization analytics without local deployment
-- 🔧 **More Tool Operation**: Integration with more tool like **modify**, **delete**
-- 🏗️ **Integrated Algorithms & Benchmarks**: Standardized benchmark suite with cross-model performance comparison dashboards
+- 🏗️ **Integrated Algorithms & Benchmarks**: Standardized benchmark suite with a cross-model comparison dashboard for Mem0, Zep, and OpenAI
+- 🔧 **More Tool Operation in MCP**: Integration with more tool like **modify**, **delete**
 - 🤝 Other to-do list: From @jowindon: For MacOS, support FAISS-CPU
 
   
