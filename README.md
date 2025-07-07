@@ -24,6 +24,24 @@
 
 **MemoryOS** is designed to provide a memory operating system for personalized AI agents, enabling more coherent, personalized, and context-aware interactions. Drawing inspiration from memory management principles in operating systems, it adopts a hierarchical storage architecture with four core modules: Storage, Updating, Retrieval, and Generation, to achieve comprehensive and efficient memory management. On the LoCoMo benchmark, the model achieved average improvements of **49.11%** and **46.18%** in F1 and BLEU-1 scores.
 
+
+## ✨Key Features
+
+* 🏆 TOP Performance in Memory Management
+</br> The SOTA results in long-term memory benchmarks, boosting F1 scores by 49.11% and BLEU-1 by 46.18% on the LoCoMo benchmark.
+
+* 🧠 Plug-and-Play Memory Management Architecture
+</br>  Enables seamless integration of pluggable memory modules—including storage engines, update strategies, and retrieval algorithms.
+
+* ✨ Agent Workflow Create with Ease (MemoryOS-MCP)
+</br> Inject long-term memory capabilities into various AI applications by calling modular tools provided by the MCP Server.
+
+* 🌐 Universal LLM Support
+</br> MemoryOS seamlessly integrates with a wide range of LLMs (e.g., OpenAI, Deepseek, Qwen ...)
+
+
+
+
 <span id='news'/>
 
 ## 📣 Latest News
