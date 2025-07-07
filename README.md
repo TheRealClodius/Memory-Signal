@@ -152,7 +152,7 @@ All model calls use the OpenAI API interface; you need to supply the API key and
   * <a href='#MCP-mode'>MemoryOS-MCP</a>
 * <a href='#todo'>☑️ Todo List</a>
 * <a href='#reproduce'>🔬 How to Reproduce the Results in the Paper (Coming soon)</a>
-* <a href='#doc'>📖 Documentation</a>
+* <a href='#doc'>📖 Documentation (Coming soon)</a>
 * <a href='#cite'>🌟 Cite</a>
 * <a href='#community'>🤝 Join the Community</a>
 
