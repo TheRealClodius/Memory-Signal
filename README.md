@@ -163,7 +163,7 @@ All model calls use the OpenAI API interface; you need to supply the API key and
 <span id='structure'/>
 
 ## 🏗️	System Architecture
-<img src="https://github.com/user-attachments/assets/09200494-03a9-4b7d-9ffa-ef646d9d51f0" width="70%" alt="image">
+<img src="https://github.com/user-attachments/assets/09200494-03a9-4b7d-9ffa-ef646d9d51f0" width="80%" alt="image">
 
 ## 🏗️ Project Structure
 
