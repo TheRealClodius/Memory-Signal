@@ -28,16 +28,16 @@
 
 ## ✨Key Features
 
-* 🏆 TOP Performance in Memory Management
+* 🏆 **TOP Performance** in Memory Management
 </br> The SOTA results in long-term memory benchmarks, boosting F1 scores by 49.11% and BLEU-1 by 46.18% on the LoCoMo benchmark.
 
-* 🧠 Plug-and-Play Memory Management Architecture
+* 🧠 **Plug-and-Play** Memory Management Architecture
 </br>  Enables seamless integration of pluggable memory modules—including storage engines, update strategies, and retrieval algorithms.
 
-* ✨ Agent Workflow Create with Ease (MemoryOS-MCP)
+* ✨ Agent Workflow Create with Ease (**MemoryOS-MCP**)
 </br> Inject long-term memory capabilities into various AI applications by calling modular tools provided by the MCP Server.
 
-* 🌐 Universal LLM Support
+* 🌐 **Universal LLM Support**
 </br> MemoryOS seamlessly integrates with a wide range of LLMs (e.g., OpenAI, Deepseek, Qwen ...)
 
 
