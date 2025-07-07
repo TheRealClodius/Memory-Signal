@@ -145,7 +145,7 @@ All model calls use the OpenAI API interface; you need to supply the API key and
 * <a href='#list'>🔍Support Lists </a>
 * <a href='#vedio'>🖥️Instruction Vedio </a>
 * <a href='#structure'> 📁Project Structure</a>
-* <a href='#quick start'>🎯 How It Works</a>
+* <a href='#pipy-mode'>🎯 Quick Start</a>
   * <a href='pipy-mode'>PYPI Install MemoryOS</a>
   * <a href='#MCP-mode'>MemoryOS-MCP</a>
 * <a href='#todo'>☑️ Todo List</a>
@@ -180,7 +180,7 @@ memoryos/
 └── utils.py               # Utility functions used across the library
 ```
 
-<span id='quick start'/>
+
 
 ## How It Works
 
@@ -195,6 +195,7 @@ memoryos/
     *   The `Retriever` module fetches relevant context from short-term history, mid-term memory segments, the user's profile & knowledge, and the assistant's knowledge base.
     *   This comprehensive context is then used, along with the user's query, to generate a coherent and informed response via an LLM.
       
+
 <span id='pipy-mode'/>
 
 ## MemoryOS_PYPI Getting Started
