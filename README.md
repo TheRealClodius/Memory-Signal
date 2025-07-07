@@ -149,7 +149,8 @@ All model calls use the OpenAI API interface; you need to supply the API key and
   * <a href='pipy-mode'>PYPI Install MemoryOS</a>
   * <a href='#MCP-mode'>MemoryOS-MCP</a>
 * <a href='#todo'>☑️ Todo List</a>
-* <a href='#reproduce'>🔬 How To Reproduce the Results in the Paper</a>
+* <a href='#reproduce'>🔬 How To Reproduce the Results in the Paper (Coming soon)</a>
+* <a href='#doc'>📖 Documentation</a>
 * <a href='#cite'>🌟 Cite</a>
 * <a href='#community'>🤝 Join the Community</a>
 
@@ -353,6 +354,12 @@ MemoryOS is continuously evolving! Here's what's coming:
   
 
 Have ideas or suggestions? Contributions are welcome! Please feel free to submit issues or pull requests! 🚀
+
+<span id='doc'/>
+
+## 📖 Documentation
+
+A more detailed documentation is coming soon 🚀, and we will update in the [Documentation](https://github.com/BAI-LAB/MemoryOS/doc) page.
 
 
 <span id='cite'/>
