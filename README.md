@@ -222,14 +222,15 @@ memoryos/
 ### Prerequisites
 
 *   Python >= 3.10
-*   pip install -i https://pypi.org/simple/ MemoryOS-BaiJia
 
 ### Installation
 
 ```bash
 conda create -n MemoryOS python=3.10
 conda activate MemoryOS
-pip install -i https://pypi.org/simple/ MemoryOS-BaiJia
+git clone https://github.com/BAI-LAB/MemoryOS.git
+cd MemoryOS/memoryos-pypi
+pip install -r requirements.txt
 ```
 
 ### Basic Usage
