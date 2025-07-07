@@ -34,7 +34,7 @@
 * 🧠 **Plug-and-Play** Memory Management Architecture
 </br>  Enables seamless integration of pluggable memory modules—including storage engines, update strategies, and retrieval algorithms.
 
-* ✨ Agent Workflow Create with Ease (**MemoryOS-MCP**)
+* ✨ **Agent Workflow Create with Ease** (**MemoryOS-MCP**)
 </br> Inject long-term memory capabilities into various AI applications by calling modular tools provided by the MCP Server.
 
 * 🌐 **Universal LLM Support**
