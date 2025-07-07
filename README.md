@@ -24,11 +24,17 @@
 
 **MemoryOS** is designed to provide a memory operating system for personalized AI agents, enabling more coherent, personalized, and context-aware interactions. Drawing inspiration from memory management principles in operating systems, it adopts a hierarchical storage architecture with four core modules: Storage, Updating, Retrieval, and Generation, to achieve comprehensive and efficient memory management. On the LoCoMo benchmark, the model achieved average improvements of **49.11%** and **46.18%** in F1 and BLEU-1 scores.
 
+<span id='news'/>
 
 ## 📣 Latest News
 *   *<mark>[new]</mark>* 🔥  **[2025-06-15]**:🛠️ Open-sourced **MemoryOS-MCP** released! Now configurable on agent clients for seamless integration and customization. [👉 MemoryOS-MCP](#memoryos-mcp-getting-started)
 *   **[2025-05-30]**: 📄 Paper-**Memory OS of AI Agent** is available on arXiv: https://arxiv.org/abs/2506.06326.
 *   **[2025-05-30]**: Initial version of **MemoryOS** launched! Featuring short-term, mid-term, and long-term persona Memory with automated user profile and knowledge updating.
+
+  
+
+<span id='list'/>
+
 ## MemoryOS Support List
 <table>
   <thead>
@@ -109,12 +115,32 @@
     </tr>
   </tbody>
 </table>
-
-
-
 All model calls use the OpenAI API interface; you need to supply the API key and base URL.
+
+
+
+## 📑 Table of Contents
+
+* <a href='#features'>✨ Features</a>
+* <a href='#news'>🔥 News</a>
+* <a href='#list'>🔍Support Lists </a>
+* <a href='#vedio'>🖥️Instruction Vedio </a>
+* <a href='#structure'> 📁Project Structure</a>
+* <a href='#quick start'>🎯 How It Works</a>
+  * <a href='pipy-mode'>PYPI Install MemoryOS</a>
+  * <a href='#MCP-mode'>MemoryOS-MCP</a>
+* <a href='#todo'>☑️ Todo List</a>
+* <a href='#reproduce'>🔬 How To Reproduce the Results in the Paper</a>
+* <a href='#cite'>🌟 Cite</a>
+* <a href='#community'>🤝 Join the Community</a>
+
+<span id='vedio'/>
+
 ## Demo
 [![Watch the video](https://img.youtube.com/vi/y9Igs0FnX_M/maxresdefault.jpg)](https://youtu.be/y9Igs0FnX_M)
+
+
+<span id='structure'/>
 
 ## 	System Architecture
 ![image](https://github.com/user-attachments/assets/09200494-03a9-4b7d-9ffa-ef646d9d51f0)
@@ -135,6 +161,8 @@ memoryos/
 └── utils.py               # Utility functions used across the library
 ```
 
+<span id='quick start'/>
+
 ## How It Works
 
 1.  **Initialization:** `Memoryos` is initialized with user and assistant IDs, API keys, data storage paths, and various capacity/threshold settings. It sets up dedicated storage for each user and assistant.
@@ -147,6 +175,8 @@ memoryos/
 5.  **Response Generation:** When a user query is received:
     *   The `Retriever` module fetches relevant context from short-term history, mid-term memory segments, the user's profile & knowledge, and the assistant's knowledge base.
     *   This comprehensive context is then used, along with the user's query, to generate a coherent and informed response via an LLM.
+      
+<span id='pipy-mode'/>
 
 ## MemoryOS_PYPI Getting Started
 
@@ -221,6 +251,8 @@ def simple_demo():
 if __name__ == "__main__":
     simple_demo()
 ```
+<span id='MCP-mode'/>
+
 ## MemoryOS-MCP Getting Started
 ### 🔧 Core Tools
 
@@ -266,9 +298,12 @@ Copy the mcp.json file over, and make sure the file path is correct.
 command": "/root/miniconda3/envs/memos/bin/python"
 #This should be changed to the Python interpreter of your virtual environment
 ```
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.
+
+<span id='cite'/>
 
 ## Citation
 📣 **If you find this project useful, please consider citing our paper:**
@@ -284,6 +319,9 @@ Contributions are welcome! Please feel free to submit issues or pull requests.
       url={https://arxiv.org/abs/2506.06326}, 
 }
 ```
+
+<span id='community'/>
+
 ## Contact us
 BaiJia AI is a research team guided by Associate Professor Bai Ting from Beijing University of Posts and Telecommunications, dedicated to creating emotionally rich and super-memory brains for AI agents.
 Cooperation and Suggestions: baiting@bupt.edu.cn
