@@ -319,9 +319,20 @@ command": "/root/miniconda3/envs/memos/bin/python"
 #This should be changed to the Python interpreter of your virtual environment
 ```
 
-## Contributing
 
-Contributions are welcome! Please feel free to submit issues or pull requests.
+<span id='todo'/>
+
+## ☑️ Todo List
+
+MemoryOS is continuously evolving! Here's what's coming:
+
+- ⚡ **Parallelization Acceleration**： Parallelism for memory retrieval and model inference to reduce end-to-end latency
+- 🖥️ **Open-Source Web Interface**: Browser-based memory visualization analytics without local deployment
+- 🔧 **More Tool Operation**: Integration with more tool like **modify**, **delete**
+- 🏗️ **Integrated Algorithms & Benchmarks**: Standardized benchmark suite with cross-model performance comparison dashboards
+
+Have ideas or suggestions? Contributions are welcome! Please feel free to submit issues or pull requests! 🚀
+
 
 <span id='cite'/>
 
