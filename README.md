@@ -160,6 +160,7 @@ All model calls use the OpenAI API interface; you need to supply the API key and
 * <a href='#reproduce'>🔬 How to Reproduce the Results in the Paper </a>
 * <a href='#doc'>📖 Documentation </a>
 * <a href='#cite'>🌟 Cite</a>
+* <a href='#related'>🔍 Related Project (🚀coming soon)</a>
 * <a href='#community'>🤝 Join the Community</a>
 
 <span id='vedio'/>
@@ -331,7 +332,7 @@ command": "/root/miniconda3/envs/memos/bin/python"
 #This should be changed to the Python interpreter of your virtual environment
 ```
 
-## Reproduce
+## 🎯Reproduce
 ```bash
 cd eval
 Configure API keys and other settings in the code
@@ -381,6 +382,11 @@ A more detailed documentation is coming soon 🚀, and we will update in the [Do
 }
 ```
 
+<span id='related'/>
+
+## Related Projects
+on going
+
 <span id='community'/>
 
 ## 🎯 Contact us
@@ -395,7 +401,7 @@ BaiJia AI is a research team guided by Associate Professor Bai Ting from Beijing
   <img src="https://github.com/user-attachments/assets/d47572f6-ee4a-4987-bf25-c68ad5bb5153" alt="微信群二维码" width="250"/>
 </div>
 
-## Star History
+## 🌟 Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=BAI-LAB/MemoryOS&type=Timeline)](https://www.star-history.com/#BAI-LAB/MemoryOS&Timeline)
 
