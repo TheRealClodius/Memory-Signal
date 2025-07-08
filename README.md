@@ -189,7 +189,7 @@ memoryos/
 ```
 
 
-
+<!--
 ## 📖 How It Works
 
 1.  **Initialization:** `Memoryos` is initialized with user and assistant IDs, API keys, data storage paths, and various capacity/threshold settings. It sets up dedicated storage for each user and assistant.
@@ -202,7 +202,7 @@ memoryos/
 5.  **Response Generation:** When a user query is received:
     *   The `Retriever` module fetches relevant context from short-term history, mid-term memory segments, the user's profile & knowledge, and the assistant's knowledge base.
     *   This comprehensive context is then used, along with the user's query, to generate a coherent and informed response via an LLM.
-      
+-->    
 
 <span id='pipy-mode'/>
 
