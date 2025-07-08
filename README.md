@@ -367,8 +367,8 @@ A more detailed documentation is coming soon 🚀, and we will update in the [Do
 
 <span id='cite'/>
 
-## Citation
-📣 **If you find this project useful, please consider citing our paper:**
+## 📣 Citation
+**If you find this project useful, please consider citing our paper:**
 
 ```bibtex
 @misc{kang2025memoryosaiagent,
@@ -384,7 +384,7 @@ A more detailed documentation is coming soon 🚀, and we will update in the [Do
 
 <span id='related'/>
 
-## Related Projects
+## 🔍 Related Projects
 on going
 
 <span id='community'/>
