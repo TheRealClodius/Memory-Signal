@@ -46,7 +46,7 @@
 <span id='news'/>
 
 ## 📣 Latest News
-*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-09]**: **📊 Eval on Locomo** [👉](#reproduce).
+*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-09]**: **📊 Evaluation** of the MemoryOS Method on the LoCoMo Dataset: Publicly Available [👉Reproduce](#reproduce).
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-08]**: **🏆 New Config Parameter**
 *   New parameter configuration: **similarity_threshold**. For configuration file, see 📖 [Documentation](https://bai-lab.github.io/MemoryOS/docs) page.
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: **🚀5 Times Faster**
@@ -346,11 +346,13 @@ python3 evalution_loco.py
 
 MemoryOS is continuously evolving! Here's what's coming:
 
-- ⚡ **Parallelization Acceleration**：Parallelism for memory retrieval and model inference to reduce end-to-end latency
-- 🖥️ **Open-Source Web Interface**: Browser-based memory visualization analytics without local deployment
-- 🏗️ **Integrated Algorithms & Benchmarks**: Standardized benchmark suite with a cross-model comparison dashboard for Mem0, Zep, and OpenAI
-- 🔧 **More Tool Operation in MCP**: Integration with more tool like **modify**, **delete**
-- 🤝 Other to-do list: From @jowindon: For MacOS, support FAISS-CPU
+- ⚡ **Parallelization Acceleration**：Parallelism for memory retrieval and model inference to reduce end-to-end latency (🎯Task completed)
+- 🖥️ **MemoryOS Platform**: Browser-based Memory visualization analytics platform (🎯Task completed, in internal testing)
+- 🏗️ **Integrated Algorithms & Benchmarks**: Standardized benchmark suite with a cross-model comparison dashboard for Mem0, Zep, and OpenAI (🚀**Ongoing**)
+- 🏗️ Interface with universal databases, like MySQL and MongoDB.
+- 🏗️ Enabling seamless Memory exchange and integration across diverse systems.
+- 🏗️ Integrating KV Cache and Memory built-in parameter optimization
+- 🔧 **More Tool Operation in MCP**: Integration with more tool like **modify**, **delete** 
 
   
 
