@@ -47,7 +47,7 @@
 
 ## 📣 Latest News
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-08]**: **🏆 New Config Parameter**
-*   New parameter configuration: **similarity_threshold**. For the specific configuration file, see in 📖 [Documentation](https://bai-lab.github.io/MemoryOS/docs) page.
+*   New parameter configuration: **similarity_threshold**. For configuration file, see 📖 [Documentation](https://bai-lab.github.io/MemoryOS/docs) page.
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: **🚀5 Times Faster**
 *   The MemoryOS (PIPY) implementation has been upgraded: **5 times faster** (reduction in latency) through parallelization optimizations.
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: **✨R1 models Support Now**
