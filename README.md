@@ -329,6 +329,13 @@ Copy the mcp.json file over, and make sure the file path is correct.
 command": "/root/miniconda3/envs/memos/bin/python"
 #This should be changed to the Python interpreter of your virtual environment
 ```
+## 📊 Reproduce experimental results
+```bash
+cd eval
+Configure API keys and other settings in the code
+python3 main_loco_parse.py
+python3 evalution_loco.py
+```
 
 
 <span id='todo'/>
