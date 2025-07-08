@@ -17,48 +17,42 @@
       max-width: 1200px;
       margin: 0 auto;
       min-height: 100vh;
+      padding-left: 250px; 
     }
     .sidebar {
-  min-width: 250px;
-  max-width: 250px;
-  width: 250px;
-  height: 100vh;
-  overflow-y: auto;
-  background: linear-gradient(160deg, #f8f9fa 60%, #e6f0fa 100%);
-  border-right: 1px solid #e0e7ef;
-  padding: 32px 0 32px 0;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0;
-  left: 0;
-  box-shadow: 2px 0 12px 0 rgba(0,0,0,0.04);
-  z-index: 100;
-}
-.container {
-  display: flex;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: 100vh;
-  padding-left: 250px; 
-}
-@media (max-width: 900px) {
-  .sidebar {
-    position: static;
-    width: 100%;
-    min-width: unset;
-    max-width: unset;
-    height: auto;
-    box-shadow: none;
-    border-right: none;
-    border-bottom: 1px solid #eee;
-    flex-direction: row;
-    padding: 0;
-  }
-  .container {
-    padding-left: 0;
-  }
-}
+      min-width: 250px;
+      max-width: 250px;
+      width: 250px;
+      height: 100vh;
+      overflow-y: auto;
+      background: linear-gradient(160deg, #f8f9fa 60%, #e6f0fa 100%);
+      border-right: 1px solid #e0e7ef;
+      padding: 32px 0 32px 0;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      box-shadow: 2px 0 12px 0 rgba(0,0,0,0.04);
+      z-index: 100;
+    }
+    @media (max-width: 900px) {
+      .sidebar {
+        position: static;
+        width: 100%;
+        min-width: unset;
+        max-width: unset;
+        height: auto;
+        box-shadow: none;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        flex-direction: row;
+        padding: 0;
+      }
+      .container {
+        padding-left: 0;
+      }
+    }
     .sidebar .nav-title {
       font-size: 1.15rem;
       font-weight: 700;
@@ -366,54 +360,115 @@
         </ul>
       </section>
       <section class="section" id="getstarted">
-        <h2>Get started</h2>
+        <h2>Get Started</h2>
         <ul class="features">
-          <li><b>Prerequisites</b>: Python &gt;= 3.10</li>
-          <li><b>Installation</b>:
-            <br><code>conda create -n MemoryOS python=3.10</code>
-            <br><code>conda activate MemoryOS</code>
-            <br><code>git clone https://github.com/BAI-LAB/MemoryOS.git</code>
-            <br><code>cd MemoryOS/memoryos-pypi</code>
-            <br><code>pip install -r requirements.txt</code>
-          </li>
-          <li><b>Basic Usage</b>:
-            <pre><code>import os
+          <li><b>MemoryOS_PYPI Getting Started</b></li>
+          <ul>
+            <li><b>Prerequisites</b>
+              <ul>
+                <li>Python >= 3.10</li>
+              </ul>
+            </li>
+            <li><b>Installation</b>
+              <pre><code>conda create -n MemoryOS python=3.10
+conda activate MemoryOS
+git clone https://github.com/BAI-LAB/MemoryOS.git
+cd MemoryOS/memoryos-pypi
+pip install -r requirements.txt</code></pre>
+            </li>
+            <li><b>Basic Usage</b>
+              <pre><code>import os
 from memoryos import Memoryos
 
+# --- Basic Configuration ---
 USER_ID = "demo_user"
 ASSISTANT_ID = "demo_assistant"
-API_KEY = "YOUR_OPENAI_API_KEY"
-BASE_URL = ""
+API_KEY = "YOUR_OPENAI_API_KEY"  # Replace with your key
+BASE_URL = ""  # Optional: if using a custom OpenAI endpoint
 DATA_STORAGE_PATH = "./simple_demo_data"
 LLM_MODEL = "gpt-4o-mini"
 
 def simple_demo():
-    memo = Memoryos(
-        user_id=USER_ID,
-        openai_api_key=API_KEY,
-        openai_base_url=BASE_URL,
-        data_storage_path=DATA_STORAGE_PATH,
-        llm_model=LLM_MODEL,
-        assistant_id=ASSISTANT_ID,
-        short_term_capacity=7,
-        mid_term_heat_threshold=5,
-        retrieval_queue_capacity=7,
-        long_term_knowledge_capacity=100
-    )
+    print("MemoryOS Simple Demo")
+    
+    # 1. Initialize MemoryOS
+    print("Initializing MemoryOS...")
+    try:
+        memo = Memoryos(
+            user_id=USER_ID,
+            openai_api_key=API_KEY,
+            openai_base_url=BASE_URL,
+            data_storage_path=DATA_STORAGE_PATH,
+            llm_model=LLM_MODEL,
+            assistant_id=ASSISTANT_ID,
+            short_term_capacity=7,  
+            mid_term_heat_threshold=5,  
+            retrieval_queue_capacity=7,
+            long_term_knowledge_capacity=100
+        )
+        print("MemoryOS initialized successfully!\n")
+    except Exception as e:
+        print(f"Error: {e}")
+        return
+
+    # 2. Add some basic memories
+    print("Adding some memories...")
+    
     memo.add_memory(
         user_input="Hi! I'm Tom, I work as a data scientist in San Francisco.",
         agent_response="Hello Tom! Nice to meet you. Data science is such an exciting field. What kind of data do you work with?"
     )
-    response = memo.get_response(query="What do you remember about my job?")
+     
+    test_query = "What do you remember about my job?"
+    print(f"User: {test_query}")
+    
+    response = memo.get_response(
+        query=test_query,
+    )
+    
     print(f"Assistant: {response}")
 
 if __name__ == "__main__":
     simple_demo()</code></pre>
-          </li>
+            </li>
+          </ul>
+          <li><b>MemoryOS-MCP Getting Started</b></li>
+          <ul>
+            <li><b>🔧 Core Tools</b>
+              <ol>
+                <li><code>add_memory</code><br>Saves the content of the conversation between the user and the AI assistant into the memory system, for the purpose of building a persistent dialogue history and contextual record.</li>
+                <li><code>retrieve_memory</code><br>Retrieves related historical dialogues, user preferences, and knowledge information from the memory system based on a query, helping the AI assistant understand the user’s needs and background.</li>
+                <li><code>get_user_profile</code><br>Obtains a user profile generated from the analysis of historical dialogues, including the user’s personality traits, interest preferences, and relevant knowledge background.</li>
+              </ol>
+            </li>
+            <li><b>1. Install dependencies</b>
+              <pre><code>cd memoryos-mcp
+pip install -r requirements.txt</code></pre>
+            </li>
+            <li><b>2. Configuration</b><br>Edit <code>config.json</code>:
+              <pre><code>{
+  "user_id": "user ID",
+  "openai_api_key": "OpenAI API key",
+  "openai_base_url": "https://api.openai.com/v1",
+  "data_storage_path": "./memoryos_data",
+  "assistant_id": "assistant_id",
+  "llm_model": "gpt-4o-mini"
+}</code></pre>
+            </li>
+            <li><b>3. Start the server</b>
+              <pre><code>python server_new.py --config config.json</code></pre>
+            </li>
+            <li><b>4. Test</b>
+              <pre><code>python test_comprehensive.py</code></pre>
+            </li>
+            <li><b>5. Configure it on Cline and other clients</b><br>Copy the <code>mcp.json</code> file over, and make sure the file path is correct.<br>
+              <pre><code>"command": "/root/miniconda3/envs/memos/bin/python"</code></pre>
+              # This should be changed to the Python interpreter of your virtual environment.
+            </li>
+          </ul>
         </ul>
       </section>
       <section class="section" id="configure">
-
         <h3>📋 <strong>Complete List of 12 Parameters</strong></h3>
         <table>
           <thead>
@@ -458,13 +513,13 @@ if __name__ == "__main__":
               <td>5</td>
               <td><code>assistant_id</code></td>
               <td>str</td>
-              <td><code>\"default_assistant_profile\"</code></td>
+              <td><code>"default_assistant_profile"</code></td>
               <td>Assistant ID</td>
             </tr>
             <tr>
               <td>6</td>
               <td><code>short_term_capacity</code></td>
-              <td>int</td>
+              mụn
               <td><code>10</code></td>
               <td>Short-term memory capacity</td>
             </tr>
@@ -507,7 +562,7 @@ if __name__ == "__main__":
               <td>12</td>
               <td><code>llm_model</code></td>
               <td>str</td>
-              <td><code>\"gpt-4o-mini\"</code></td>
+              <td><code>"gpt-4o-mini"</code></td>
               <td>LLM model name</td>
             </tr>
           </tbody>
