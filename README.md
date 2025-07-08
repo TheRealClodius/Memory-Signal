@@ -46,6 +46,7 @@
 <span id='news'/>
 
 ## 📣 Latest News
+*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-09]**: **Eval on Locomo**see 📊 (#reproduce-experimental-results)
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-08]**: **🏆 New Config Parameter**
 *   New parameter configuration: **similarity_threshold**. For configuration file, see 📖 [Documentation](https://bai-lab.github.io/MemoryOS/docs) page.
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: **🚀5 Times Faster**
