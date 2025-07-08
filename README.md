@@ -46,7 +46,7 @@
 <span id='news'/>
 
 ## 📣 Latest News
-*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-09]**: **📊 Eval on Locomo**,[👉](#reproduce)
+*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-09]**: **📊 Eval on Locomo** [👉](#reproduce).
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-08]**: **🏆 New Config Parameter**
 *   New parameter configuration: **similarity_threshold**. For configuration file, see 📖 [Documentation](https://bai-lab.github.io/MemoryOS/docs) page.
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: **🚀5 Times Faster**
@@ -330,7 +330,8 @@ Copy the mcp.json file over, and make sure the file path is correct.
 command": "/root/miniconda3/envs/memos/bin/python"
 #This should be changed to the Python interpreter of your virtual environment
 ```
-## 📊 Reproduce
+
+## Reproduce
 ```bash
 cd eval
 Configure API keys and other settings in the code
