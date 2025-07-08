@@ -349,8 +349,7 @@ Have ideas or suggestions? Contributions are welcome! Please feel free to submit
 
 ## 📖 Documentation
 
-A more detailed documentation is coming soon 🚀, and we will update in the [Documentation](https://github.com/BAI-LAB/MemoryOS/blob/main/docs/docs.html) page.
-
+A more detailed documentation is coming soon 🚀, and we will update in the [Documentation](https://bai-lab.github.io/MemoryOS/docs/docs.html) page.
 
 <span id='cite'/>
 
