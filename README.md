@@ -46,7 +46,7 @@
 <span id='news'/>
 
 ## 📣 Latest News
-*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-09]**: **Eval on Locomo**see 📊 (#reproduce-experimental-results)
+*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-09]**: **📊 Eval on Locomo**,[👉](#reproduce-experimental-results)
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-08]**: **🏆 New Config Parameter**
 *   New parameter configuration: **similarity_threshold**. For configuration file, see 📖 [Documentation](https://bai-lab.github.io/MemoryOS/docs) page.
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: **🚀5 Times Faster**
@@ -157,7 +157,7 @@ All model calls use the OpenAI API interface; you need to supply the API key and
   * <a href='pipy-mode'>PYPI Install MemoryOS</a>
   * <a href='#MCP-mode'>MemoryOS-MCP</a>
 * <a href='#todo'>☑️ Todo List</a>
-* <a href='#reproduce'>🔬 How to Reproduce the Results in the Paper </a>
+* <a href='#reproduce-experimental-results'>🔬 How to Reproduce the Results in the Paper </a>
 * <a href='#doc'>📖 Documentation </a>
 * <a href='#cite'>🌟 Cite</a>
 * <a href='#community'>🤝 Join the Community</a>
