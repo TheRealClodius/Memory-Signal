@@ -153,8 +153,8 @@ All model calls use the OpenAI API interface; you need to supply the API key and
 * <a href='#news'>🔥 News</a>
 * <a href='#list'>🔍Support Lists </a>
 * <a href='#structure'> 📁Project Structure</a>
-* <a href='#pipy-mode'>🎯 Quick Start</a>
-  * <a href='pipy-mode'>PYPI Install MemoryOS</a>
+* <a href='#pypi-mode'>🎯 Quick Start</a>
+  * <a href='pypi-mode'>PYPI Install MemoryOS</a>
   * <a href='#MCP-mode'>MemoryOS-MCP</a>
 * <a href='#todo'>☑️ Todo List</a>
 * <a href='#reproduce'>🔬 How to Reproduce the Results in the Paper </a>
@@ -206,9 +206,9 @@ memoryos/
     *   This comprehensive context is then used, along with the user's query, to generate a coherent and informed response via an LLM.
 -->    
 
-<span id='pipy-mode'/>
+<span id='pypi-mode'/>
 
-## 📖MemoryOS_PYPI Getting Started
+## 📖MemoryOS_PyPi Getting Started
 
 
 
@@ -220,9 +220,9 @@ memoryos/
 
 ### Installation
 
-#### Download from Pypi
+#### Download from PyPi
 ```bash
-pip install memoryos-pro -i https://pypi.org/simple
+pip install memoryos-pro
 ```
 #### Download from GitHub
 
