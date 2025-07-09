@@ -347,7 +347,7 @@ python3 evalution_loco.py
 
 MemoryOS is continuously evolving! Here's what's coming:
 
-- [🚀**Ongoing**] **Integrated Benchmarks**: Standardized benchmark suite with a cross-model comparison dashboard for Mem0, Zep, and OpenAI
+- **Ongoing🚀**: **Integrated Benchmarks**: Standardized benchmark suite with a cross-model comparison dashboard for Mem0, Zep, and OpenAI
 - 🏗️ Interface with universal databases, like MySQL and MongoDB.
 - 🏗️ Enabling seamless Memory exchange and integration across diverse systems.
 - 🏗️ Integrating KV Cache and Memory built-in parameter optimization
