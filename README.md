@@ -220,9 +220,9 @@ memoryos/
 
 ### Installation
 
-#### Download from GitHub
+#### Download from Pypi
 ```bash
-pip install memoryos-pro
+pip install memoryos-pro -i https://pypi.org/simple
 ```
 #### Download from GitHub
 
