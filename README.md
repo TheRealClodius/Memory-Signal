@@ -50,7 +50,7 @@
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-08]**: **🏆 New Config Parameter**
 *   New parameter configuration: **similarity_threshold**. For configuration file, see 📖 [Documentation](https://bai-lab.github.io/MemoryOS/docs) page.
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: **🚀5 Times Faster**
-*   The MemoryOS (PIPY) implementation has been upgraded: **5 times faster** (reduction in latency) through parallelization optimizations.
+*   The MemoryOS (PYPI) implementation has been upgraded: **5 times faster** (reduction in latency) through parallelization optimizations.
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: **✨R1 models Support Now**
 *   MemoryOS supports configuring and using inference models such as **Deepseek-r1 and Qwen3..**
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: **✨MemoryOS Playground Launched**
@@ -215,15 +215,18 @@ memoryos/
 ### Prerequisites
 
 *   Python >= 3.10
+*   conda create -n MemoryOS python=3.10
+*   conda activate MemoryOS
 
 ### Installation
 
 ```bash
-conda create -n MemoryOS python=3.10
-conda activate MemoryOS
+pip install memoryos-pro
+or
 git clone https://github.com/BAI-LAB/MemoryOS.git
 cd MemoryOS/memoryos-pypi
 pip install -r requirements.txt
+
 ```
 
 ### Basic Usage
