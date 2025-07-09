@@ -347,13 +347,13 @@ python3 evalution_loco.py
 
 MemoryOS is continuously evolving! Here's what's coming:
 
-- ⚡ **Parallelization Acceleration**：Parallelism for memory retrieval and model inference to reduce end-to-end latency (🎯Task completed)
-- 🖥️ **MemoryOS Platform**: Browser-based Memory visualization analytics platform (🎯Task completed, in internal testing)
 - 🏗️ **Integrated Algorithms & Benchmarks**: Standardized benchmark suite with a cross-model comparison dashboard for Mem0, Zep, and OpenAI (🚀**Ongoing**)
 - 🏗️ Interface with universal databases, like MySQL and MongoDB.
 - 🏗️ Enabling seamless Memory exchange and integration across diverse systems.
 - 🏗️ Integrating KV Cache and Memory built-in parameter optimization
-- 🔧 **More Tool Operation in MCP**: Integration with more tool like **modify**, **delete** 
+- 🔧 **More Tool Operation in MCP**: Integration with more tool like **modify**, **delete**
+- ⚡ **Parallelization Acceleration**：Parallelism for memory retrieval and model inference to reduce end-to-end latency (🎯Task completed)
+- 🖥️ **MemoryOS Platform**: Browser-based Memory visualization analytics platform (🎯Task completed, in internal testing)
 
   
 
