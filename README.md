@@ -222,7 +222,7 @@ memoryos/
 
 #### Download from PyPi
 ```bash
-pip install memoryos-pro
+pip install memoryos-pro -i https://pypi.org/simple
 ```
 #### Download from GitHub
 
