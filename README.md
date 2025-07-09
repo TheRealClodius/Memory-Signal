@@ -220,14 +220,19 @@ memoryos/
 
 ### Installation
 
+#### Download from GitHub
 ```bash
 pip install memoryos-pro
-or
+```
+#### Download from GitHub
+
+```bash
 git clone https://github.com/BAI-LAB/MemoryOS.git
 cd MemoryOS/memoryos-pypi
 pip install -r requirements.txt
-
 ```
+
+
 
 ### Basic Usage
 
