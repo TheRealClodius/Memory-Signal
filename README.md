@@ -24,6 +24,13 @@
 
 **MemoryOS** is designed to provide a memory operating system for personalized AI agents, enabling more coherent, personalized, and context-aware interactions. Drawing inspiration from memory management principles in operating systems, it adopts a hierarchical storage architecture with four core modules: Storage, Updating, Retrieval, and Generation, to achieve comprehensive and efficient memory management. On the LoCoMo benchmark, the model achieved average improvements of **49.11%** and **46.18%** in F1 and BLEU-1 scores.
 
+- **Paper**: <a href="https://arxiv.org/abs/2506.06326" target="_blank">https://arxiv.org/abs/2506.06326</a>
+- **Website**: <a href="https://baijia.online/memoryos/" target="_blank">https://baijia.online/memoryos/</a>
+- **Documentation**: <a href="https://bai-lab.github.io/MemoryOS/docs" target="_blank">https://bai-lab.github.io/MemoryOS/docs</a>
+- **YouTube Video**: **MemoryOS MCP + RAG Agent That Can Remember Anything**
+- <a href="https://www.youtube.com/watch?v=WHQu8fpEOaU ">https://www.youtube.com/watch?v=WHQu8fpEOaU </a>
+
+
 <span id='features'/>
 
 ## ✨Key Features
@@ -355,13 +362,14 @@ python3 evalution_loco.py
 
 MemoryOS is continuously evolving! Here's what's coming:
 
-- **Ongoing🚀**: **Integrated Benchmarks**: Standardized benchmark suite with a cross-model comparison dashboard for Mem0, Zep, and OpenAI
-- 🏗️ Interface with universal databases, like MySQL and MongoDB.
+- **Ongoing🚀**: **Integrated Benchmarks**: Standardized benchmark suite with a cross-model comparison for Mem0, Zep, and OpenAI
+- **Ongoing🚀 Parallelization Acceleration of MemoryOS-MCP**
+- 🏗️ Support for vector database, graph database
 - 🏗️ Enabling seamless Memory exchange and integration across diverse systems.
 - 🏗️ Integrating KV Cache and Memory built-in parameter optimization
 - 🔧 **More Tool Operation in MCP**: Integration with more tool like **modify**, **delete**
-- ⚡ **Parallelization Acceleration**：Parallelism for memory retrieval and model inference to reduce end-to-end latency (🎯Task completed)
-- 🖥️ **MemoryOS Platform**: Browser-based Memory visualization analytics platform (🎯Task completed, in internal testing)
+- [🎯Task completed]**Parallelization Acceleration of PyPi**：Parallelism for memory retrieval and model inference to reduce latency 
+- [🎯Task completed, in internal testing] **MemoryOS Platform**: Browser-based Memory visualization analytics platform 
 
   
 
