@@ -167,7 +167,7 @@ All model calls use the OpenAI API interface; you need to supply the API key and
 * <a href='#reproduce'>🔬 How to Reproduce the Results in the Paper </a>
 * <a href='#doc'>📖 Documentation </a>
 * <a href='#cite'>🌟 Cite</a>
-* <a href='#related'>🔍 Related Project (🚀coming soon)</a>
+<!--* <a href='#related'>🔍 Related Project (🚀coming soon)</a> -->
 * <a href='#community'>🤝 Join the Community</a>
 
 <span id='vedio'/>
@@ -362,14 +362,16 @@ python3 evalution_loco.py
 
 MemoryOS is continuously evolving! Here's what's coming:
 
-- **Ongoing🚀**: **Integrated Benchmarks**: Standardized benchmark suite with a cross-model comparison for Mem0, Zep, and OpenAI
 - **Ongoing🚀 Parallelization Acceleration of MemoryOS-MCP**
-- 🏗️ Support for vector database, graph database
+- **Ongoing🚀**:  Support for **Embedding models**
+- **Ongoing🚀**:  Support for **vector database**, **graph database**
+- **Ongoing🚀**:  Support for **faiss-cpu**
+- **Ongoing🚀**:  The deployment methods of **Docker**
+- **Ongoing🚀**: **Integrated Benchmarks**: Standardized benchmark suite with a cross-model comparison for Mem0, Zep, and OpenAI
 - 🏗️ Enabling seamless Memory exchange and integration across diverse systems.
-- 🏗️ Integrating KV Cache and Memory built-in parameter optimization
 - 🔧 **More Tool Operation in MCP**: Integration with more tool like **modify**, **delete**
-- [🎯Task completed]**Parallelization Acceleration of PyPi**：Parallelism for memory retrieval and model inference to reduce latency 
-- [🎯Task completed, in internal testing] **MemoryOS Platform**: Browser-based Memory visualization analytics platform 
+- [🎯**Completed**]**Parallelization Acceleration of PyPi**：Parallelism for memory retrieval and model inference to reduce latency 
+- [🎯 **Completed**, internal testing] **MemoryOS Platform**: Browser-based Memory visualization analytics platform 
 
   
 
@@ -400,8 +402,8 @@ A more detailed documentation is coming soon 🚀, and we will update in the [Do
 
 <span id='related'/>
 
-## 🔍 Related Projects
-on going
+<!--## 🔍 Related Projects -->
+<!--on going-->
 
 <span id='community'/>
 
