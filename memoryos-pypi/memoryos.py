@@ -44,6 +44,7 @@ class Memoryos:
         self.assistant_id = assistant_id
         self.data_storage_path = os.path.abspath(data_storage_path)
         self.llm_model = llm_model
+        os.environ["llm_model"]= llm_model
         self.mid_term_similarity_threshold = mid_term_similarity_threshold
 
         print(f"Initializing Memoryos for user '{self.user_id}' and assistant '{self.assistant_id}'. Data path: {self.data_storage_path}")
