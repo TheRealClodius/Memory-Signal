@@ -232,7 +232,7 @@ memoryos/
 ```bash
 pip install memoryos-pro -i https://pypi.org/simple
 ```
-#### Download from GitHub
+#### Download from GitHub (latest version)
 
 ```bash
 git clone https://github.com/BAI-LAB/MemoryOS.git
