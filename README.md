@@ -53,7 +53,8 @@
 <span id='news'/>
 
 ## 📣 Latest News
-*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-14]**: **⚡ Acceleration** of MCP parallelization & **🔌 Support** for BGE-M3 & Qwen3 embeddings on PyPI and MCP.
+*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-14]**: **⚡ Acceleration** of MCP parallelization 
+*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-14]**: **🔌 Support** for BGE-M3 & Qwen3 embeddings on PyPI and MCP.
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-09]**: **📊 Evaluation** of the MemoryOS on LoCoMo Dataset: Publicly Available [👉Reproduce](#reproduce).
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-08]**: **🏆 New Config Parameter**
 *   New parameter configuration: **similarity_threshold**. For configuration file, see 📖 [Documentation](https://bai-lab.github.io/MemoryOS/docs) page.
@@ -168,7 +169,6 @@ All model calls use the OpenAI API interface; you need to supply the API key and
 * <a href='#reproduce'>🔬 How to Reproduce the Results in the Paper </a>
 * <a href='#doc'>📖 Documentation </a>
 * <a href='#cite'>🌟 Cite</a>
-<!--* <a href='#related'>🔍 Related Project (🚀coming soon)</a> -->
 * <a href='#community'>🤝 Join the Community</a>
 
 <span id='vedio'/>
@@ -274,8 +274,8 @@ def simple_demo():
             mid_term_heat_threshold=5,  
             retrieval_queue_capacity=7,
             long_term_knowledge_capacity=100,
+            #Support Qwen/Qwen3-Embedding-0.6B, BAAI/bge-m3, all-MiniLM-L6-v2
             embedding_model_name="BAAI/bge-m3"
-#Support Qwen/Qwen3-Embedding-0.6B BAAI/bge-m3 all-MiniLM-L6-v2
         )
         print("MemoryOS initialized successfully!\n")
     except Exception as e:
@@ -344,7 +344,7 @@ python server_new.py --config config.json
 ```bash
 python test_comprehensive.py
 ```
-### 5.Configure it on Cline and other clients
+### 5. Configure it on Cline and other clients
 Copy the mcp.json file over, and make sure the file path is correct.
 ```bash
 command": "/root/miniconda3/envs/memos/bin/python"
@@ -366,16 +366,11 @@ python3 evalution_loco.py
 
 MemoryOS is continuously evolving! Here's what's coming:
 
-- **Ongoing🚀 Parallelization Acceleration of MemoryOS-MCP**
-- **Ongoing🚀**:  Support for **Embedding models**
-- **Ongoing🚀**:  Support for **vector database**, **graph database**
-- **Ongoing🚀**:  Support for **faiss-cpu**
+- **Ongoing🚀**:  Support for **vector database**
 - **Ongoing🚀**:  The deployment methods of **Docker**
 - **Ongoing🚀**: **Integrated Benchmarks**: Standardized benchmark suite with a cross-model comparison for Mem0, Zep, and OpenAI
 - 🏗️ Enabling seamless Memory exchange and integration across diverse systems.
 - 🔧 **More Tool Operation in MCP**: Integration with more tool like **modify**, **delete**
-- [🎯**Completed**]**Parallelization Acceleration of PyPi**：Parallelism for memory retrieval and model inference to reduce latency 
-- [🎯 **Completed**, internal testing] **MemoryOS Platform**: Browser-based Memory visualization analytics platform 
 
   
 
