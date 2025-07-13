@@ -49,7 +49,8 @@ def init_memoryos(config_path: str) -> Memoryos:
         long_term_knowledge_capacity=config.get('long_term_knowledge_capacity', 100),
         retrieval_queue_capacity=config.get('retrieval_queue_capacity', 7),
         mid_term_heat_threshold=config.get('mid_term_heat_threshold', 5.0),
-        llm_model=config.get('llm_model', 'gpt-4o-mini')
+        llm_model=config.get('llm_model', 'gpt-4o-mini'),
+        embedding_model_name=config.get('embedding_model_name', 'all-MiniLM-L6-v2')
     )
 
 # 创建FastMCP服务器实例
@@ -87,8 +88,8 @@ def add_memory(user_input: str, agent_response: str, timestamp: Optional[str] = 
         memoryos_instance.add_memory(
             user_input=user_input,
             agent_response=agent_response,
-            timestamp=timestamp,
-            meta_data=meta_data
+            timestamp=timestamp or get_timestamp(),
+            meta_data=meta_data or {}
         )
         
         result = {
@@ -163,9 +164,6 @@ def retrieve_memory(query: str, relationship_with_user: str = "friend", style_hi
             "user_profile": user_profile if user_profile and user_profile.lower() != "none" else "No detailed user profile",
             "short_term_memory": short_term_history,
             "short_term_count": len(short_term_history),
-            # "retrieved_pages": retrieval_results["retrieved_pages"][:max_results],
-            # "retrieved_user_knowledge": retrieval_results["retrieved_user_knowledge"][:max_results],
-            # "retrieved_assistant_knowledge": retrieval_results["retrieved_assistant_knowledge"][:max_results],
             "retrieved_pages": [{
                 'user_input': page['user_input'],
                 'agent_response': page['agent_response'],
@@ -182,9 +180,11 @@ def retrieve_memory(query: str, relationship_with_user: str = "friend", style_hi
                 'knowledge': k['knowledge'],
                 'timestamp': k['timestamp']
             } for k in retrieval_results["retrieved_assistant_knowledge"][:max_results]],
-            # "total_pages_found": len(retrieval_results["retrieved_pages"]),
-            # "total_user_knowledge_found": len(retrieval_results["retrieved_user_knowledge"]),
-            # "total_assistant_knowledge_found": len(retrieval_results["retrieved_assistant_knowledge"])
+            
+            # 添加总数统计字段
+            "total_pages_found": len(retrieval_results["retrieved_pages"]),
+            "total_user_knowledge_found": len(retrieval_results["retrieved_user_knowledge"]),
+            "total_assistant_knowledge_found": len(retrieval_results["retrieved_assistant_knowledge"])
         }
         
         return result

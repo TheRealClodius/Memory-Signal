@@ -37,18 +37,32 @@ class Memoryos:
                  long_term_knowledge_capacity=100,
                  retrieval_queue_capacity=7,
                  mid_term_heat_threshold=H_PROFILE_UPDATE_THRESHOLD,
-                 mid_term_similarity_threshold=0.6,  # 新增：中期记忆插入相似度阈值
-                 llm_model="gpt-4o-mini" # Unified model for all LLM operations
+                 mid_term_similarity_threshold=0.6,
+                 llm_model="gpt-4o-mini",
+                 embedding_model_name: str = "all-MiniLM-L6-v2",
+                 embedding_model_kwargs: dict = None
                  ):
         self.user_id = user_id
         self.assistant_id = assistant_id
         self.data_storage_path = os.path.abspath(data_storage_path)
         self.llm_model = llm_model
-        os.environ["llm_model"]= llm_model
         self.mid_term_similarity_threshold = mid_term_similarity_threshold
+        self.embedding_model_name = embedding_model_name
+        
+        # Smart defaults for embedding_model_kwargs
+        if embedding_model_kwargs is None:
+            if 'bge-m3' in self.embedding_model_name.lower():
+                print("INFO: Detected bge-m3 model, defaulting embedding_model_kwargs to {'use_fp16': True}")
+                self.embedding_model_kwargs = {'use_fp16': True}
+            else:
+                self.embedding_model_kwargs = {}
+        else:
+            self.embedding_model_kwargs = embedding_model_kwargs
+
 
         print(f"Initializing Memoryos for user '{self.user_id}' and assistant '{self.assistant_id}'. Data path: {self.data_storage_path}")
         print(f"Using unified LLM model: {self.llm_model}")
+        print(f"Using embedding model: {self.embedding_model_name} with kwargs: {self.embedding_model_kwargs}")
 
         # Initialize OpenAI Client
         self.client = OpenAIClient(api_key=openai_api_key, base_url=openai_base_url)
@@ -71,11 +85,27 @@ class Memoryos:
 
         # Initialize Memory Modules for User
         self.short_term_memory = ShortTermMemory(file_path=user_short_term_path, max_capacity=short_term_capacity)
-        self.mid_term_memory = MidTermMemory(file_path=user_mid_term_path, client=self.client, max_capacity=mid_term_capacity)
-        self.user_long_term_memory = LongTermMemory(file_path=user_long_term_path, knowledge_capacity=long_term_knowledge_capacity)
+        self.mid_term_memory = MidTermMemory(
+            file_path=user_mid_term_path, 
+            client=self.client, 
+            max_capacity=mid_term_capacity,
+            embedding_model_name=self.embedding_model_name,
+            embedding_model_kwargs=self.embedding_model_kwargs
+        )
+        self.user_long_term_memory = LongTermMemory(
+            file_path=user_long_term_path, 
+            knowledge_capacity=long_term_knowledge_capacity,
+            embedding_model_name=self.embedding_model_name,
+            embedding_model_kwargs=self.embedding_model_kwargs
+        )
 
         # Initialize Memory Module for Assistant Knowledge
-        self.assistant_long_term_memory = LongTermMemory(file_path=assistant_long_term_path, knowledge_capacity=long_term_knowledge_capacity)
+        self.assistant_long_term_memory = LongTermMemory(
+            file_path=assistant_long_term_path, 
+            knowledge_capacity=long_term_knowledge_capacity,
+            embedding_model_name=self.embedding_model_name,
+            embedding_model_kwargs=self.embedding_model_kwargs
+        )
 
         # Initialize Orchestration Modules
         self.updater = Updater(short_term_memory=self.short_term_memory, 

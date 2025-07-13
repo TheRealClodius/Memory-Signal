@@ -2,7 +2,7 @@ try:
     from .utils import (
         generate_id, get_timestamp, 
         gpt_generate_multi_summary, check_conversation_continuity, generate_page_meta_info, OpenAIClient,
-        llm_extract_keywords, run_parallel_tasks
+        run_parallel_tasks
     )
     from .short_term import ShortTermMemory
     from .mid_term import MidTermMemory
@@ -11,7 +11,7 @@ except ImportError:
     from utils import (
         generate_id, get_timestamp, 
         gpt_generate_multi_summary, check_conversation_continuity, generate_page_meta_info, OpenAIClient,
-        llm_extract_keywords, run_parallel_tasks
+        run_parallel_tasks
     )
     from short_term import ShortTermMemory
     from mid_term import MidTermMemory
@@ -36,45 +36,29 @@ class Updater:
         self.llm_model = llm_model
 
     def _process_page_embedding_and_keywords(self, page_data):
-        """并行处理单个页面的embedding和keywords生成"""
+        """处理单个页面的embedding生成（关键词由multi-summary提供）"""
         page_id = page_data.get("page_id", generate_id("page"))
         
-        # 检查是否已有embedding和keywords
-        if "page_embedding" in page_data and page_data["page_embedding"] and \
-           "page_keywords" in page_data and page_data["page_keywords"]:
-            print(f"Updater: Page {page_id} already has embedding and keywords, skipping computation")
+        # 检查是否已有embedding
+        if "page_embedding" in page_data and page_data["page_embedding"]:
+            print(f"Updater: Page {page_id} already has embedding, skipping computation")
             return page_data
         
-        full_text = f"User: {page_data.get('user_input','')} Assistant: {page_data.get('agent_response','')}"
-        
-        # 并行计算embedding和keywords（如果需要）
-        tasks = []
+        # 只处理embedding，关键词由multi-summary统一提供
         if not ("page_embedding" in page_data and page_data["page_embedding"]):
-            tasks.append(('embedding', lambda: self._get_embedding_for_page(full_text)))
+            full_text = f"User: {page_data.get('user_input','')} Assistant: {page_data.get('agent_response','')}"
+            try:
+                embedding = self._get_embedding_for_page(full_text)
+                if embedding is not None:
+                    from .utils import normalize_vector
+                    page_data["page_embedding"] = normalize_vector(embedding).tolist()
+                    print(f"Updater: Generated embedding for page {page_id}")
+            except Exception as e:
+                print(f"Error generating embedding for page {page_id}: {e}")
         
-        if not ("page_keywords" in page_data and page_data["page_keywords"]):
-            tasks.append(('keywords', lambda: llm_extract_keywords(full_text, client=self.client)))
-        
-        if tasks:
-            with ThreadPoolExecutor(max_workers=2) as executor:
-                futures = {executor.submit(task[1]): task[0] for task in tasks}
-                results = {}
-                
-                for future in as_completed(futures):
-                    task_type = futures[future]
-                    try:
-                        results[task_type] = future.result()
-                    except Exception as e:
-                        print(f"Error in {task_type} computation for page {page_id}: {e}")
-                        results[task_type] = None
-            
-            # 更新页面数据
-            if 'embedding' in results and results['embedding'] is not None:
-                from .utils import normalize_vector
-                page_data["page_embedding"] = normalize_vector(results['embedding']).tolist()
-            
-            if 'keywords' in results and results['keywords'] is not None:
-                page_data["page_keywords"] = list(results['keywords'])
+        # 设置空的关键词列表（将由multi-summary的关键词填充）
+        if "page_keywords" not in page_data:
+            page_data["page_keywords"] = []
         
         return page_data
 
@@ -203,7 +187,7 @@ class Updater:
             # Fallback: if no summaries, add as one session or handle as a single block
             print("Updater: No specific themes from multi-summary. Adding batch as a general session.")
             fallback_summary = "General conversation segment from short-term memory."
-            fallback_keywords = llm_extract_keywords(input_text_for_summary, self.client, model=self.llm_model) if input_text_for_summary else []
+            fallback_keywords = []  # Use empty keywords since multi-summary failed
             self.mid_term_memory.insert_pages_into_session(
                 summary_for_new_pages=fallback_summary,
                 keywords_for_new_pages=list(fallback_keywords),

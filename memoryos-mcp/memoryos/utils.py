@@ -5,17 +5,45 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 import json
 import os
-import prompts # Assuming prompts.py is in the same directory
+import inspect
+from functools import wraps
+try:
+    from . import prompts # 尝试相对导入
+except ImportError:
+    import prompts # 回退到绝对导入
 from openai import OpenAI
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
+
+def clean_reasoning_model_output(text):
+    """
+    清理推理模型输出中的<think>标签
+    适配推理模型（如o1系列）的输出格式
+    """
+    if not text:
+        return text
+    
+    import re
+    # 移除<think>...</think>标签及其内容
+    cleaned_text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
+    # 清理可能产生的多余空白行
+    cleaned_text = re.sub(r'\n\s*\n\s*\n', '\n\n', cleaned_text)
+    # 移除开头和结尾的空白
+    cleaned_text = cleaned_text.strip()
+    
+    return cleaned_text
+
 # ---- OpenAI Client ----
 class OpenAIClient:
-    def __init__(self, api_key, base_url=None):
+    def __init__(self, api_key, base_url=None, max_workers=5):
         self.api_key = api_key
         self.base_url = base_url if base_url else "https://api.openai.com/v1"
         # The openai library looks for OPENAI_API_KEY and OPENAI_BASE_URL env vars by default
         # or they can be passed directly to the client.
         # For simplicity and explicit control, we'll pass them to the client constructor.
         self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        self.executor = ThreadPoolExecutor(max_workers=max_workers)
+        self._lock = threading.Lock()
 
     def chat_completion(self, model, messages, temperature=0.7, max_tokens=2000):
         print(f"Calling OpenAI API. Model: {model}")
@@ -26,12 +54,66 @@ class OpenAIClient:
                 temperature=temperature,
                 max_tokens=max_tokens
             )
-            return response.choices[0].message.content.strip()
+            raw_content = response.choices[0].message.content.strip()
+            # 自动清理推理模型的<think>标签
+            cleaned_content = clean_reasoning_model_output(raw_content)
+            return cleaned_content
         except Exception as e:
             print(f"Error calling OpenAI API: {e}")
             # Fallback or error handling
             return "Error: Could not get response from LLM."
 
+    def chat_completion_async(self, model, messages, temperature=0.7, max_tokens=2000):
+        """异步版本的chat_completion"""
+        return self.executor.submit(self.chat_completion, model, messages, temperature, max_tokens)
+
+    def batch_chat_completion(self, requests):
+        """
+        并行处理多个LLM请求
+        requests: List of dict with keys: model, messages, temperature, max_tokens
+        """
+        futures = []
+        for req in requests:
+            future = self.chat_completion_async(
+                model=req.get("model", "gpt-4o-mini"),
+                messages=req["messages"],
+                temperature=req.get("temperature", 0.7),
+                max_tokens=req.get("max_tokens", 2000)
+            )
+            futures.append(future)
+        
+        results = []
+        for future in as_completed(futures):
+            try:
+                result = future.result()
+                results.append(result)
+            except Exception as e:
+                print(f"Error in batch completion: {e}")
+                results.append("Error: Could not get response from LLM.")
+        
+        return results
+
+    def shutdown(self):
+        """关闭线程池"""
+        self.executor.shutdown(wait=True)
+
+# ---- Parallel Processing Utilities ----
+def run_parallel_tasks(tasks, max_workers=3):
+    """
+    并行执行任务列表
+    tasks: List of callable functions
+    """
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(task) for task in tasks]
+        results = []
+        for future in as_completed(futures):
+            try:
+                result = future.result()
+                results.append(result)
+            except Exception as e:
+                print(f"Error in parallel task: {e}")
+                results.append(None)
+        return results
 
 # ---- Basic Utilities ----
 def get_timestamp():
@@ -45,14 +127,95 @@ def ensure_directory_exists(path):
 
 # ---- Embedding Utilities ----
 _model_cache = {}
+_embedding_cache = {}  # 添加embedding缓存
 
-def get_embedding(text, model_name="all-MiniLM-L6-v2"):
-    if model_name not in _model_cache:
-        print(f"Loading sentence transformer model: {model_name}")
-        _model_cache[model_name] = SentenceTransformer(model_name)
-    model = _model_cache[model_name]
-    embedding = model.encode([text], convert_to_numpy=True)[0]
+def _get_valid_kwargs(func, kwargs):
+    """Helper to filter kwargs for a given function's signature."""
+    try:
+        sig = inspect.signature(func)
+        param_keys = set(sig.parameters.keys())
+        return {k: v for k, v in kwargs.items() if k in param_keys}
+    except (ValueError, TypeError):
+        # Fallback for functions/methods where signature inspection is not straightforward
+        return kwargs
+
+def get_embedding(text, model_name="all-MiniLM-L6-v2", use_cache=True, **kwargs):
+    """
+    获取文本的embedding向量。
+    支持多种主流模型，能自动适应不同库的调用方式。
+    - SentenceTransformer模型: e.g., 'all-MiniLM-L6-v2', 'Qwen/Qwen3-Embedding-0.6B'
+    - FlagEmbedding模型: e.g., 'BAAI/bge-m3'
+
+    :param text: 输入文本。
+    :param model_name: Hugging Face上的模型名称。
+    :param use_cache: 是否使用内存缓存。
+    :param kwargs: 传递给模型构造函数或encode方法的额外参数。
+                   - for Qwen: `model_kwargs`, `tokenizer_kwargs`, `prompt_name="query"`
+                   - for BGE-M3: `use_fp16=True`, `max_length=8192`
+    :return: 文本的embedding向量 (numpy array)。
+    """
+    model_config_key = json.dumps({"model_name": model_name, **kwargs}, sort_keys=True)
+    
+    if use_cache:
+        cache_key = f"{model_config_key}::{hash(text)}"
+        if cache_key in _embedding_cache:
+            return _embedding_cache[cache_key]
+    
+    # --- Model Loading ---
+    model_init_key = json.dumps({"model_name": model_name, **{k:v for k,v in kwargs.items() if k not in ['batch_size', 'max_length']}}, sort_keys=True)
+    if model_init_key not in _model_cache:
+        print(f"Loading model: {model_name}...")
+        if 'bge-m3' in model_name.lower():
+            try:
+                from FlagEmbedding import BGEM3FlagModel
+                init_kwargs = _get_valid_kwargs(BGEM3FlagModel.__init__, kwargs)
+                print(f"-> Using BGEM3FlagModel with init kwargs: {init_kwargs}")
+                _model_cache[model_init_key] = BGEM3FlagModel(model_name, **init_kwargs)
+            except ImportError:
+                raise ImportError("Please install FlagEmbedding: 'pip install -U FlagEmbedding' to use bge-m3 model.")
+        else: # Default handler for SentenceTransformer-based models (like Qwen, all-MiniLM, etc.)
+            try:
+                from sentence_transformers import SentenceTransformer
+                init_kwargs = _get_valid_kwargs(SentenceTransformer.__init__, kwargs)
+                print(f"-> Using SentenceTransformer with init kwargs: {init_kwargs}")
+                _model_cache[model_init_key] = SentenceTransformer(model_name, **init_kwargs)
+            except ImportError:
+                raise ImportError("Please install sentence-transformers: 'pip install -U sentence-transformers' to use this model.")
+            
+    model = _model_cache[model_init_key]
+    
+    # --- Encoding ---
+    embedding = None
+    if 'bge-m3' in model_name.lower():
+        encode_kwargs = _get_valid_kwargs(model.encode, kwargs)
+        print(f"-> Encoding with BGEM3FlagModel using kwargs: {encode_kwargs}")
+        result = model.encode([text], **encode_kwargs)
+        embedding = result['dense_vecs'][0]
+    else: # Default to SentenceTransformer-based models
+        encode_kwargs = _get_valid_kwargs(model.encode, kwargs)
+        print(f"-> Encoding with SentenceTransformer using kwargs: {encode_kwargs}")
+        embedding = model.encode([text], **encode_kwargs)[0]
+
+    if use_cache:
+        cache_key = f"{model_config_key}::{hash(text)}"
+        _embedding_cache[cache_key] = embedding
+        if len(_embedding_cache) > 10000:
+            keys_to_remove = list(_embedding_cache.keys())[:1000]
+            for key in keys_to_remove:
+                try:
+                    del _embedding_cache[key]
+                except KeyError:
+                    pass
+            print("Cleaned embedding cache to prevent memory overflow")
+    
     return embedding
+
+
+def clear_embedding_cache():
+    """清空embedding缓存"""
+    global _embedding_cache
+    _embedding_cache.clear()
+    print("Embedding cache cleared")
 
 def normalize_vector(vec):
     vec = np.array(vec, dtype=np.float32)
@@ -100,17 +263,20 @@ def gpt_generate_multi_summary(text, client: OpenAIClient, model="gpt-4o-mini"):
     return {"input": text, "summaries": summaries}
 
 
-def gpt_user_profile_analysis(dialogs, client: OpenAIClient, model="gpt-4o-mini", known_user_traits="None"):
-    """Analyze user personality profile from dialogs"""
+def gpt_user_profile_analysis(dialogs, client: OpenAIClient, model="gpt-4o-mini", existing_user_profile="None"):
+    """
+    Analyze and update user personality profile from dialogs
+    结合现有画像和新对话，直接输出更新后的完整画像
+    """
     conversation = "\n".join([f"User: {d.get('user_input','')} (Timestamp: {d.get('timestamp', '')})\nAssistant: {d.get('agent_response','')} (Timestamp: {d.get('timestamp', '')})" for d in dialogs])
     messages = [
         {"role": "system", "content": prompts.PERSONALITY_ANALYSIS_SYSTEM_PROMPT},
         {"role": "user", "content": prompts.PERSONALITY_ANALYSIS_USER_PROMPT.format(
             conversation=conversation,
-            known_user_traits=known_user_traits
+            existing_user_profile=existing_user_profile
         )}
     ]
-    print("Calling LLM for user profile analysis...")
+    print("Calling LLM for user profile analysis and update...")
     result_text = client.chat_completion(model=model, messages=messages)
     return result_text.strip() if result_text else "None"
 

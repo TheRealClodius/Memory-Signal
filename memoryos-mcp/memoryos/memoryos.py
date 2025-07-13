@@ -1,13 +1,26 @@
 import os
 import json
-from utils import OpenAIClient, get_timestamp, generate_id, gpt_user_profile_analysis, gpt_knowledge_extraction, gpt_update_profile, ensure_directory_exists
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-import prompts
-from short_term import ShortTermMemory
-from mid_term import MidTermMemory, compute_segment_heat # For H_THRESHOLD logic
-from long_term import LongTermMemory
-from updater import Updater
-from retriever import Retriever
+# 修改为绝对导入
+try:
+    # 尝试相对导入（当作为包使用时）
+    from .utils import OpenAIClient, get_timestamp, generate_id, gpt_user_profile_analysis, gpt_knowledge_extraction, ensure_directory_exists
+    from . import prompts
+    from .short_term import ShortTermMemory
+    from .mid_term import MidTermMemory, compute_segment_heat # For H_THRESHOLD logic
+    from .long_term import LongTermMemory
+    from .updater import Updater
+    from .retriever import Retriever
+except ImportError:
+    # 回退到绝对导入（当作为独立模块使用时）
+    from utils import OpenAIClient, get_timestamp, generate_id, gpt_user_profile_analysis, gpt_knowledge_extraction, ensure_directory_exists
+    import prompts
+    from short_term import ShortTermMemory
+    from mid_term import MidTermMemory, compute_segment_heat # For H_THRESHOLD logic
+    from long_term import LongTermMemory
+    from updater import Updater
+    from retriever import Retriever
 
 # Heat threshold for triggering profile/knowledge update from mid-term memory
 H_PROFILE_UPDATE_THRESHOLD = 5.0 
@@ -24,15 +37,32 @@ class Memoryos:
                  long_term_knowledge_capacity=100,
                  retrieval_queue_capacity=7,
                  mid_term_heat_threshold=H_PROFILE_UPDATE_THRESHOLD,
-                 llm_model="gpt-4o-mini" # Unified model for all LLM operations
+                 mid_term_similarity_threshold=0.6,
+                 llm_model="gpt-4o-mini",
+                 embedding_model_name: str = "all-MiniLM-L6-v2",
+                 embedding_model_kwargs: dict = None
                  ):
         self.user_id = user_id
         self.assistant_id = assistant_id
         self.data_storage_path = os.path.abspath(data_storage_path)
         self.llm_model = llm_model
+        self.mid_term_similarity_threshold = mid_term_similarity_threshold
+        self.embedding_model_name = embedding_model_name
+        
+        # Smart defaults for embedding_model_kwargs
+        if embedding_model_kwargs is None:
+            if 'bge-m3' in self.embedding_model_name.lower():
+                print("INFO: Detected bge-m3 model, defaulting embedding_model_kwargs to {'use_fp16': True}")
+                self.embedding_model_kwargs = {'use_fp16': True}
+            else:
+                self.embedding_model_kwargs = {}
+        else:
+            self.embedding_model_kwargs = embedding_model_kwargs
+
 
         print(f"Initializing Memoryos for user '{self.user_id}' and assistant '{self.assistant_id}'. Data path: {self.data_storage_path}")
         print(f"Using unified LLM model: {self.llm_model}")
+        print(f"Using embedding model: {self.embedding_model_name} with kwargs: {self.embedding_model_kwargs}")
 
         # Initialize OpenAI Client
         self.client = OpenAIClient(api_key=openai_api_key, base_url=openai_base_url)
@@ -55,17 +85,34 @@ class Memoryos:
 
         # Initialize Memory Modules for User
         self.short_term_memory = ShortTermMemory(file_path=user_short_term_path, max_capacity=short_term_capacity)
-        self.mid_term_memory = MidTermMemory(file_path=user_mid_term_path, client=self.client, max_capacity=mid_term_capacity)
-        self.user_long_term_memory = LongTermMemory(file_path=user_long_term_path, knowledge_capacity=long_term_knowledge_capacity)
+        self.mid_term_memory = MidTermMemory(
+            file_path=user_mid_term_path, 
+            client=self.client, 
+            max_capacity=mid_term_capacity,
+            embedding_model_name=self.embedding_model_name,
+            embedding_model_kwargs=self.embedding_model_kwargs
+        )
+        self.user_long_term_memory = LongTermMemory(
+            file_path=user_long_term_path, 
+            knowledge_capacity=long_term_knowledge_capacity,
+            embedding_model_name=self.embedding_model_name,
+            embedding_model_kwargs=self.embedding_model_kwargs
+        )
 
         # Initialize Memory Module for Assistant Knowledge
-        self.assistant_long_term_memory = LongTermMemory(file_path=assistant_long_term_path, knowledge_capacity=long_term_knowledge_capacity)
+        self.assistant_long_term_memory = LongTermMemory(
+            file_path=assistant_long_term_path, 
+            knowledge_capacity=long_term_knowledge_capacity,
+            embedding_model_name=self.embedding_model_name,
+            embedding_model_kwargs=self.embedding_model_kwargs
+        )
 
         # Initialize Orchestration Modules
         self.updater = Updater(short_term_memory=self.short_term_memory, 
                                mid_term_memory=self.mid_term_memory, 
                                long_term_memory=self.user_long_term_memory, # Updater primarily updates user's LTM profile/knowledge
                                client=self.client,
+                               topic_similarity_threshold=mid_term_similarity_threshold,  # 传递中期记忆相似度阈值
                                llm_model=self.llm_model)
         self.retriever = Retriever(
             mid_term_memory=self.mid_term_memory,
@@ -80,6 +127,7 @@ class Memoryos:
         """
         Checks mid-term memory for hot segments and triggers profile/knowledge update if threshold is met.
         Adapted from main_memoybank.py's update_user_profile_from_top_segment.
+        Enhanced with parallel LLM processing for better performance.
         """
         if not self.mid_term_memory.heap:
             return
@@ -102,23 +150,42 @@ class Memoryos:
             if unanalyzed_pages:
                 print(f"Memoryos: Mid-term session {sid} heat ({current_heat:.2f}) exceeded threshold. Analyzing {len(unanalyzed_pages)} pages for profile/knowledge update.")
                 
-                # Perform user profile analysis and knowledge extraction separately
-                # First call: User profile analysis
-                new_user_profile_text = gpt_user_profile_analysis(unanalyzed_pages, self.client, model=self.llm_model)
+                # 并行执行两个LLM任务：用户画像分析（已包含更新）、知识提取
+                def task_user_profile_analysis():
+                    print("Memoryos: Starting parallel user profile analysis and update...")
+                    # 获取现有用户画像
+                    existing_profile = self.user_long_term_memory.get_raw_user_profile(self.user_id)
+                    if not existing_profile or existing_profile.lower() == "none":
+                        existing_profile = "No existing profile data."
+                    
+                    # 直接输出更新后的完整画像
+                    return gpt_user_profile_analysis(unanalyzed_pages, self.client, model=self.llm_model, existing_user_profile=existing_profile)
                 
-                # Second call: Knowledge extraction (user private data and assistant knowledge)
-                knowledge_result = gpt_knowledge_extraction(unanalyzed_pages, self.client, model=self.llm_model)
+                def task_knowledge_extraction():
+                    print("Memoryos: Starting parallel knowledge extraction...")
+                    return gpt_knowledge_extraction(unanalyzed_pages, self.client, model=self.llm_model)
+                
+                # 使用并行任务执行                
+                with ThreadPoolExecutor(max_workers=2) as executor:
+                    # 提交两个主要任务
+                    future_profile = executor.submit(task_user_profile_analysis)
+                    future_knowledge = executor.submit(task_knowledge_extraction)
+                    
+                    # 等待结果
+                    try:
+                        updated_user_profile = future_profile.result()  # 直接是更新后的完整画像
+                        knowledge_result = future_knowledge.result()
+                    except Exception as e:
+                        print(f"Error in parallel LLM processing: {e}")
+                        return
+                
                 new_user_private_knowledge = knowledge_result.get("private")
                 new_assistant_knowledge = knowledge_result.get("assistant_knowledge")
 
-                # Update User Profile in user's LTM
-                if new_user_profile_text and new_user_profile_text.lower() != "none":
-                    old_profile = self.user_long_term_memory.get_raw_user_profile(self.user_id)
-                    if old_profile and old_profile.lower() != "none":
-                        updated_profile = gpt_update_profile(old_profile, new_user_profile_text, self.client, model=self.llm_model)
-                    else:
-                        updated_profile = new_user_profile_text
-                    self.user_long_term_memory.update_user_profile(self.user_id, updated_profile, merge=False)  # Don't merge, replace with latest
+                # 直接使用更新后的完整用户画像
+                if updated_user_profile and updated_user_profile.lower() != "none":
+                    print("Memoryos: Updating user profile with integrated analysis...")
+                    self.user_long_term_memory.update_user_profile(self.user_id, updated_user_profile, merge=False)  # 直接替换为新的完整画像
                 
                 # Add User Private Knowledge to user's LTM
                 if new_user_private_knowledge and new_user_private_knowledge.lower() != "none":

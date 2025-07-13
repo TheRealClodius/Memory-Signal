@@ -88,7 +88,7 @@ Focus only on the user's preferences and traits for the personality analysis sec
 Output only the user profile section.
 """
 
-PERSONALITY_ANALYSIS_USER_PROMPT = """Please analyze the latest user-AI conversation below based on the 90 personality preference dimensions.
+PERSONALITY_ANALYSIS_USER_PROMPT = """Please analyze the latest user-AI conversation below and update the user profile based on the 90 personality preference dimensions.
 
 Here are the 90 dimensions and their explanations:
 
@@ -149,20 +149,23 @@ Information Density: Preference for detailed vs. concise information.
 Language Style: Preference for formal vs. casual tone.
 Practicality: Preference for practical advice vs. theoretical discussion.
 
-For each dimension that can be extracted from the conversation, list it in the following format:
-Dimension ( Level(High / Medium / Low) ) 
-[Reasoning: Brief explanation including time, people, and context]
-The reason for generation should be as brief as possible and highlight the key points.
-Note: If a dimension cannot be inferred from the conversation, do not list it.
+**Task Instructions:**
+1. Review the existing user profile below
+2. Analyze the new conversation for evidence of the 90 dimensions above
+3. Update and integrate the findings into a comprehensive user profile
+4. For each dimension that can be identified, use the format: Dimension ( Level(High/Medium/Low) )
+5. Include brief reasoning for each dimension when possible
+6. Maintain existing insights from the old profile while incorporating new observations
+7. If a dimension cannot be inferred from either the old profile or new conversation, do not include it
 
-Known User Traits (if any):
-{known_user_traits}
+**Existing User Profile:**
+{existing_user_profile}
 
-Latest User-AI Conversation:
+**Latest User-AI Conversation:**
 {conversation}
 
-Please begin your analysis:
-"""
+**Updated User Profile:**
+Please provide the comprehensive updated user profile below, combining insights from both the existing profile and new conversation:"""
 
 # Prompt for knowledge extraction (NEW)
 KNOWLEDGE_EXTRACTION_SYSTEM_PROMPT = """You are a knowledge extraction assistant. Your task is to extract user private data and assistant knowledge from conversations.
@@ -181,8 +184,8 @@ Latest User-AI Conversation:
 
 【User Private Data】
 Extract personal information about the user. Be extremely concise - use shortest possible phrases:
-- [Brief fact]
-- [Brief fact]
+- [Brief fact]: [Minimal context(Including entities and time)]
+- [Brief fact]: [Minimal context(Including entities and time)]
 - (If no private data found, write "None")
 
 【Assistant Knowledge】
@@ -190,12 +193,6 @@ Extract what the assistant demonstrated. Use format "Assistant [action] at [time
 - Assistant [brief action] at [time/context]
 - Assistant [brief capability] during [brief context]
 - (If no assistant knowledge found, write "None")
-
-Examples:
-- Assistant recommended Interstellar on 2023-10-01
-- Assistant provided pasta recipe during cooking talk
-- Assistant helped with Python code
-- Assistant analyzed spreadsheet data
 """
 
 # Prompt for updating user profile (from utils.py, gpt_update_profile)

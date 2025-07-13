@@ -5,6 +5,8 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 import json
 import os
+import inspect
+from functools import wraps
 try:
     from . import prompts # 尝试相对导入
 except ImportError:
@@ -73,9 +75,7 @@ class OpenAIClient:
         futures = []
         for req in requests:
             future = self.chat_completion_async(
-                model=req.get("model",     
-                               model=os.environ.get("llm_model") 
-                              ),
+                model=req.get("model", "gpt-4o-mini"),
                 messages=req["messages"],
                 temperature=req.get("temperature", 0.7),
                 max_tokens=req.get("max_tokens", 2000)
@@ -129,32 +129,87 @@ def ensure_directory_exists(path):
 _model_cache = {}
 _embedding_cache = {}  # 添加embedding缓存
 
-def get_embedding(text, model_name="all-MiniLM-L6-v2", use_cache=True):
-    # 创建缓存键
+def _get_valid_kwargs(func, kwargs):
+    """Helper to filter kwargs for a given function's signature."""
+    try:
+        sig = inspect.signature(func)
+        param_keys = set(sig.parameters.keys())
+        return {k: v for k, v in kwargs.items() if k in param_keys}
+    except (ValueError, TypeError):
+        # Fallback for functions/methods where signature inspection is not straightforward
+        return kwargs
+
+def get_embedding(text, model_name="all-MiniLM-L6-v2", use_cache=True, **kwargs):
+    """
+    获取文本的embedding向量。
+    支持多种主流模型，能自动适应不同库的调用方式。
+    - SentenceTransformer模型: e.g., 'all-MiniLM-L6-v2', 'Qwen/Qwen3-Embedding-0.6B'
+    - FlagEmbedding模型: e.g., 'BAAI/bge-m3'
+
+    :param text: 输入文本。
+    :param model_name: Hugging Face上的模型名称。
+    :param use_cache: 是否使用内存缓存。
+    :param kwargs: 传递给模型构造函数或encode方法的额外参数。
+                   - for Qwen: `model_kwargs`, `tokenizer_kwargs`, `prompt_name="query"`
+                   - for BGE-M3: `use_fp16=True`, `max_length=8192`
+    :return: 文本的embedding向量 (numpy array)。
+    """
+    model_config_key = json.dumps({"model_name": model_name, **kwargs}, sort_keys=True)
+    
     if use_cache:
-        cache_key = f"{model_name}::{hash(text)}"
+        cache_key = f"{model_config_key}::{hash(text)}"
         if cache_key in _embedding_cache:
-            print(f"Using cached embedding for text: {text[:30]}...")
             return _embedding_cache[cache_key]
     
-    if model_name not in _model_cache:
-        print(f"Loading sentence transformer model: {model_name}")
-        _model_cache[model_name] = SentenceTransformer(model_name)
-    model = _model_cache[model_name]
-    embedding = model.encode([text], convert_to_numpy=True)[0]
+    # --- Model Loading ---
+    model_init_key = json.dumps({"model_name": model_name, **{k:v for k,v in kwargs.items() if k not in ['batch_size', 'max_length']}}, sort_keys=True)
+    if model_init_key not in _model_cache:
+        print(f"Loading model: {model_name}...")
+        if 'bge-m3' in model_name.lower():
+            try:
+                from FlagEmbedding import BGEM3FlagModel
+                init_kwargs = _get_valid_kwargs(BGEM3FlagModel.__init__, kwargs)
+                print(f"-> Using BGEM3FlagModel with init kwargs: {init_kwargs}")
+                _model_cache[model_init_key] = BGEM3FlagModel(model_name, **init_kwargs)
+            except ImportError:
+                raise ImportError("Please install FlagEmbedding: 'pip install -U FlagEmbedding' to use bge-m3 model.")
+        else: # Default handler for SentenceTransformer-based models (like Qwen, all-MiniLM, etc.)
+            try:
+                from sentence_transformers import SentenceTransformer
+                init_kwargs = _get_valid_kwargs(SentenceTransformer.__init__, kwargs)
+                print(f"-> Using SentenceTransformer with init kwargs: {init_kwargs}")
+                _model_cache[model_init_key] = SentenceTransformer(model_name, **init_kwargs)
+            except ImportError:
+                raise ImportError("Please install sentence-transformers: 'pip install -U sentence-transformers' to use this model.")
+            
+    model = _model_cache[model_init_key]
     
-    # 缓存结果
+    # --- Encoding ---
+    embedding = None
+    if 'bge-m3' in model_name.lower():
+        encode_kwargs = _get_valid_kwargs(model.encode, kwargs)
+        print(f"-> Encoding with BGEM3FlagModel using kwargs: {encode_kwargs}")
+        result = model.encode([text], **encode_kwargs)
+        embedding = result['dense_vecs'][0]
+    else: # Default to SentenceTransformer-based models
+        encode_kwargs = _get_valid_kwargs(model.encode, kwargs)
+        print(f"-> Encoding with SentenceTransformer using kwargs: {encode_kwargs}")
+        embedding = model.encode([text], **encode_kwargs)[0]
+
     if use_cache:
+        cache_key = f"{model_config_key}::{hash(text)}"
         _embedding_cache[cache_key] = embedding
-        # 限制缓存大小，避免内存泄漏
-        if len(_embedding_cache) > 10000:  # 最多缓存10000个embedding
-            # 删除一些旧的缓存项
+        if len(_embedding_cache) > 10000:
             keys_to_remove = list(_embedding_cache.keys())[:1000]
             for key in keys_to_remove:
-                del _embedding_cache[key]
+                try:
+                    del _embedding_cache[key]
+                except KeyError:
+                    pass
             print("Cleaned embedding cache to prevent memory overflow")
     
     return embedding
+
 
 def clear_embedding_cache():
     """清空embedding缓存"""
@@ -185,7 +240,6 @@ def compute_time_decay(event_timestamp_str, current_timestamp_str, tau_hours=24)
 # ---- LLM-based Utility Functions ----
 
 def gpt_summarize_dialogs(dialogs, client: OpenAIClient, model="gpt-4o-mini"):
-    model=os.environ.get("llm_model") or model
     dialog_text = "\n".join([f"User: {d.get('user_input','')} Assistant: {d.get('agent_response','')}" for d in dialogs])
     messages = [
         {"role": "system", "content": prompts.SUMMARIZE_DIALOGS_SYSTEM_PROMPT},
@@ -195,7 +249,6 @@ def gpt_summarize_dialogs(dialogs, client: OpenAIClient, model="gpt-4o-mini"):
     return client.chat_completion(model=model, messages=messages)
 
 def gpt_generate_multi_summary(text, client: OpenAIClient, model="gpt-4o-mini"):
-    model=os.environ.get("llm_model") or model
     messages = [
         {"role": "system", "content": prompts.MULTI_SUMMARY_SYSTEM_PROMPT},
         {"role": "user", "content": prompts.MULTI_SUMMARY_USER_PROMPT.format(text=text)}
@@ -215,7 +268,6 @@ def gpt_user_profile_analysis(dialogs, client: OpenAIClient, model="gpt-4o-mini"
     Analyze and update user personality profile from dialogs
     结合现有画像和新对话，直接输出更新后的完整画像
     """
-    model=os.environ.get("llm_model") or model
     conversation = "\n".join([f"User: {d.get('user_input','')} (Timestamp: {d.get('timestamp', '')})\nAssistant: {d.get('agent_response','')} (Timestamp: {d.get('timestamp', '')})" for d in dialogs])
     messages = [
         {"role": "system", "content": prompts.PERSONALITY_ANALYSIS_SYSTEM_PROMPT},
@@ -231,7 +283,6 @@ def gpt_user_profile_analysis(dialogs, client: OpenAIClient, model="gpt-4o-mini"
 
 def gpt_knowledge_extraction(dialogs, client: OpenAIClient, model="gpt-4o-mini"):
     """Extract user private data and assistant knowledge from dialogs"""
-    model=os.environ.get("llm_model") or model
     conversation = "\n".join([f"User: {d.get('user_input','')} (Timestamp: {d.get('timestamp', '')})\nAssistant: {d.get('agent_response','')} (Timestamp: {d.get('timestamp', '')})" for d in dialogs])
     messages = [
         {"role": "system", "content": prompts.KNOWLEDGE_EXTRACTION_SYSTEM_PROMPT},
@@ -276,7 +327,6 @@ def gpt_personality_analysis(dialogs, client: OpenAIClient, model="gpt-4o-mini",
     This function is kept for backward compatibility only.
     """
     # Call the new functions
-    model=os.environ.get("llm_model") or model
     profile = gpt_user_profile_analysis(dialogs, client, model, known_user_traits)
     knowledge_data = gpt_knowledge_extraction(dialogs, client, model)
     
@@ -288,7 +338,6 @@ def gpt_personality_analysis(dialogs, client: OpenAIClient, model="gpt-4o-mini",
 
 
 def gpt_update_profile(old_profile, new_analysis, client: OpenAIClient, model="gpt-4o-mini"):
-    model=os.environ.get("llm_model") or model
     messages = [
         {"role": "system", "content": prompts.UPDATE_PROFILE_SYSTEM_PROMPT},
         {"role": "user", "content": prompts.UPDATE_PROFILE_USER_PROMPT.format(old_profile=old_profile, new_analysis=new_analysis)}
@@ -297,8 +346,6 @@ def gpt_update_profile(old_profile, new_analysis, client: OpenAIClient, model="g
     return client.chat_completion(model=model, messages=messages)
 
 def gpt_extract_theme(answer_text, client: OpenAIClient, model="gpt-4o-mini"):
-    model=os.environ.get("llm_model") or model
-
     messages = [
         {"role": "system", "content": prompts.EXTRACT_THEME_SYSTEM_PROMPT},
         {"role": "user", "content": prompts.EXTRACT_THEME_USER_PROMPT.format(answer_text=answer_text)}
@@ -306,24 +353,13 @@ def gpt_extract_theme(answer_text, client: OpenAIClient, model="gpt-4o-mini"):
     print("Calling LLM to extract theme...")
     return client.chat_completion(model=model, messages=messages)
 
-def llm_extract_keywords(text, client: OpenAIClient, model="gpt-4o-mini"):
-    
-    model=os.environ.get("llm_model") or model
 
-    messages = [
-        {"role": "system", "content": prompts.EXTRACT_KEYWORDS_SYSTEM_PROMPT},
-        {"role": "user", "content": prompts.EXTRACT_KEYWORDS_USER_PROMPT.format(text=text)}
-    ]
-    print("Calling LLM to extract keywords...")
-    response = client.chat_completion(model=model, messages=messages)
-    return [kw.strip() for kw in response.split(',') if kw.strip()]
 
 # ---- Functions from dynamic_update.py (to be used by Updater class) ----
 def check_conversation_continuity(previous_page, current_page, client: OpenAIClient, model="gpt-4o-mini"):
     prev_user = previous_page.get("user_input", "") if previous_page else ""
     prev_agent = previous_page.get("agent_response", "") if previous_page else ""
-    model=os.environ.get("llm_model") or model
-
+    
     user_prompt = prompts.CONTINUITY_CHECK_USER_PROMPT.format(
         prev_user=prev_user,
         prev_agent=prev_agent,
@@ -338,7 +374,6 @@ def check_conversation_continuity(previous_page, current_page, client: OpenAICli
     return response.strip().lower() == "true"
 
 def generate_page_meta_info(last_page_meta, current_page, client: OpenAIClient, model="gpt-4o-mini"):
-    model=os.environ.get("llm_model") or model
     current_conversation = f"User: {current_page.get('user_input', '')}\nAssistant: {current_page.get('agent_response', '')}"
     user_prompt = prompts.META_INFO_USER_PROMPT.format(
         last_meta=last_page_meta if last_page_meta else "None",

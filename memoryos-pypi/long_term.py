@@ -8,7 +8,7 @@ except ImportError:
     from utils import get_timestamp, get_embedding, normalize_vector, ensure_directory_exists
 
 class LongTermMemory:
-    def __init__(self, file_path, knowledge_capacity=100):
+    def __init__(self, file_path, knowledge_capacity=100, embedding_model_name: str = "all-MiniLM-L6-v2", embedding_model_kwargs: dict = None):
         self.file_path = file_path
         ensure_directory_exists(self.file_path)
         self.knowledge_capacity = knowledge_capacity
@@ -16,6 +16,9 @@ class LongTermMemory:
         # Use deques for knowledge bases to easily manage capacity
         self.knowledge_base = deque(maxlen=self.knowledge_capacity) # For general/user private knowledge
         self.assistant_knowledge = deque(maxlen=self.knowledge_capacity) # For assistant specific knowledge
+
+        self.embedding_model_name = embedding_model_name
+        self.embedding_model_kwargs = embedding_model_kwargs if embedding_model_kwargs is not None else {}
         self.load()
 
     def update_user_profile(self, user_id, new_data, merge=True):
@@ -48,7 +51,11 @@ class LongTermMemory:
             return
         
         # If deque is full, the oldest item is automatically removed when appending.
-        vec = get_embedding(knowledge_text)
+        vec = get_embedding(
+            knowledge_text, 
+            model_name=self.embedding_model_name, 
+            **self.embedding_model_kwargs
+        )
         vec = normalize_vector(vec).tolist()
         entry = {
             "knowledge": knowledge_text,
@@ -75,7 +82,11 @@ class LongTermMemory:
         if not knowledge_deque:
             return []
         
-        query_vec = get_embedding(query)
+        query_vec = get_embedding(
+            query, 
+            model_name=self.embedding_model_name, 
+            **self.embedding_model_kwargs
+        )
         query_vec = normalize_vector(query_vec)
         
         embeddings = []

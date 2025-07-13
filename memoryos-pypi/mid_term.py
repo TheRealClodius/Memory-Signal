@@ -8,12 +8,12 @@ from datetime import datetime
 try:
     from .utils import (
         get_timestamp, generate_id, get_embedding, normalize_vector, 
-        llm_extract_keywords, compute_time_decay, ensure_directory_exists, OpenAIClient
+        compute_time_decay, ensure_directory_exists, OpenAIClient
     )
 except ImportError:
     from utils import (
         get_timestamp, generate_id, get_embedding, normalize_vector, 
-        llm_extract_keywords, compute_time_decay, ensure_directory_exists, OpenAIClient
+        compute_time_decay, ensure_directory_exists, OpenAIClient
     )
 
 # Heat computation constants (can be tuned or made configurable)
@@ -35,7 +35,7 @@ def compute_segment_heat(session, alpha=HEAT_ALPHA, beta=HEAT_BETA, gamma=HEAT_G
     return alpha * N_visit + beta * L_interaction + gamma * R_recency
 
 class MidTermMemory:
-    def __init__(self, file_path: str, client: OpenAIClient, max_capacity=2000):
+    def __init__(self, file_path: str, client: OpenAIClient, max_capacity=2000, embedding_model_name: str = "all-MiniLM-L6-v2", embedding_model_kwargs: dict = None):
         self.file_path = file_path
         ensure_directory_exists(self.file_path)
         self.client = client
@@ -43,6 +43,9 @@ class MidTermMemory:
         self.sessions = {} # {session_id: session_object}
         self.access_frequency = defaultdict(int) # {session_id: access_count_for_lfu}
         self.heap = []  # Min-heap storing (-H_segment, session_id) for hottest segments
+
+        self.embedding_model_name = embedding_model_name
+        self.embedding_model_kwargs = embedding_model_kwargs if embedding_model_kwargs is not None else {}
         self.load()
 
     def get_page_by_id(self, page_id):
@@ -95,11 +98,15 @@ class MidTermMemory:
         self.save()
         print(f"MidTermMemory: Evicted session {lfu_sid}.")
 
-    def add_session(self, summary, details):
+    def add_session(self, summary, details, summary_keywords=None):
         session_id = generate_id("session")
-        summary_vec = get_embedding(summary)
+        summary_vec = get_embedding(
+            summary, 
+            model_name=self.embedding_model_name, 
+            **self.embedding_model_kwargs
+        )
         summary_vec = normalize_vector(summary_vec).tolist()
-        summary_keywords = list(llm_extract_keywords(summary, client=self.client))
+        summary_keywords = summary_keywords if summary_keywords is not None else []
         
         processed_details = []
         for page_data in details:
@@ -117,17 +124,20 @@ class MidTermMemory:
             else:
                 print(f"MidTermMemory: Computing new embedding for page {page_id}")
                 full_text = f"User: {page_data.get('user_input','')} Assistant: {page_data.get('agent_response','')}"
-                inp_vec = get_embedding(full_text)
+                inp_vec = get_embedding(
+                    full_text,
+                    model_name=self.embedding_model_name,
+                    **self.embedding_model_kwargs
+                )
                 inp_vec = normalize_vector(inp_vec).tolist()
             
-            # 检查是否已有keywords，避免重复计算
+            # 使用已有keywords或设置为空（由multi-summary提供）
             if "page_keywords" in page_data and page_data["page_keywords"]:
-                print(f"MidTermMemory: Reusing existing keywords for page {page_id}")
+                print(f"MidTermMemory: Using existing keywords for page {page_id}")
                 page_keywords = page_data["page_keywords"]
             else:
-                print(f"MidTermMemory: Computing new keywords for page {page_id}")
-                full_text = f"User: {page_data.get('user_input','')} Assistant: {page_data.get('agent_response','')}"
-                page_keywords = list(llm_extract_keywords(full_text, client=self.client))
+                print(f"MidTermMemory: Setting empty keywords for page {page_id} (will be filled by multi-summary)")
+                page_keywords = []
             
             processed_page = {
                 **page_data, # Carry over existing fields like user_input, agent_response, timestamp
@@ -179,9 +189,13 @@ class MidTermMemory:
                                   similarity_threshold=0.6, keyword_similarity_alpha=1.0):
         if not self.sessions: # If no existing sessions, just add as a new one
             print("MidTermMemory: No existing sessions. Adding new session directly.")
-            return self.add_session(summary_for_new_pages, pages_to_insert)
+            return self.add_session(summary_for_new_pages, pages_to_insert, keywords_for_new_pages)
 
-        new_summary_vec = get_embedding(summary_for_new_pages)
+        new_summary_vec = get_embedding(
+            summary_for_new_pages,
+            model_name=self.embedding_model_name,
+            **self.embedding_model_kwargs
+        )
         new_summary_vec = normalize_vector(new_summary_vec)
         
         best_sid = None
@@ -227,17 +241,20 @@ class MidTermMemory:
                 else:
                     print(f"MidTermMemory: Computing new embedding for page {page_id}")
                     full_text = f"User: {page_data.get('user_input','')} Assistant: {page_data.get('agent_response','')}"
-                    inp_vec = get_embedding(full_text)
+                    inp_vec = get_embedding(
+                        full_text,
+                        model_name=self.embedding_model_name,
+                        **self.embedding_model_kwargs
+                    )
                     inp_vec = normalize_vector(inp_vec).tolist()
                 
-                # 检查是否已有keywords，避免重复计算
+                # 使用已有keywords或继承session的keywords
                 if "page_keywords" in page_data and page_data["page_keywords"]:
-                    print(f"MidTermMemory: Reusing existing keywords for page {page_id}")
+                    print(f"MidTermMemory: Using existing keywords for page {page_id}")
                     page_keywords_current = page_data["page_keywords"]
                 else:
-                    print(f"MidTermMemory: Computing new keywords for page {page_id}")
-                    full_text = f"User: {page_data.get('user_input','')} Assistant: {page_data.get('agent_response','')}"
-                    page_keywords_current = list(llm_extract_keywords(full_text, client=self.client))
+                    print(f"MidTermMemory: Using session keywords for page {page_id}")
+                    page_keywords_current = keywords_for_new_pages
 
                 processed_page = {
                     **page_data, # Carry over existing fields
@@ -257,16 +274,20 @@ class MidTermMemory:
             return best_sid
         else:
             print(f"MidTermMemory: No suitable session to merge (best score {best_overall_score:.2f} < threshold {similarity_threshold}). Creating new session.")
-            return self.add_session(summary_for_new_pages, pages_to_insert)
+            return self.add_session(summary_for_new_pages, pages_to_insert, keywords_for_new_pages)
 
     def search_sessions(self, query_text, segment_similarity_threshold=0.1, page_similarity_threshold=0.1, 
                           top_k_sessions=5, keyword_alpha=1.0, recency_tau_search=3600):
         if not self.sessions:
             return []
 
-        query_vec = get_embedding(query_text)
+        query_vec = get_embedding(
+            query_text,
+            model_name=self.embedding_model_name,
+            **self.embedding_model_kwargs
+        )
         query_vec = normalize_vector(query_vec)
-        query_keywords = set(llm_extract_keywords(query_text, client=self.client))
+        query_keywords = set()  # Keywords extraction removed, relying on semantic similarity
 
         candidate_sessions = []
         session_ids = list(self.sessions.keys())

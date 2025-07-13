@@ -1,11 +1,23 @@
-from utils import (
-    generate_id, get_timestamp, 
-    gpt_generate_multi_summary, check_conversation_continuity, generate_page_meta_info, OpenAIClient,
-    llm_extract_keywords
-)
-from short_term import ShortTermMemory
-from mid_term import MidTermMemory
-from long_term import LongTermMemory
+try:
+    from .utils import (
+        generate_id, get_timestamp, 
+        gpt_generate_multi_summary, check_conversation_continuity, generate_page_meta_info, OpenAIClient,
+        run_parallel_tasks
+    )
+    from .short_term import ShortTermMemory
+    from .mid_term import MidTermMemory
+    from .long_term import LongTermMemory
+except ImportError:
+    from utils import (
+        generate_id, get_timestamp, 
+        gpt_generate_multi_summary, check_conversation_continuity, generate_page_meta_info, OpenAIClient,
+        run_parallel_tasks
+    )
+    from short_term import ShortTermMemory
+    from mid_term import MidTermMemory
+    from long_term import LongTermMemory
+
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 class Updater:
     def __init__(self, 
@@ -22,6 +34,38 @@ class Updater:
         self.topic_similarity_threshold = topic_similarity_threshold
         self.last_evicted_page_for_continuity = None # Tracks the actual last page object for continuity checks
         self.llm_model = llm_model
+
+    def _process_page_embedding_and_keywords(self, page_data):
+        """处理单个页面的embedding生成（关键词由multi-summary提供）"""
+        page_id = page_data.get("page_id", generate_id("page"))
+        
+        # 检查是否已有embedding
+        if "page_embedding" in page_data and page_data["page_embedding"]:
+            print(f"Updater: Page {page_id} already has embedding, skipping computation")
+            return page_data
+        
+        # 只处理embedding，关键词由multi-summary统一提供
+        if not ("page_embedding" in page_data and page_data["page_embedding"]):
+            full_text = f"User: {page_data.get('user_input','')} Assistant: {page_data.get('agent_response','')}"
+            try:
+                embedding = self._get_embedding_for_page(full_text)
+                if embedding is not None:
+                    from .utils import normalize_vector
+                    page_data["page_embedding"] = normalize_vector(embedding).tolist()
+                    print(f"Updater: Generated embedding for page {page_id}")
+            except Exception as e:
+                print(f"Error generating embedding for page {page_id}: {e}")
+        
+        # 设置空的关键词列表（将由multi-summary的关键词填充）
+        if "page_keywords" not in page_data:
+            page_data["page_keywords"] = []
+        
+        return page_data
+
+    def _get_embedding_for_page(self, text):
+        """获取页面embedding的辅助方法"""
+        from .utils import get_embedding
+        return get_embedding(text)
 
     def _update_linked_pages_meta_info(self, start_page_id, new_meta_info):
         """
@@ -143,10 +187,10 @@ class Updater:
             # Fallback: if no summaries, add as one session or handle as a single block
             print("Updater: No specific themes from multi-summary. Adding batch as a general session.")
             fallback_summary = "General conversation segment from short-term memory."
-            fallback_keywords = llm_extract_keywords(input_text_for_summary, self.client, model=self.llm_model) if input_text_for_summary else []
+            fallback_keywords = []  # Use empty keywords since multi-summary failed
             self.mid_term_memory.insert_pages_into_session(
                 summary_for_new_pages=fallback_summary,
-                keywords_for_new_pages=list(fallback_keywords),
+                keywords_for_new_pages=fallback_keywords,
                 pages_to_insert=current_batch_pages,
                 similarity_threshold=self.topic_similarity_threshold
             )
@@ -174,12 +218,8 @@ class Updater:
         new_profile_text = profile_analysis_result.get("profile")
         if new_profile_text and new_profile_text.lower() != "none":
             print(f"Updater: Updating user profile for {user_id} in LongTermMemory.")
-            current_profile = self.long_term_memory.get_raw_user_profile(user_id)
-            if current_profile and current_profile.lower() != "none":
-                updated_profile = gpt_update_profile(current_profile, new_profile_text, self.client)
-            else:
-                updated_profile = new_profile_text # First profile
-            self.long_term_memory.update_user_profile(user_id, updated_profile)
+            # 直接使用新的分析结果作为完整画像，因为它应该已经是集成后的结果
+            self.long_term_memory.update_user_profile(user_id, new_profile_text, merge=False)
         
         user_private_knowledge = profile_analysis_result.get("private")
         if user_private_knowledge and user_private_knowledge.lower() != "none":

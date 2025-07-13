@@ -203,9 +203,7 @@ UPDATE_PROFILE_USER_PROMPT = "Please update the following user profile based on 
 EXTRACT_THEME_SYSTEM_PROMPT = "You are an expert in extracting the main theme from a text. Provide a concise theme."
 EXTRACT_THEME_USER_PROMPT = "Please extract the main theme from the following text:\n{answer_text}\n\nTheme:"
 
-# Prompt for extracting keywords (from utils.py, llm_extract_keywords)
-EXTRACT_KEYWORDS_SYSTEM_PROMPT = "You are an expert in keyword extraction. Extract only the most essential keywords from the text. Return 3-5 keywords maximum as a comma-separated list. Be extremely selective."
-EXTRACT_KEYWORDS_USER_PROMPT = "Please extract the 3-5 most important keywords from the following text. Be very selective and concise:\n{text}\n\nKeywords:"
+
 
 # Prompt for conversation continuity check (from dynamic_update.py, _is_conversation_continuing)
 CONTINUITY_CHECK_SYSTEM_PROMPT = "You are a conversation continuity detector. Return ONLY 'true' or 'false'."

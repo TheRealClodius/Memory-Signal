@@ -24,10 +24,11 @@ def simple_demo():
             llm_model=LLM_MODEL,
             assistant_id=ASSISTANT_ID,
             short_term_capacity=7,  
-            mid_term_heat_threshold=5,  
+            mid_term_heat_threshold=1000,  
             retrieval_queue_capacity=10,
             long_term_knowledge_capacity=100,
-            mid_term_similarity_threshold=0.6
+            mid_term_similarity_threshold=0.6,
+            embedding_model_name=""
         )
         print("MemoryOS initialized successfully!\n")
     except Exception as e:
@@ -41,6 +42,43 @@ def simple_demo():
         user_input="Hi! I'm Tom, I work as a data scientist in San Francisco.",
         agent_response="Hello Tom! Nice to meet you. Data science is such an exciting field. What kind of data do you work with?"
     )
+    memo.add_memory(
+        user_input="I love hiking on weekends, especially in the mountains.",
+        agent_response="That sounds wonderful! Do you have a favorite trail or mountain you like to visit?"
+    )
+    memo.add_memory(
+        user_input="Recently, I've been reading a lot about artificial intelligence.",
+        agent_response="AI is a fascinating topic! Are you interested in any specific area of AI?"
+    )
+    memo.add_memory(
+        user_input="My favorite food is sushi, especially salmon nigiri.",
+        agent_response="Sushi is delicious! Have you ever tried making it at home?"
+    )
+    memo.add_memory(
+        user_input="I have a golden retriever named Max.",
+        agent_response="Max must be adorable! How old is he?"
+    )
+    memo.add_memory(
+        user_input="I traveled to Japan last year and visited Tokyo and Kyoto.",
+        agent_response="That must have been an amazing experience! What did you enjoy most about Japan?"
+    )
+    memo.add_memory(
+        user_input="I'm currently learning how to play the guitar.",
+        agent_response="That's awesome! What songs are you practicing right now?"
+    )
+    memo.add_memory(
+        user_input="I usually start my day with a cup of black coffee.",
+        agent_response="Coffee is a great way to kickstart the day! Do you prefer it hot or iced?"
+    )
+    memo.add_memory(
+        user_input="My favorite movie genre is science fiction.",
+        agent_response="Sci-fi movies can be so imaginative! Do you have a favorite film?"
+    )
+    memo.add_memory(
+        user_input="I enjoy painting landscapes in my free time.",
+        agent_response="Painting is such a creative hobby! Do you use oils, acrylics, or watercolors?"
+    )
+
      
     test_query = "What do you remember about my job?"
     print(f"User: {test_query}")
