@@ -273,7 +273,9 @@ def simple_demo():
             short_term_capacity=7,  
             mid_term_heat_threshold=5,  
             retrieval_queue_capacity=7,
-            long_term_knowledge_capacity=100
+            long_term_knowledge_capacity=100,
+            embedding_model_name="BAAI/bge-m3"
+#Support Qwen/Qwen3-Embedding-0.6B BAAI/bge-m3 all-MiniLM-L6-v2
         )
         print("MemoryOS initialized successfully!\n")
     except Exception as e:
@@ -331,6 +333,7 @@ Edit `config.json`：
   "data_storage_path": "./memoryos_data",
   "assistant_id": "assistant_id",
   "llm_model": "gpt-4o-mini"
+  "embedding_model_name":"BAAI/bge-m3"
 }
 ```
 ### 3. Start the server
