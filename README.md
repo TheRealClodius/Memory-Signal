@@ -12,7 +12,7 @@
   <a href="https://www.youtube.com/watch?v=WHQu8fpEOaU" target="blank">
     <img src="https://img.shields.io/badge/Youtube-Video-red" alt="Npm package">
   </a>
-  <a href="https://discord.gg/S38ctNkT" target="_blank">
+  <a href="https://discord.gg/SqVj7QvZ" target="_blank">
     <img src="https://img.shields.io/badge/Discord-Join_us-yellow" alt="Discord">
   </a>
   <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">
@@ -411,7 +411,7 @@ BaiJia AI is a research team guided by Associate Professor Bai Ting from Beijing
 
 🤝 Cooperation and Suggestions: baiting@bupt.edu.cn 
 
-📣Follow our **WeChat official account**, join the **WeChat group** or <img src="https://img.shields.io/badge/Discord-yellow" alt="Discord"> https://discord.gg/SqVj7QvZ to get the latest updates.
+📣Follow our **WeChat official account**, join the **WeChat group** or <img src="https://img.shields.io/badge/Discord-join us-yellow" alt="Discord">to get the latest updates.
 
 <div style="display: flex; justify-content: center; gap: 20px;">
   <img src="https://github.com/user-attachments/assets/42651f49-f1f7-444d-9455-718e13ed75e9" alt="百家Agent公众号" width="250"/> 
