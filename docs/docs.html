@@ -473,7 +473,6 @@ pip install -r requirements.txt</code></pre>
           <li><b>Option 1: Pull the Official Image</b></li>
         </ul>
         <pre><code># Pull the latest official image
-
 docker pull ghcr.io/bai-lab/memoryos:latest
 
 # Run the container (add --gpus=all if you have a GPU)
@@ -483,6 +482,7 @@ docker run -it --gpus=all ghcr.io/bai-lab/memoryos /bin/bash</code></pre>
         </ul>
         <pre><code># Clone the repository
 git clone https://github.com/BAI-LAB/MemoryOS.git
+          
 cd MemoryOS
 
 # Build the Docker image (make sure Dockerfile is present)
