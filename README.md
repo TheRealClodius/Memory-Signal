@@ -53,7 +53,8 @@
 <span id='news'/>
 
 ## 📣 Latest News
-*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-15]**: **🔌 Support** for [Chromadb](#memoryos_chromadb-getting-started) and [Docker](#docker-getting-started) 
+*   *<mark>[new]</mark>* 🔥🔥 🔥 **[2025-07-15]**: **🔌 Support** for Vector Database [Chromadb](#memoryos_chromadb-getting-started)
+*   *<mark>[new]</mark>* 🔥🔥 🔥 **[2025-07-15]**: **🔌 Integrate** [Docker](#docker-getting-started) into deployment
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-14]**: **⚡ Acceleration** of MCP parallelization 
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-14]**: **🔌 Support** for BGE-M3 & Qwen3 embeddings on PyPI and MCP.
 *   *<mark>[new]</mark>* 🔥  **[2025-07-09]**: **📊 Evaluation** of the MemoryOS on LoCoMo Dataset: Publicly Available [👉Reproduce](#reproduce).
@@ -416,11 +417,8 @@ python3 evalution_loco.py
 
 MemoryOS is continuously evolving! Here's what's coming:
 
-- **Ongoing🚀**:  Support for **vector database**
-- **Ongoing🚀**:  The deployment methods of **Docker**
 - **Ongoing🚀**: **Integrated Benchmarks**: Standardized benchmark suite with a cross-model comparison for Mem0, Zep, and OpenAI
 - 🏗️ Enabling seamless Memory exchange and integration across diverse systems.
-- 🔧 **More Tool Operation in MCP**: Integration with more tool like **modify**, **delete**
 
   
 
