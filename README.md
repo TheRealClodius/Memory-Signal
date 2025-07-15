@@ -386,7 +386,6 @@ You can run MemoryOS using Docker in two ways: by pulling the official image or 
 # Pull the latest official image
 docker pull ghcr.io/bai-lab/memoryos:latest
 
-# Run the container (add --gpus=all if you have a GPU)
 docker run -it --gpus=all ghcr.io/bai-lab/memoryos /bin/bash
 ```
 ### Option 2: Build from Dockerfile
