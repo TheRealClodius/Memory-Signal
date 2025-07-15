@@ -350,6 +350,32 @@ Copy the mcp.json file over, and make sure the file path is correct.
 command": "/root/miniconda3/envs/memos/bin/python"
 #This should be changed to the Python interpreter of your virtual environment
 ```
+## 📖MemoryOS_Chromadb Getting Started
+
+### 1. Install dependencies
+```bash
+cd memoryos-chromadb
+pip install -r requirements.txt
+```
+### 2. Test
+```bash
+The edit information is in comprehensive_test.py
+    memoryos = Memoryos(
+        user_id='travel_user_test',
+        openai_api_key='',
+        openai_base_url='',
+        data_storage_path='./comprehensive_test_data',
+        assistant_id='travel_assistant',
+        embedding_model_name='BAAI/bge-m3',
+        mid_term_capacity=1000,
+        mid_term_heat_threshold=13.0,
+        mid_term_similarity_threshold=0.7,
+        short_term_capacity=2
+    )
+python3 comprehensive_test.py
+# Make sure to use a different data storage path when switching embedding models.
+```
+
 
 ## 🎯Reproduce
 ```bash
