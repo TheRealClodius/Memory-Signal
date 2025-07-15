@@ -389,7 +389,7 @@ docker pull ghcr.io/bai-lab/memoryos:latest
 # Run the container (add --gpus=all if you have a GPU)
 docker run -it --gpus=all ghcr.io/bai-lab/memoryos /bin/bash
 ```
-### Option 2: Pull the Official Image
+### Option 2: Build from Dockerfile
 ```bash
 # Clone the repository
 git clone https://github.com/BAI-LAB/MemoryOS.git
