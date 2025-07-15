@@ -375,7 +375,28 @@ The edit information is in comprehensive_test.py
 python3 comprehensive_test.py
 # Make sure to use a different data storage path when switching embedding models.
 ```
+## 📖Docker Getting Started
+You can run MemoryOS using Docker in two ways: by pulling the official image or by building your own image from the Dockerfile. Both methods are suitable for quick setup, testing, and production deployment.
+### Option 1: Pull the Official Image
+```bash
+# Pull the latest official image
+docker pull ghcr.io/bai-lab/memoryos:latest
 
+# Run the container (add --gpus=all if you have a GPU)
+docker run -it --gpus=all ghcr.io/bai-lab/memoryos /bin/bash
+```
+### Option 2: Pull the Official Image
+```bash
+# Clone the repository
+git clone https://github.com/BAI-LAB/MemoryOS.git
+          
+cd MemoryOS
+
+# Build the Docker image (make sure Dockerfile is present)
+docker build -t memoryos .
+
+docker run -it --gpus=all memoryos /bin/bash
+```
 
 ## 🎯Reproduce
 ```bash
