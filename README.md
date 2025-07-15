@@ -53,18 +53,19 @@
 <span id='news'/>
 
 ## 📣 Latest News
+*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-15]**: **🔌 Support** for [Chromadb](#memoryos_chromadb-getting-started) and [Docker](#docker-getting-started) 
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-14]**: **⚡ Acceleration** of MCP parallelization 
 *   *<mark>[new]</mark>* 🔥🔥  **[2025-07-14]**: **🔌 Support** for BGE-M3 & Qwen3 embeddings on PyPI and MCP.
-*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-09]**: **📊 Evaluation** of the MemoryOS on LoCoMo Dataset: Publicly Available [👉Reproduce](#reproduce).
-*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-08]**: **🏆 New Config Parameter**
+*   *<mark>[new]</mark>* 🔥  **[2025-07-09]**: **📊 Evaluation** of the MemoryOS on LoCoMo Dataset: Publicly Available [👉Reproduce](#reproduce).
+*   *<mark>[new]</mark>* 🔥 **[2025-07-08]**: **🏆 New Config Parameter**
 *   New parameter configuration: **similarity_threshold**. For configuration file, see 📖 [Documentation](https://bai-lab.github.io/MemoryOS/docs) page.
-*   *<mark>[new]</mark>* 🔥🔥  **[2025-07-07]**: **🚀5 Times Faster**
+*   *<mark>[new]</mark>*   **[2025-07-07]**: **🚀5 Times Faster**
 *   The MemoryOS (PYPI) implementation has been upgraded: **5 times faster** (reduction in latency) through parallelization optimizations.
-*   *<mark>[new]</mark>* 🔥  **[2025-07-07]**: **✨R1 models Support Now**
+*   *<mark>[new]</mark>*  **[2025-07-07]**: **✨R1 models Support Now**
 *   MemoryOS supports configuring and using inference models such as **Deepseek-r1 and Qwen3..**
-*   *<mark>[new]</mark>* 🔥  **[2025-07-07]**: **✨MemoryOS Playground Launched**
+*   *<mark>[new]</mark>*  **[2025-07-07]**: **✨MemoryOS Playground Launched**
 *   The Playground of **MemoryOS Platform** has been launched! [👉MemoryOS Platform](https://baijia.online/memoryos/). If you need an **Invitation Code**, please feel free to reach [Contact US](#community).
-*   *<mark>[new]</mark>* 🔥  **[2025-06-15]**:🛠️ Open-sourced **MemoryOS-MCP** released! Now configurable on agent clients for seamless integration and customization. [👉 MemoryOS-MCP](#memoryos-mcp-getting-started).
+*   *<mark>[new]</mark>*   **[2025-06-15]**:🛠️ Open-sourced **MemoryOS-MCP** released! Now configurable on agent clients for seamless integration and customization. [👉 MemoryOS-MCP](#memoryos-mcp-getting-started).
 *   **[2025-05-30]**: 📄 Paper-**Memory OS of AI Agent** is available on arXiv: https://arxiv.org/abs/2506.06326.
 *   **[2025-05-30]**: Initial version of **MemoryOS** launched! Featuring short-term, mid-term, and long-term persona Memory with automated user profile and knowledge updating.
 
@@ -165,6 +166,8 @@ All model calls use the OpenAI API interface; you need to supply the API key and
 * <a href='#pypi-mode'>🎯 Quick Start</a>
   * <a href='pypi-mode'>PYPI Install MemoryOS</a>
   * <a href='#MCP-mode'>MemoryOS-MCP</a>
+  * <a href='#memoryos_chromadb-getting-started'>MemoryOS-chromadb</a>
+  * <a href='#docker-getting-started'>Docker</a>
 * <a href='#todo'>☑️ Todo List</a>
 * <a href='#reproduce'>🔬 How to Reproduce the Results in the Paper </a>
 * <a href='#doc'>📖 Documentation </a>
