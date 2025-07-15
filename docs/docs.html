@@ -466,8 +466,30 @@ pip install -r requirements.txt</code></pre>
               # This should be changed to the Python interpreter of your virtual environment.
             </li>
           </ul>
-<!--         <li><b>Download the docker image</b></li>
-              <pre><code>docker pull ghcr.io/bai-lab/memoryos:latest</code></pre> -->
+          <br><br>
+        <li><b>Docker Deployment</b></li>
+        <p>You can run MemoryOS using Docker in two ways: by pulling the official image or by building your own image from the Dockerfile. Both methods are suitable for quick setup, testing, and production deployment.</p>
+        <ul class="features">
+          <li><b>Option 1: Pull the Official Image</b></li>
+        </ul>
+        <pre><code># Pull the latest official image
+
+docker pull ghcr.io/bai-lab/memoryos:latest
+
+# Run the container (add --gpus=all if you have a GPU)
+docker run -it --gpus=all ghcr.io/bai-lab/memoryos /bin/bash</code></pre>
+        <ul class="features">
+          <li><b>Option 2: Build from Dockerfile</b></li>
+        </ul>
+        <pre><code># Clone the repository
+git clone https://github.com/BAI-LAB/MemoryOS.git
+cd MemoryOS/memoryos-pypi
+
+# Build the Docker image (make sure Dockerfile is present)
+docker build -t memoryos .
+
+docker run -it --gpus=all memoryos /bin/bash</code></pre>
+
 
         </ul>
       </section>
