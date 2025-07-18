@@ -53,7 +53,7 @@ class Updater:
             tasks.append(('embedding', lambda: get_embedding(full_text)))
         
         if not ("page_keywords" in page_data and page_data["page_keywords"]):
-            tasks.append(('keywords', lambda: extract_keywords_from_multi_summary(full_text, client=self.client)))
+            tasks.append(('keywords', lambda: extract_keywords_from_multi_summary(full_text, client=self.client,model=self.llm_model)))
         
         if tasks:
             with ThreadPoolExecutor(max_workers=2) as executor:

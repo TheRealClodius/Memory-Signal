@@ -91,13 +91,15 @@ class Memoryos:
             client=self.client, 
             max_capacity=mid_term_capacity,
             embedding_model_name=self.embedding_model_name,
-            embedding_model_kwargs=self.embedding_model_kwargs
+            embedding_model_kwargs=self.embedding_model_kwargs,
+            llm_model=self.llm_model
         )
         self.user_long_term_memory = LongTermMemory(
             storage_provider=self.storage_provider,
             llm_interface=self.client,
             embedding_model_name=self.embedding_model_name,
-            embedding_model_kwargs=self.embedding_model_kwargs
+            embedding_model_kwargs=self.embedding_model_kwargs,
+            llm_model=self.llm_model 
         )
 
         # Initialize Memory Module for Assistant Knowledge
@@ -105,7 +107,8 @@ class Memoryos:
             storage_provider=self.storage_provider,
             llm_interface=self.client,
             embedding_model_name=self.embedding_model_name,
-            embedding_model_kwargs=self.embedding_model_kwargs
+            embedding_model_kwargs=self.embedding_model_kwargs,
+            llm_model=self.llm_model
         )
 
         # Initialize Orchestration Modules

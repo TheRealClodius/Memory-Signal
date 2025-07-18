@@ -15,12 +15,14 @@ class LongTermMemory:
                  llm_interface: OpenAIClient,
                  knowledge_capacity=100, 
                  embedding_model_name: str = "all-MiniLM-L6-v2", 
-                 embedding_model_kwargs: Optional[dict] = None):
+                 embedding_model_kwargs: Optional[dict] = None,
+                 llm_model: str = "gpt-4o-mini"):  # 添加 llm_model 参数
         self.storage = storage_provider
         self.llm_interface = llm_interface
         self.knowledge_capacity = knowledge_capacity
         self.embedding_model_name = embedding_model_name
         self.embedding_model_kwargs = embedding_model_kwargs or {}
+        self.llm_model = llm_model  # 保存模型名称
 
     def update_user_profile(self, user_id: str, conversation_history: str) -> Optional[Dict[str, Any]]:
         """
@@ -31,6 +33,7 @@ class LongTermMemory:
         updated_profile = gpt_user_profile_analysis(
             conversation_str=conversation_history,
             client=self.llm_interface,
+            model=self.llm_model,  # 传递模型参数
             existing_user_profile=existing_profile_str
         )
         
@@ -73,7 +76,11 @@ class LongTermMemory:
         """
         if not text.strip():
             return None
-        return gpt_knowledge_extraction(conversation_str=text, client=self.llm_interface)
+        return gpt_knowledge_extraction(
+            conversation_str=text, 
+            client=self.llm_interface,
+            model=self.llm_model  # 传递模型参数
+        )
 
     def get_user_knowledge(self) -> list:
         return self.storage.get_all_user_knowledge()
@@ -95,4 +102,4 @@ class LongTermMemory:
             results = self.storage.search_assistant_knowledge(query_vec, top_k=top_k)
         
         print(f"LongTermMemory: Searched {knowledge_type} knowledge for '{query[:30]}...'. Found {len(results)} matches.")
-        return results 
+        return results

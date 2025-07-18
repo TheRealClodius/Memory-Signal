@@ -21,14 +21,15 @@ def main():
     memoryos = Memoryos(
         user_id='travel_user_test',
         openai_api_key='',
-        openai_base_url='',
+        openai_base_url='https://cn2us02.opapi.win/v1',
         data_storage_path='./comprehensive_test_data',
         assistant_id='travel_assistant',
-        embedding_model_name='BAAI/bge-m3',
+        embedding_model_name='',
         mid_term_capacity=1000,
-        mid_term_heat_threshold=13.0,
+        mid_term_heat_threshold=12.0,
         mid_term_similarity_threshold=0.7,
-        short_term_capacity=2
+        short_term_capacity=2,
+        llm_model='gpt-4.1-mini'
     )
     
     print("📝 Phase 1: Adding 30 rounds of travel planning conversations...")

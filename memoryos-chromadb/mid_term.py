@@ -43,11 +43,13 @@ class MidTermMemory:
                  client: OpenAIClient, 
                  max_capacity=2000,
                  embedding_model_name: str = "all-MiniLM-L6-v2", 
-                 embedding_model_kwargs: Optional[dict] = None):
+                 embedding_model_kwargs: Optional[dict] = None,
+                 llm_model: str = "gpt-4o-mini"):
         self.user_id = user_id
         self.client = client
         self.max_capacity = max_capacity
         self.storage = storage_provider
+        self.llm_model = llm_model
         
         # Load sessions and other data from the shared storage provider's in-memory metadata
         self.sessions: dict = self.storage.get_mid_term_sessions()
@@ -100,7 +102,7 @@ class MidTermMemory:
             **self.embedding_model_kwargs
         )
         summary_vec = normalize_vector(summary_vec).tolist()
-        summary_keywords = list(extract_keywords_from_multi_summary(summary, client=self.client))
+        summary_keywords = list(extract_keywords_from_multi_summary(summary, client=self.client,model=self.llm_model))  
         
         processed_details = []
         for page_data in details:
@@ -132,7 +134,7 @@ class MidTermMemory:
             else:
                 print(f"MidTermMemory: Computing new keywords for page {page_id}")
                 full_text = f"User: {page_data.get('user_input','')} Assistant: {page_data.get('agent_response','')}"
-                page_keywords = list(extract_keywords_from_multi_summary(full_text, client=self.client))
+                page_keywords = list(extract_keywords_from_multi_summary(full_text, client=self.client,model=self.llm_model))
             
             processed_page = {
                 **page_data, # Carry over existing fields like user_input, agent_response, timestamp
@@ -249,7 +251,7 @@ class MidTermMemory:
 
                 if "page_keywords" not in page_data or not page_data["page_keywords"]:
                     full_text = f"User: {page_data.get('user_input','')} Assistant: {page_data.get('agent_response','')}"
-                    page_data["page_keywords"] = list(extract_keywords_from_multi_summary(full_text, client=self.client))
+                    page_data["page_keywords"] = list(extract_keywords_from_multi_summary(full_text, client=self.client,model=self.llm_model))
 
                 processed_new_pages.append({**page_data, "page_id": page_id})
 
@@ -285,7 +287,7 @@ class MidTermMemory:
             **self.embedding_model_kwargs
         )
         query_vec = normalize_vector(query_vec)
-        query_keywords = set(extract_keywords_from_multi_summary(query_text, client=self.client))
+        query_keywords = set(extract_keywords_from_multi_summary(query_text, client=self.client,model=self.llm_model))
 
         # Search sessions using ChromaDB
         similar_sessions = self.storage.search_mid_term_sessions(query_vec.tolist(), top_k=top_k_sessions)
