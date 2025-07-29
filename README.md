@@ -471,6 +471,6 @@ BaiJia AI is a research team guided by Associate Professor Bai Ting from Beijing
 [![Star History Chart](https://api.star-history.com/svg?repos=BAI-LAB/MemoryOS&type=Timeline)](https://www.star-history.com/#BAI-LAB/MemoryOS&Timeline)
 
 ## Disclaimer
-This project, MemoryOS, is in no way affiliated with memoryOS (https://memoryos.com). The use of the name "MemoryOS" herein is solely for academic discussion purposes.
+This project, MemoryOS (Memory Operation System), is developed by the BaiJia AI team and has no affiliation with memoryOS (https://memoryos.com). The use of the name "MemoryOS" herein is solely for academic discussion purposes.
 
 
