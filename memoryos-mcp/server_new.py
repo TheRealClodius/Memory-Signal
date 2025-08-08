@@ -317,8 +317,10 @@ def main():
         
         # 启动MCP服务器
         if args.transport == "http":
-            # FastMCP supports http transport
-            mcp.run(transport="http", host=args.host, port=args.port)
+            # Configure host/port via settings and use streamable-http transport
+            mcp.settings.host = args.host
+            mcp.settings.port = args.port
+            mcp.run(transport="streamable-http")
         else:
             mcp.run(transport="stdio")
         
