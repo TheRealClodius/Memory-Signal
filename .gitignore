@@ -1,0 +1,10 @@
+.env
+.env.local
+*.log
+*.pid
+.venv/
+memoryos-mcp/.venv/
+memoryos_data/
+memoryos-mcp/memoryos_data/
+__pycache__/
+*.pyc

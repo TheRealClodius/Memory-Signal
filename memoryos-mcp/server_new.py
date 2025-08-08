@@ -4,6 +4,7 @@ import os
 import json
 import argparse
 from typing import Any, Dict, Optional, List
+from dotenv import load_dotenv
 # 确保当前目录在sys.path中，以便导入memoryos模块
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'memoryos'))
 
@@ -27,6 +28,13 @@ memoryos_instance: Optional[Memoryos] = None
 
 def init_memoryos(config_path: str) -> Memoryos:
     """初始化MemoryOS实例"""
+    # Load environment variables from .env.local if present
+    try:
+        env_path = os.path.join(os.path.dirname(__file__), '.env.local')
+        load_dotenv(dotenv_path=env_path)
+    except Exception:
+        # Non-fatal if dotenv isn't available or file missing; continue with config values
+        pass
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"配置文件不存在: {config_path}")
     
@@ -40,17 +48,17 @@ def init_memoryos(config_path: str) -> Memoryos:
     
     return Memoryos(
         user_id=config['user_id'],
-        openai_api_key=config['openai_api_key'],
-        data_storage_path=config['data_storage_path'],
-        openai_base_url=config.get('openai_base_url'),
-        assistant_id=config.get('assistant_id', 'default_assistant_profile'),
+        openai_api_key=os.getenv('OPENAI_API_KEY', config['openai_api_key']),
+        data_storage_path=os.getenv('DATA_STORAGE_PATH', config['data_storage_path']),
+        openai_base_url=os.getenv('OPENAI_BASE_URL', config.get('openai_base_url')),
+        assistant_id=os.getenv('ASSISTANT_ID', config.get('assistant_id', 'default_assistant_profile')),
         short_term_capacity=config.get('short_term_capacity', 10),
         mid_term_capacity=config.get('mid_term_capacity', 2000),
         long_term_knowledge_capacity=config.get('long_term_knowledge_capacity', 100),
         retrieval_queue_capacity=config.get('retrieval_queue_capacity', 7),
         mid_term_heat_threshold=config.get('mid_term_heat_threshold', 5.0),
-        llm_model=config.get('llm_model', 'gpt-4o-mini'),
-        embedding_model_name=config.get('embedding_model_name', 'all-MiniLM-L6-v2')
+        llm_model=os.getenv('LLM_MODEL', config.get('llm_model', 'gpt-4o-mini')),
+        embedding_model_name=os.getenv('EMBEDDING_MODEL_NAME', config.get('embedding_model_name', 'all-MiniLM-L6-v2'))
     )
 
 # 创建FastMCP服务器实例
@@ -266,19 +274,53 @@ def main():
         default="config.json",
         help="配置文件路径 (默认: config.json)"
     )
+    parser.add_argument(
+        "--env-file",
+        type=str,
+        default=os.getenv("ENV_FILE", ".env.local"),
+        help="可选的环境变量文件 (默认: .env.local 或环境变量 ENV_FILE)"
+    )
+    parser.add_argument(
+        "--transport",
+        type=str,
+        default=os.getenv("TRANSPORT", "stdio"),
+        choices=["stdio", "http"],
+        help="MCP 传输方式: stdio 或 http (默认: stdio，或从环境变量 TRANSPORT 读取)"
+    )
+    parser.add_argument(
+        "--host",
+        type=str,
+        default=os.getenv("HOST", "0.0.0.0"),
+        help="HTTP 主机 (默认: 0.0.0.0 或环境变量 HOST)"
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=int(os.getenv("PORT", "8000")),
+        help="HTTP 端口 (默认: 8000 或环境变量 PORT)"
+    )
     
     args = parser.parse_args()
     
     global memoryos_instance
     
     try:
-        # 初始化MemoryOS
+        # 初始化MemoryOS（先加载指定的env文件）
+        try:
+            load_dotenv(dotenv_path=args.env_file)
+        except Exception:
+            pass
         memoryos_instance = init_memoryos(args.config)
         print(f"MemoryOS MCP Server 已启动，用户ID: {memoryos_instance.user_id}", file=sys.stderr)
         print(f"配置文件: {args.config}", file=sys.stderr)
+        print(f"传输方式: {args.transport}", file=sys.stderr)
         
-        # 启动MCP服务器 - 使用stdio传输
-        mcp.run(transport="stdio")
+        # 启动MCP服务器
+        if args.transport == "http":
+            # FastMCP supports http transport
+            mcp.run(transport="http", host=args.host, port=args.port)
+        else:
+            mcp.run(transport="stdio")
         
     except KeyboardInterrupt:
         print("服务器被用户中断", file=sys.stderr)

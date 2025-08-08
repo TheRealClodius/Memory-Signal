@@ -67,11 +67,20 @@ class Memoryos:
         # Initialize OpenAI Client
         self.client = OpenAIClient(api_key=openai_api_key, base_url=openai_base_url)
 
-        # Define file paths for user-specific data
+        # Define file paths
+        # Per-user global data directory (e.g., user profile and user knowledge)
         self.user_data_dir = os.path.join(self.data_storage_path, "users", self.user_id)
-        user_short_term_path = os.path.join(self.user_data_dir, "short_term.json")
-        user_mid_term_path = os.path.join(self.user_data_dir, "mid_term.json")
-        user_long_term_path = os.path.join(self.user_data_dir, "long_term_user.json") # User profile and their knowledge
+
+        # Conversation data directory isolated by user+assistant pair
+        # All message-like artifacts (short-term and mid-term) are stored per pair
+        self.pair_data_dir = os.path.join(self.user_data_dir, "assistants", self.assistant_id)
+
+        # Message stores (per user+assistant)
+        user_short_term_path = os.path.join(self.pair_data_dir, "short_term.json")
+        user_mid_term_path = os.path.join(self.pair_data_dir, "mid_term.json")
+
+        # User long-term profile/knowledge remains per-user (not per-assistant)
+        user_long_term_path = os.path.join(self.user_data_dir, "long_term_user.json")
 
         # Define file paths for assistant-specific data (knowledge)
         self.assistant_data_dir = os.path.join(self.data_storage_path, "assistants", self.assistant_id)
