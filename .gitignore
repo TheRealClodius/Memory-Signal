@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual envs
+.venv/
+
+# Local env files
+*.env
+.env.local
+
+# Runtime artifacts
+memoryos-mcp/server.log
+memoryos-mcp/server.pid
+memoryos-mcp/comp_test.pid
+
+# Local data
+memoryos-mcp/memoryos_data/
+
+# Editor
+.DS_Store
+
