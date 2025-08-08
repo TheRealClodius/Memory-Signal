@@ -5,7 +5,7 @@ import json
 import argparse
 from typing import Any, Dict, Optional, List
 from dotenv import load_dotenv
-# 确保当前目录在sys.path中，以便导入memoryos模块
+# Ensure the current directory is in sys.path so that the `memoryos` package can be imported
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'memoryos'))
 
 try:
@@ -27,7 +27,7 @@ except ImportError as e:
 memoryos_instance: Optional[Memoryos] = None
 
 def init_memoryos(config_path: str) -> Memoryos:
-    """初始化MemoryOS实例"""
+    """Initialize the MemoryOS instance."""
     # Load environment variables from .env.local if present
     try:
         env_path = os.path.join(os.path.dirname(__file__), '.env.local')
@@ -61,22 +61,22 @@ def init_memoryos(config_path: str) -> Memoryos:
         embedding_model_name=os.getenv('EMBEDDING_MODEL_NAME', config.get('embedding_model_name', 'all-MiniLM-L6-v2'))
     )
 
-# 创建FastMCP服务器实例
+# Create FastMCP server instance
 mcp = FastMCP("MemoryOS")
 
 @mcp.tool()
 def add_memory(user_input: str, agent_response: str, timestamp: Optional[str] = None, meta_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
-    向MemoryOS系统添加新的记忆（用户输入和助手回应的对话对）
-    
+    Add a new memory (a user input and assistant response pair) to MemoryOS.
+
     Args:
-        user_input: 用户的输入或问题
-        agent_response: 助手的回应
-        timestamp: 时间戳（可选，格式：YYYY-MM-DD HH:MM:SS）
-        meta_data: 可选的元数据（JSON对象）
-    
+        user_input: The user's input or question.
+        agent_response: The assistant's response.
+        timestamp: Optional timestamp in the format YYYY-MM-DD HH:MM:SS.
+        meta_data: Optional metadata (JSON object).
+
     Returns:
-        包含操作结果的字典
+        A dictionary containing the operation result.
     """
     global memoryos_instance
     
@@ -122,20 +122,21 @@ def add_memory(user_input: str, agent_response: str, timestamp: Optional[str] = 
 @mcp.tool()
 def retrieve_memory(query: str, relationship_with_user: str = "friend", style_hint: str = "", max_results: int = 10) -> Dict[str, Any]:
     """
-    根据查询从MemoryOS检索相关的记忆和上下文信息，包括短期记忆、中期记忆和长期知识
-    
+    Retrieve relevant memories and context from MemoryOS based on a query, including
+    short-term memory, mid-term memory, and long-term knowledge.
+
     Args:
-        query: 检索查询，描述要寻找的信息
-        relationship_with_user: 与用户的关系类型（如：friend, assistant, colleague等）
-        style_hint: 回应风格提示
-        max_results: 返回的最大结果数量
-    
+        query: The retrieval query describing what to find.
+        relationship_with_user: Relationship to the user (e.g., friend, assistant, colleague).
+        style_hint: Optional response style hint.
+        max_results: Maximum number of items to return.
+
     Returns:
-        包含检索结果的字典，包括：
-        - short_term_memory: 当前短期记忆中的所有QA对
-        - retrieved_pages: 从中期记忆检索的相关页面
-        - retrieved_user_knowledge: 从用户长期知识库检索的相关条目
-        - retrieved_assistant_knowledge: 从助手知识库检索的相关条目
+        A dictionary with the retrieval results, including:
+        - short_term_memory: All QA pairs currently in short-term memory.
+        - retrieved_pages: Relevant pages retrieved from mid-term memory.
+        - retrieved_user_knowledge: Relevant entries from the user's long-term knowledge.
+        - retrieved_assistant_knowledge: Relevant entries from the assistant's knowledge base.
     """
     global memoryos_instance
     
@@ -206,14 +207,15 @@ def retrieve_memory(query: str, relationship_with_user: str = "friend", style_hi
 @mcp.tool()
 def get_user_profile(include_knowledge: bool = True, include_assistant_knowledge: bool = False) -> Dict[str, Any]:
     """
-    获取用户的画像信息，包括个性特征、偏好和相关知识
-    
+    Get the user's profile information, including personality traits, preferences,
+    and related knowledge.
+
     Args:
-        include_knowledge: 是否包括用户相关的知识条目
-        include_assistant_knowledge: 是否包括助手知识库
-    
+        include_knowledge: Whether to include user knowledge entries.
+        include_assistant_knowledge: Whether to include assistant knowledge entries.
+
     Returns:
-        包含用户画像信息的字典
+        A dictionary containing the user's profile information.
     """
     global memoryos_instance
     
@@ -266,7 +268,7 @@ def get_user_profile(include_knowledge: bool = True, include_assistant_knowledge
         }
 
 def main():
-    """主函数"""
+    """Main function."""
     parser = argparse.ArgumentParser(description="MemoryOS MCP Server")
     parser.add_argument(
         "--config", 
@@ -305,7 +307,7 @@ def main():
     global memoryos_instance
     
     try:
-        # 初始化MemoryOS（先加载指定的env文件）
+        # Initialize MemoryOS (load the specified env file first)
         try:
             load_dotenv(dotenv_path=args.env_file)
         except Exception:
@@ -315,7 +317,7 @@ def main():
         print(f"配置文件: {args.config}", file=sys.stderr)
         print(f"传输方式: {args.transport}", file=sys.stderr)
         
-        # 启动MCP服务器
+        # Start the MCP server
         if args.transport == "http":
             # Configure host/port via settings and use streamable-http transport
             mcp.settings.host = args.host
