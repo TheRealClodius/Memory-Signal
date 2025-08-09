@@ -131,6 +131,30 @@ class Memoryos:
         )
         
         self.mid_term_heat_threshold = mid_term_heat_threshold
+        
+        # Pre-load embedding model to avoid runtime delays
+        self._preload_embedding_model()
+
+    def _preload_embedding_model(self):
+        """
+        Pre-loads the embedding model during initialization to avoid delays during first use.
+        This prevents the 10-20 second delay that occurs when embeddings are first needed.
+        """
+        try:
+            from .utils import get_embedding
+        except ImportError:
+            from utils import get_embedding
+        
+        print(f"Pre-loading embedding model: {self.embedding_model_name}...")
+        # Generate a dummy embedding to trigger model loading
+        dummy_text = "Initialization test"
+        _ = get_embedding(
+            dummy_text, 
+            model_name=self.embedding_model_name,
+            use_cache=False,  # Don't cache this dummy embedding
+            **self.embedding_model_kwargs
+        )
+        print(f"✅ Embedding model pre-loaded successfully")
 
     def _trigger_profile_and_knowledge_update_if_needed(self):
         """
