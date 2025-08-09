@@ -1,9 +1,6 @@
 import json
 from collections import deque
-try:
-    from .utils import get_timestamp, ensure_directory_exists
-except ImportError:
-    from utils import get_timestamp, ensure_directory_exists
+from .utils import get_timestamp, ensure_directory_exists
 
 class ShortTermMemory:
     def __init__(self, file_path, max_capacity=10):

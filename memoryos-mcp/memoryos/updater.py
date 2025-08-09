@@ -1,21 +1,11 @@
-try:
-    from .utils import (
-        generate_id, get_timestamp, 
-        gpt_generate_multi_summary, check_conversation_continuity, generate_page_meta_info, OpenAIClient,
-        run_parallel_tasks
-    )
-    from .short_term import ShortTermMemory
-    from .mid_term import MidTermMemory
-    from .long_term import LongTermMemory
-except ImportError:
-    from utils import (
-        generate_id, get_timestamp, 
-        gpt_generate_multi_summary, check_conversation_continuity, generate_page_meta_info, OpenAIClient,
-        run_parallel_tasks
-    )
-    from short_term import ShortTermMemory
-    from mid_term import MidTermMemory
-    from long_term import LongTermMemory
+from .utils import (
+    generate_id, get_timestamp, 
+    gpt_generate_multi_summary, check_conversation_continuity, generate_page_meta_info, OpenAIClient,
+    run_parallel_tasks
+)
+from .short_term import ShortTermMemory
+from .mid_term import MidTermMemory
+from .long_term import LongTermMemory
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 

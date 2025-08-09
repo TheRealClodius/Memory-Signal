@@ -5,16 +5,10 @@ import faiss
 import heapq
 from datetime import datetime
 
-try:
-    from .utils import (
-        get_timestamp, generate_id, get_embedding, normalize_vector, 
-        compute_time_decay, ensure_directory_exists, OpenAIClient
-    )
-except ImportError:
-    from utils import (
-        get_timestamp, generate_id, get_embedding, normalize_vector, 
-        compute_time_decay, ensure_directory_exists, OpenAIClient
-    )
+from .utils import (
+    get_timestamp, generate_id, get_embedding, normalize_vector, 
+    compute_time_decay, ensure_directory_exists, OpenAIClient
+)
 
 # Heat computation constants (can be tuned or made configurable)
 HEAT_ALPHA = 1.0

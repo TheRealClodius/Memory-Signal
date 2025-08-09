@@ -2,10 +2,7 @@ import json
 import numpy as np
 import faiss
 from collections import deque
-try:
-    from .utils import get_timestamp, get_embedding, normalize_vector, ensure_directory_exists
-except ImportError:
-    from utils import get_timestamp, get_embedding, normalize_vector, ensure_directory_exists
+from .utils import get_timestamp, get_embedding, normalize_vector, ensure_directory_exists
 
 class LongTermMemory:
     def __init__(self, file_path, knowledge_capacity=100, embedding_model_name: str = "all-MiniLM-L6-v2", embedding_model_kwargs: dict = None):

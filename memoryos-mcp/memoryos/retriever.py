@@ -3,16 +3,10 @@ import heapq
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Optional
 
-try:
-    from .utils import get_timestamp, OpenAIClient, run_parallel_tasks
-    from .short_term import ShortTermMemory
-    from .mid_term import MidTermMemory
-    from .long_term import LongTermMemory
-except ImportError:
-    from utils import get_timestamp, OpenAIClient, run_parallel_tasks
-    from short_term import ShortTermMemory
-    from mid_term import MidTermMemory
-    from long_term import LongTermMemory
+from .utils import get_timestamp, OpenAIClient, run_parallel_tasks
+from .short_term import ShortTermMemory
+from .mid_term import MidTermMemory
+from .long_term import LongTermMemory
 # from .updater import Updater # Updater is not directly used by Retriever
 
 class Retriever:
