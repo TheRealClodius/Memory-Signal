@@ -2,25 +2,14 @@ import os
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# 修改为绝对导入
-try:
-    # 尝试相对导入（当作为包使用时）
-    from .utils import OpenAIClient, get_timestamp, generate_id, gpt_user_profile_analysis, gpt_knowledge_extraction, ensure_directory_exists
-    from . import prompts
-    from .short_term import ShortTermMemory
-    from .mid_term import MidTermMemory, compute_segment_heat # For H_THRESHOLD logic
-    from .long_term import LongTermMemory
-    from .updater import Updater
-    from .retriever import Retriever
-except ImportError:
-    # 回退到绝对导入（当作为独立模块使用时）
-    from utils import OpenAIClient, get_timestamp, generate_id, gpt_user_profile_analysis, gpt_knowledge_extraction, ensure_directory_exists
-    import prompts
-    from short_term import ShortTermMemory
-    from mid_term import MidTermMemory, compute_segment_heat # For H_THRESHOLD logic
-    from long_term import LongTermMemory
-    from updater import Updater
-    from retriever import Retriever
+# Package imports
+from .utils import OpenAIClient, get_timestamp, generate_id, gpt_user_profile_analysis, gpt_knowledge_extraction, ensure_directory_exists
+from . import prompts
+from .short_term import ShortTermMemory
+from .mid_term import MidTermMemory, compute_segment_heat # For H_THRESHOLD logic
+from .long_term import LongTermMemory
+from .updater import Updater
+from .retriever import Retriever
 
 # Heat threshold for triggering profile/knowledge update from mid-term memory
 H_PROFILE_UPDATE_THRESHOLD = 5.0 

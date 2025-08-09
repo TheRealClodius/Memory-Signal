@@ -7,10 +7,7 @@ import json
 import os
 import inspect
 from functools import wraps
-try:
-    from . import prompts # 尝试相对导入
-except ImportError:
-    import prompts # 回退到绝对导入
+from . import prompts
 from openai import OpenAI
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
