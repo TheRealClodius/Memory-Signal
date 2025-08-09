@@ -6,7 +6,7 @@ import argparse
 from typing import Any, Dict, Optional, List
 from dotenv import load_dotenv
 # Ensure the current directory is in sys.path so that the `memoryos` package can be imported
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'memoryos'))
+sys.path.insert(0, os.path.dirname(__file__))
 
 try:
     from mcp.server.fastmcp import FastMCP
@@ -17,7 +17,7 @@ except ImportError as e:
 
 try:
     from memoryos import Memoryos
-    from utils import get_timestamp
+    from memoryos.utils import get_timestamp
 except ImportError as e:
     print(f"无法导入MemoryOS模块: {e}", file=sys.stderr)
     print("请确保项目结构正确，memoryos目录应包含所有必要文件", file=sys.stderr)
