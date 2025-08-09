@@ -132,6 +132,41 @@ class Memoryos:
         
         self.mid_term_heat_threshold = mid_term_heat_threshold
 
+        # Preload the embedding model to avoid delays on first use
+        self._preload_embedding_model()
+
+        print(f"Memoryos initialized successfully for user '{self.user_id}' and assistant '{self.assistant_id}'.")
+
+    def _preload_embedding_model(self):
+        """
+        Preloads the embedding model to avoid delays during the first memory addition.
+        This forces the ~90MB embedding model to load at server startup instead of lazily
+        during the 11th memory addition.
+        """
+        print(f"Preloading embedding model: {self.embedding_model_name}...")
+        start_time = get_timestamp()
+        
+        # Import get_embedding here to avoid circular imports
+        from .utils import get_embedding
+        
+        # Call get_embedding with a dummy text to force model loading
+        dummy_text = "Preloading embedding model"
+        _ = get_embedding(
+            dummy_text, 
+            model_name=self.embedding_model_name,
+            use_cache=False,  # Don't cache this dummy embedding
+            **self.embedding_model_kwargs
+        )
+        
+        end_time = get_timestamp()
+        # Calculate time difference
+        from datetime import datetime
+        start_dt = datetime.fromisoformat(start_time.replace('Z', '+00:00'))
+        end_dt = datetime.fromisoformat(end_time.replace('Z', '+00:00'))
+        duration = (end_dt - start_dt).total_seconds()
+        
+        print(f"Embedding model preloaded successfully in {duration:.2f} seconds")
+
     def _trigger_profile_and_knowledge_update_if_needed(self):
         """
         Checks mid-term memory for hot segments and triggers profile/knowledge update if threshold is met.
