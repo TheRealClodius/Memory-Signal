@@ -28,7 +28,7 @@ class Memoryos:
                  long_term_knowledge_capacity=100,
                  retrieval_queue_capacity=7,
                  mid_term_heat_threshold=H_PROFILE_UPDATE_THRESHOLD,
-                 mid_term_similarity_threshold=0.6,
+                 mid_term_similarity_threshold=0.85,
                  llm_model="gpt-4o-mini",
                  embedding_model_name: str = "all-MiniLM-L6-v2",
                  embedding_model_kwargs: dict = None

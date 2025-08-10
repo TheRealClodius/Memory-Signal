@@ -15,7 +15,7 @@ class Updater:
                  mid_term_memory: MidTermMemory, 
                  long_term_memory: LongTermMemory, 
                  client: OpenAIClient,
-                 topic_similarity_threshold=0.5,
+                 topic_similarity_threshold=0.85,
                  llm_model="gpt-4o-mini"):
         self.short_term_memory = short_term_memory
         self.mid_term_memory = mid_term_memory
@@ -271,9 +271,26 @@ class Updater:
                     similarity_threshold=self.topic_similarity_threshold
                 )
         else:
-            # Fallback: single session
+            # Fallback: single session with content-based summary
             print("Updater: Using fallback single session insertion")
-            fallback_summary = "General conversation segment from short-term memory."
+            # Create a more meaningful summary from the actual page content
+            if processed_pages:
+                # Use the first few words from each page to create a unique summary
+                content_snippets = []
+                for page in processed_pages[:3]:  # Use up to 3 pages for summary
+                    user_input = page.get("user_input", "")
+                    if user_input:
+                        # Take first 15 words to create a meaningful summary
+                        words = user_input.split()[:15]
+                        content_snippets.append(" ".join(words))
+                
+                if content_snippets:
+                    fallback_summary = "Conversation about: " + "; ".join(content_snippets)
+                else:
+                    fallback_summary = "General conversation segment from short-term memory."
+            else:
+                fallback_summary = "General conversation segment from short-term memory."
+            
             fallback_keywords = []
             self.mid_term_memory.insert_pages_into_session(
                 summary_for_new_pages=fallback_summary,

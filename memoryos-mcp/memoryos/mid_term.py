@@ -201,7 +201,7 @@ class MidTermMemory:
             self.rebuild_heap(force=True)
 
     def insert_pages_into_session(self, summary_for_new_pages, keywords_for_new_pages, pages_to_insert, 
-                                  similarity_threshold=0.6, keyword_similarity_alpha=1.0):
+                                  similarity_threshold=0.85, keyword_similarity_alpha=1.0):
         if not self.sessions: # If no existing sessions, just add as a new one
             print("MidTermMemory: No existing sessions. Adding new session directly.")
             return self.add_session(summary_for_new_pages, pages_to_insert, keywords_for_new_pages)
