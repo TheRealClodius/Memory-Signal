@@ -13,8 +13,8 @@ from pathlib import Path
 
 # Import MCP client
 try:
-    from mcp import ClientSession, StdioServerParameters
-    from mcp.client.stdio import stdio_client
+    from mcp import ClientSession
+    from mcp.client.streamable_http import streamablehttp_client
     from mcp import types
 except ImportError as e:
     print(f"❌ Failed to import MCP client library: {e}")
@@ -34,13 +34,10 @@ class SimpleMemoryOSTest:
         if not self.config_file.exists():
             raise FileNotFoundError(f"Config file not found: {self.config_file}")
     
-    def get_server_params(self):
-        """Get server parameters"""
-        return StdioServerParameters(
-            command=sys.executable,
-            args=[str(self.server_script), "--config", str(self.config_file)],
-            env=None
-        )
+    def get_server_url(self):
+        import os
+        # FastMCP streamable HTTP typically mounts under /mcp
+        return os.getenv("MCP_URL", "http://127.0.0.1:8000/mcp")
     
     async def test_insert_conversations(self):
         """Insert 15 conversations into MemoryOS"""
@@ -65,10 +62,10 @@ class SimpleMemoryOSTest:
             {"user_input": "Maybe somewhere within 2 hours drive", "agent_response": "Perfect! You could visit Napa Valley, Santa Cruz, or even go to Lake Tahoe if you don't mind a slightly longer drive."}
         ]
         
-        server_params = self.get_server_params()
+        server_url = self.get_server_url()
         
         try:
-            async with stdio_client(server_params) as (read_stream, write_stream):
+            async with streamablehttp_client(server_url) as (read_stream, write_stream, _):
                 async with ClientSession(read_stream, write_stream) as session:
                     await session.initialize()
                     
@@ -121,10 +118,10 @@ class SimpleMemoryOSTest:
             }
         ]
         
-        server_params = self.get_server_params()
+        server_url = self.get_server_url()
         
         try:
-            async with stdio_client(server_params) as (read_stream, write_stream):
+            async with streamablehttp_client(server_url) as (read_stream, write_stream, _):
                 async with ClientSession(read_stream, write_stream) as session:
                     await session.initialize()
                     

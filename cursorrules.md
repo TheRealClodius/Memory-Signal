@@ -1,0 +1,1 @@
+Always use uv instead of pip as a package manager. It's faster.

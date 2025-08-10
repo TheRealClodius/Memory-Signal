@@ -283,9 +283,9 @@ def main():
     parser.add_argument(
         "--transport",
         type=str,
-        default=os.getenv("TRANSPORT", "stdio"),
-        choices=["stdio", "http"],
-        help="MCP 传输方式: stdio 或 http (默认: stdio，或从环境变量 TRANSPORT 读取)"
+        default=os.getenv("TRANSPORT", "http"),
+        choices=["http"],
+        help="MCP 传输方式: 仅 http (SSE)"
     )
     parser.add_argument(
         "--host",
@@ -315,14 +315,10 @@ def main():
         print(f"配置文件: {args.config}", file=sys.stderr)
         print(f"传输方式: {args.transport}", file=sys.stderr)
         
-        # Start the MCP server
-        if args.transport == "http":
-            # Configure host/port via settings and use streamable-http transport
-            mcp.settings.host = args.host
-            mcp.settings.port = args.port
-            mcp.run(transport="streamable-http")
-        else:
-            mcp.run(transport="stdio")
+        # Start the MCP server over HTTP SSE only
+        mcp.settings.host = args.host
+        mcp.settings.port = args.port
+        mcp.run(transport="streamable-http")
         
     except KeyboardInterrupt:
         print("服务器被用户中断", file=sys.stderr)
