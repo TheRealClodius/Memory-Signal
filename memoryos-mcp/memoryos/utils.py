@@ -57,7 +57,7 @@ class LLMClient:
         else:
             raise ValueError(f"Unsupported provider: {self.provider}. Supported: 'openai', 'gemini'")
 
-    def chat_completion(self, model, messages, temperature=0.7, max_tokens=2000):
+    def chat_completion(self, model, messages, temperature=0.7, max_tokens=3500):
         print(f"Calling {self.provider.upper()} API. Model: {model}")
         
         try:
@@ -116,7 +116,7 @@ class LLMClient:
         
         return combined_text.strip()
 
-    def chat_completion_async(self, model, messages, temperature=0.7, max_tokens=2000):
+    def chat_completion_async(self, model, messages, temperature=0.7, max_tokens=3500):
         """异步版本的chat_completion"""
         return self.executor.submit(self.chat_completion, model, messages, temperature, max_tokens)
 

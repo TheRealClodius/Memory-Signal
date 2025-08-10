@@ -445,7 +445,7 @@ class Memoryos:
             model=self.llm_model, 
             messages=messages, 
             temperature=0.7, 
-            max_tokens=1500 # As in original main
+            max_tokens=3500 # Optimized for Gemini
         )
         
         # 10. Add this interaction to memory
