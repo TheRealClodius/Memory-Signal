@@ -464,7 +464,7 @@ def compute_time_decay(event_timestamp_str, current_timestamp_str, tau_hours=24)
 
 # ---- LLM-based Utility Functions ----
 
-def gpt_summarize_dialogs(dialogs, client: OpenAIClient, model="gpt-4o-mini"):
+def gpt_summarize_dialogs(dialogs, client: LLMClient, model="gpt-4o-mini"):
     dialog_text = "\n".join([f"User: {d.get('user_input','')} Assistant: {d.get('agent_response','')}" for d in dialogs])
     messages = [
         {"role": "system", "content": prompts.SUMMARIZE_DIALOGS_SYSTEM_PROMPT},
@@ -578,7 +578,7 @@ def gpt_extract_theme(answer_text, client: LLMClient, model="gpt-4o-mini"):
     print("Calling LLM to extract theme...")
     return client.chat_completion(model=model, messages=messages)
 
-def llm_extract_keywords(text, client: OpenAIClient, model="gpt-4o-mini"):
+def llm_extract_keywords(text, client: LLMClient, model="gpt-4o-mini"):
     messages = [
         {"role": "system", "content": prompts.EXTRACT_KEYWORDS_SYSTEM_PROMPT},
         {"role": "user", "content": prompts.EXTRACT_KEYWORDS_USER_PROMPT.format(text=text)}
@@ -588,7 +588,7 @@ def llm_extract_keywords(text, client: OpenAIClient, model="gpt-4o-mini"):
     return [kw.strip() for kw in response.split(',') if kw.strip()]
 
 # ---- Functions from dynamic_update.py (to be used by Updater class) ----
-def check_conversation_continuity(previous_page, current_page, client: OpenAIClient, model="gpt-4o-mini"):
+def check_conversation_continuity(previous_page, current_page, client: LLMClient, model="gpt-4o-mini"):
     prev_user = previous_page.get("user_input", "") if previous_page else ""
     prev_agent = previous_page.get("agent_response", "") if previous_page else ""
     
@@ -605,7 +605,7 @@ def check_conversation_continuity(previous_page, current_page, client: OpenAICli
     response = client.chat_completion(model=model, messages=messages, temperature=0.0, max_tokens=10)
     return response.strip().lower() == "true"
 
-def generate_page_meta_info(last_page_meta, current_page, client: OpenAIClient, model="gpt-4o-mini"):
+def generate_page_meta_info(last_page_meta, current_page, client: LLMClient, model="gpt-4o-mini"):
     current_conversation = f"User: {current_page.get('user_input', '')}\nAssistant: {current_page.get('agent_response', '')}"
     user_prompt = prompts.META_INFO_USER_PROMPT.format(
         last_meta=last_page_meta if last_page_meta else "None",

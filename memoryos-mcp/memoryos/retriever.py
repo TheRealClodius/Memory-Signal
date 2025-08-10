@@ -3,7 +3,7 @@ import heapq
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Optional
 
-from .utils import get_timestamp, OpenAIClient, run_parallel_tasks
+from .utils import get_timestamp, LLMClient, run_parallel_tasks
 from .short_term import ShortTermMemory
 from .mid_term import MidTermMemory
 from .long_term import LongTermMemory
@@ -14,7 +14,7 @@ class Retriever:
                  mid_term_memory: MidTermMemory, 
                  long_term_memory: LongTermMemory, 
                  assistant_long_term_memory: Optional[LongTermMemory] = None, # Add assistant LTM
-                 # client: OpenAIClient, # Not strictly needed if all LLM calls are within memory modules
+                 # client: LLMClient, # Not strictly needed if all LLM calls are within memory modules
                  queue_capacity=7): # Default from main_memoybank was 7 for retrieval_queue
         # Short term memory is usually for direct context, not primary retrieval source here
         # self.short_term_memory = short_term_memory 

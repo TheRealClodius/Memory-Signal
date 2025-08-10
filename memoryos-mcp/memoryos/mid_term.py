@@ -8,7 +8,7 @@ from datetime import datetime
 
 from .utils import (
     get_timestamp, generate_id, get_embedding, normalize_vector, 
-    compute_time_decay, ensure_directory_exists, OpenAIClient
+    compute_time_decay, ensure_directory_exists, LLMClient
 )
 
 # Heat computation constants (can be tuned or made configurable)
@@ -30,7 +30,7 @@ def compute_segment_heat(session, alpha=HEAT_ALPHA, beta=HEAT_BETA, gamma=HEAT_G
     return alpha * N_visit + beta * L_interaction + gamma * R_recency
 
 class MidTermMemory:
-    def __init__(self, file_path: str, client: OpenAIClient, max_capacity=2000, embedding_model_name: str = "all-MiniLM-L6-v2", embedding_model_kwargs: dict = None):
+    def __init__(self, file_path: str, client: LLMClient, max_capacity=2000, embedding_model_name: str = "all-MiniLM-L6-v2", embedding_model_kwargs: dict = None):
         self.file_path = file_path
         ensure_directory_exists(self.file_path)
         self.client = client

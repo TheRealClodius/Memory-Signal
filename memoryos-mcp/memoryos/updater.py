@@ -1,6 +1,6 @@
 from .utils import (
     generate_id, get_timestamp, 
-    gpt_generate_multi_summary, check_conversation_continuity, generate_page_meta_info, OpenAIClient,
+    gpt_generate_multi_summary, check_conversation_continuity, generate_page_meta_info, LLMClient,
     run_parallel_tasks
 )
 from .short_term import ShortTermMemory
@@ -14,7 +14,7 @@ class Updater:
                  short_term_memory: ShortTermMemory, 
                  mid_term_memory: MidTermMemory, 
                  long_term_memory: LongTermMemory, 
-                 client: OpenAIClient,
+                 client: LLMClient,
                  topic_similarity_threshold=0.85,
                  llm_model="gpt-4o-mini"):
         self.short_term_memory = short_term_memory
