@@ -24,6 +24,48 @@ except ImportError as e:
 # MemoryOS实例 - 将在初始化时设置
 memoryos_instance: Optional[Memoryos] = None
 
+# Per-user MemoryOS instances for proper user isolation
+user_instances: Dict[str, Memoryos] = {}
+
+def get_or_create_user_instance(user_id: str) -> Memoryos:
+    """Get or create a MemoryOS instance for the specified user."""
+    if user_id not in user_instances:
+        print(f"Creating new MemoryOS instance for user: {user_id}")
+        
+        # Load base config but override user_id
+        config_path = os.path.join(os.path.dirname(__file__), "config.json")
+        if not os.path.exists(config_path):
+            raise FileNotFoundError(f"配置文件不存在: {config_path}")
+        
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+        
+        # Override user_id for this instance
+        config['user_id'] = user_id
+        
+        # Create instance with user-specific config
+        user_instances[user_id] = Memoryos(
+            user_id=user_id,  # Use dynamic user_id
+            openai_api_key=os.getenv('OPENAI_API_KEY', config.get('openai_api_key', '')),
+            gemini_api_key=os.getenv('GEMINI_API_KEY', config.get('gemini_api_key', '')) or os.getenv('GOOGLE_API_KEY', ''),
+            llm_provider=config.get('llm_provider', 'gemini'),
+            data_storage_path=os.getenv('DATA_STORAGE_PATH', config['data_storage_path']),
+            openai_base_url=os.getenv('OPENAI_BASE_URL', config.get('openai_base_url')),
+            assistant_id=os.getenv('ASSISTANT_ID', config.get('assistant_id', 'default_assistant_profile')),
+            short_term_capacity=config.get('short_term_capacity', 10),
+            mid_term_capacity=config.get('mid_term_capacity', 2000),
+            long_term_knowledge_capacity=config.get('long_term_knowledge_capacity', 100),
+            retrieval_queue_capacity=config.get('retrieval_queue_capacity', 7),
+            mid_term_heat_threshold=config.get('mid_term_heat_threshold', 5.0),
+            mid_term_similarity_threshold=config.get('mid_term_similarity_threshold', 0.85),
+            llm_model=os.getenv('LLM_MODEL', config.get('llm_model', 'gpt-4o-mini')),
+            embedding_model_name=os.getenv('EMBEDDING_MODEL_NAME', config.get('embedding_model_name', 'all-MiniLM-L6-v2'))
+        )
+        
+        print(f"✅ Created MemoryOS instance for user: {user_id}")
+    
+    return user_instances[user_id]
+
 def init_memoryos(config_path: str) -> Memoryos:
     """Initialize the MemoryOS instance."""
     # Load environment variables from .env.local if present
@@ -73,11 +115,12 @@ def init_memoryos(config_path: str) -> Memoryos:
 mcp = FastMCP("MemoryOS")
 
 @mcp.tool()
-def add_memory(user_input: str, agent_response: str, timestamp: Optional[str] = None, meta_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+def add_memory(user_id: str, user_input: str, agent_response: str, timestamp: Optional[str] = None, meta_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
     Add a new memory (a user input and assistant response pair) to MemoryOS.
 
     Args:
+        user_id: The unique identifier for the user (required for user isolation).
         user_input: The user's input or question.
         agent_response: The assistant's response.
         timestamp: Optional timestamp in the format YYYY-MM-DD HH:MM:SS.
@@ -86,22 +129,17 @@ def add_memory(user_input: str, agent_response: str, timestamp: Optional[str] = 
     Returns:
         A dictionary containing the operation result.
     """
-    global memoryos_instance
-    
-    if memoryos_instance is None:
-        return {
-            "status": "error",
-            "message": "MemoryOS is not initialized. Please check the configuration file."
-        }
-    
     try:
-        if not user_input or not agent_response:
+        if not user_id or not user_input or not agent_response:
             return {
                 "status": "error",
-                "message": "user_input and agent_response are required"
+                "message": "user_id, user_input and agent_response are required"
             }
         
-        memoryos_instance.add_memory(
+        # Get or create user-specific MemoryOS instance
+        user_memory_instance = get_or_create_user_instance(user_id)
+        
+        user_memory_instance.add_memory(
             user_input=user_input,
             agent_response=agent_response,
             timestamp=timestamp or get_timestamp(),
@@ -112,6 +150,7 @@ def add_memory(user_input: str, agent_response: str, timestamp: Optional[str] = 
             "status": "success",
             "message": "Memory has been successfully added to MemoryOS",
             "timestamp": timestamp or get_timestamp(),
+            "user_id": user_id,
             "details": {
                 "user_input_length": len(user_input),
                 "agent_response_length": len(agent_response),
@@ -128,12 +167,13 @@ def add_memory(user_input: str, agent_response: str, timestamp: Optional[str] = 
         }
 
 @mcp.tool()
-def retrieve_memory(query: str, relationship_with_user: str = "friend", style_hint: str = "", max_results: int = 10) -> Dict[str, Any]:
+def retrieve_memory(user_id: str, query: str, relationship_with_user: str = "friend", style_hint: str = "", max_results: int = 10) -> Dict[str, Any]:
     """
     Retrieve relevant memories and context from MemoryOS based on a query, including
     short-term memory, mid-term memory, and long-term knowledge.
 
     Args:
+        user_id: The unique identifier for the user (required for user isolation).
         query: The retrieval query describing what to find.
         relationship_with_user: Relationship to the user (e.g., friend, assistant, colleague).
         style_hint: Optional response style hint.
@@ -146,38 +186,34 @@ def retrieve_memory(query: str, relationship_with_user: str = "friend", style_hi
         - retrieved_user_knowledge: Relevant entries from the user's long-term knowledge.
         - retrieved_assistant_knowledge: Relevant entries from the assistant's knowledge base.
     """
-    global memoryos_instance
-    
-    if memoryos_instance is None:
-        return {
-            "status": "error",
-            "message": "MemoryOS is not initialized. Please check the configuration file."
-        }
-    
     try:
-        if not query:
+        if not user_id or not query:
             return {
                 "status": "error",
-                "message": "query parameter is required"
+                "message": "user_id and query are required"
             }
         
+        # Get or create user-specific MemoryOS instance
+        user_memory_instance = get_or_create_user_instance(user_id)
+        
         # 使用retriever获取相关上下文
-        retrieval_results = memoryos_instance.retriever.retrieve_context(
+        retrieval_results = user_memory_instance.retriever.retrieve_context(
             user_query=query,
-            user_id=memoryos_instance.user_id
+            user_id=user_id  # Use the provided user_id
         )
         
         # 获取短期记忆内容
-        short_term_history = memoryos_instance.short_term_memory.get_all()
+        short_term_history = user_memory_instance.short_term_memory.get_all()
         
         # 获取用户画像
-        user_profile = memoryos_instance.get_user_profile_summary()
+        user_profile = user_memory_instance.get_user_profile_summary()
         
         # 组织返回结果
         result = {
             "status": "success",
             "query": query,
             "timestamp": get_timestamp(),
+            "user_id": user_id,
             "user_profile": user_profile if user_profile and user_profile.lower() != "none" else "No detailed user profile",
             "short_term_memory": short_term_history,
             "short_term_count": len(short_term_history),
@@ -213,40 +249,42 @@ def retrieve_memory(query: str, relationship_with_user: str = "friend", style_hi
         }
 
 @mcp.tool()
-def get_user_profile(include_knowledge: bool = True, include_assistant_knowledge: bool = False) -> Dict[str, Any]:
+def get_user_profile(user_id: str, include_knowledge: bool = True, include_assistant_knowledge: bool = False) -> Dict[str, Any]:
     """
     Get the user's profile information, including personality traits, preferences,
     and related knowledge.
 
     Args:
+        user_id: The unique identifier for the user (required for user isolation).
         include_knowledge: Whether to include user knowledge entries.
         include_assistant_knowledge: Whether to include assistant knowledge entries.
 
     Returns:
         A dictionary containing the user's profile information.
     """
-    global memoryos_instance
-    
-    if memoryos_instance is None:
-        return {
-            "status": "error",
-            "message": "MemoryOS is not initialized. Please check the configuration file."
-        }
-    
     try:
+        if not user_id:
+            return {
+                "status": "error",
+                "message": "user_id is required"
+            }
+        
+        # Get or create user-specific MemoryOS instance
+        user_memory_instance = get_or_create_user_instance(user_id)
+        
         # 获取用户画像
-        user_profile = memoryos_instance.get_user_profile_summary()
+        user_profile = user_memory_instance.get_user_profile_summary()
         
         result = {
             "status": "success",
             "timestamp": get_timestamp(),
-            "user_id": memoryos_instance.user_id,
-            "assistant_id": memoryos_instance.assistant_id,
+            "user_id": user_id,
+            "assistant_id": user_memory_instance.assistant_id,
             "user_profile": user_profile if user_profile and user_profile.lower() != "none" else "No detailed user profile"
         }
         
         if include_knowledge:
-            user_knowledge = memoryos_instance.user_long_term_memory.get_user_knowledge()
+            user_knowledge = user_memory_instance.user_long_term_memory.get_user_knowledge()
             result["user_knowledge"] = [
                 {
                     "knowledge": item["knowledge"],
@@ -257,7 +295,7 @@ def get_user_profile(include_knowledge: bool = True, include_assistant_knowledge
             result["user_knowledge_count"] = len(user_knowledge)
         
         if include_assistant_knowledge:
-            assistant_knowledge = memoryos_instance.get_assistant_knowledge_summary()
+            assistant_knowledge = user_memory_instance.get_assistant_knowledge_summary()
             result["assistant_knowledge"] = [
                 {
                     "knowledge": item["knowledge"],
