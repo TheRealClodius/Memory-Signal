@@ -7,6 +7,7 @@ mcp
 faiss-gpu>=1.7.0,<2.0.0
 httpx[socks]
 openai
+google-genai
 # Web framework (for demo)
 flask>=2.0.0,<3.0.0
 

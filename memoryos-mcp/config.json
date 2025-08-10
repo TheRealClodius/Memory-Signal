@@ -1,5 +1,7 @@
 {
   "user_id": "test_user_001",
+  "llm_provider": "gemini",
+  "gemini_api_key": "",
   "openai_api_key": "",
   "openai_base_url": "",
   "data_storage_path": "./memoryos_data",
@@ -10,6 +12,6 @@
   "long_term_knowledge_capacity": 100,
   "retrieval_queue_capacity": 7,
   "mid_term_heat_threshold": 7.0,
-  "mid_term_similarity_threshold": 0.6,
-  "llm_model": "gpt-4o-mini"
+  "mid_term_similarity_threshold": 0.66,
+  "llm_model": "gemini-2.5-flash"
 } 

@@ -5,7 +5,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Package imports
-from .utils import OpenAIClient, get_timestamp, generate_id, gpt_user_profile_analysis, gpt_knowledge_extraction, ensure_directory_exists
+from .utils import LLMClient, get_timestamp, generate_id, gpt_user_profile_analysis, gpt_knowledge_extraction, ensure_directory_exists
 from . import prompts
 from .short_term import ShortTermMemory
 from .mid_term import MidTermMemory, compute_segment_heat # For H_THRESHOLD logic
@@ -19,8 +19,10 @@ DEFAULT_ASSISTANT_ID = "default_assistant_profile"
 
 class Memoryos:
     def __init__(self, user_id: str, 
-                 openai_api_key: str, 
-                 data_storage_path: str,
+                 openai_api_key: str = None,
+                 gemini_api_key: str = None,
+                 llm_provider: str = "gemini",
+                 data_storage_path: str = None,
                  openai_base_url: str = None, 
                  assistant_id: str = DEFAULT_ASSISTANT_ID, 
                  short_term_capacity=10,
@@ -52,11 +54,17 @@ class Memoryos:
 
 
         print(f"Initializing Memoryos for user '{self.user_id}' and assistant '{self.assistant_id}'. Data path: {self.data_storage_path}")
+        print(f"Using LLM provider: {llm_provider}")
         print(f"Using unified LLM model: {self.llm_model}")
         print(f"Using embedding model: {self.embedding_model_name} with kwargs: {self.embedding_model_kwargs}")
 
-        # Initialize OpenAI Client
-        self.client = OpenAIClient(api_key=openai_api_key, base_url=openai_base_url)
+        # Initialize LLM Client (supports OpenAI and Gemini)
+        self.client = LLMClient(
+            provider=llm_provider,
+            api_key=openai_api_key, 
+            base_url=openai_base_url,
+            gemini_api_key=gemini_api_key
+        )
 
         # Define file paths
         # Per-user global data directory (e.g., user profile and user knowledge)

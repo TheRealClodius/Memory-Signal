@@ -30,35 +30,91 @@ def clean_reasoning_model_output(text):
     
     return cleaned_text
 
-# ---- OpenAI Client ----
-class OpenAIClient:
-    def __init__(self, api_key, base_url=None, max_workers=5):
+# ---- LLM Client (supports OpenAI and Gemini) ----
+class LLMClient:
+    def __init__(self, provider="openai", api_key=None, base_url=None, gemini_api_key=None, max_workers=5):
+        self.provider = provider.lower()
         self.api_key = api_key
+        self.gemini_api_key = gemini_api_key
         self.base_url = base_url if base_url else "https://api.openai.com/v1"
-        # The openai library looks for OPENAI_API_KEY and OPENAI_BASE_URL env vars by default
-        # or they can be passed directly to the client.
-        # For simplicity and explicit control, we'll pass them to the client constructor.
-        self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
         self._lock = threading.Lock()
+        
+        if self.provider == "openai":
+            self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        elif self.provider == "gemini":
+            try:
+                from google import genai
+                import os
+                # Try multiple API key sources
+                api_key = self.gemini_api_key or os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY')
+                if api_key:
+                    self.genai_client = genai.Client(api_key=api_key)
+                else:
+                    self.genai_client = genai.Client()  # Will try default env vars
+            except ImportError:
+                raise ImportError("google-genai package is required for Gemini. Install with: pip install google-genai")
+        else:
+            raise ValueError(f"Unsupported provider: {self.provider}. Supported: 'openai', 'gemini'")
 
     def chat_completion(self, model, messages, temperature=0.7, max_tokens=2000):
-        print(f"Calling OpenAI API. Model: {model}")
+        print(f"Calling {self.provider.upper()} API. Model: {model}")
+        
         try:
-            response = self.client.chat.completions.create(
-                model=model,
-                messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens
-            )
-            raw_content = response.choices[0].message.content.strip()
+            if self.provider == "openai":
+                response = self.client.chat.completions.create(
+                    model=model,
+                    messages=messages,
+                    temperature=temperature,
+                    max_tokens=max_tokens
+                )
+                raw_content = response.choices[0].message.content.strip()
+                
+            elif self.provider == "gemini":
+                # Convert OpenAI message format to Gemini format
+                gemini_content = self._convert_to_gemini_format(messages)
+                
+                response = self.genai_client.models.generate_content(
+                    model=model,
+                    contents=gemini_content,
+                    config={
+                        "temperature": temperature,
+                        "max_output_tokens": max_tokens,
+                    }
+                )
+                raw_content = response.text.strip() if hasattr(response, 'text') and response.text else ""
+            
+            else:
+                raise ValueError(f"Unsupported provider: {self.provider}")
+            
             # 自动清理推理模型的<think>标签
             cleaned_content = clean_reasoning_model_output(raw_content)
             return cleaned_content
+            
         except Exception as e:
-            print(f"Error calling OpenAI API: {e}")
+            print(f"Error calling {self.provider.upper()} API: {e}")
             # Fallback or error handling
             return "Error: Could not get response from LLM."
+
+    def _convert_to_gemini_format(self, messages):
+        """Convert OpenAI message format to Gemini format."""
+        if not messages:
+            return ""
+        
+        # Gemini expects a single text prompt, so we'll combine the messages
+        combined_text = ""
+        for msg in messages:
+            role = msg.get("role", "")
+            content = msg.get("content", "")
+            
+            if role == "system":
+                combined_text += f"System Instructions: {content}\n\n"
+            elif role == "user":
+                combined_text += f"User: {content}\n\n"
+            elif role == "assistant":
+                combined_text += f"Assistant: {content}\n\n"
+        
+        return combined_text.strip()
 
     def chat_completion_async(self, model, messages, temperature=0.7, max_tokens=2000):
         """异步版本的chat_completion"""
@@ -417,7 +473,7 @@ def gpt_summarize_dialogs(dialogs, client: OpenAIClient, model="gpt-4o-mini"):
     print("Calling LLM to generate topic summary...")
     return client.chat_completion(model=model, messages=messages)
 
-def gpt_generate_multi_summary(text, client: OpenAIClient, model="gpt-4o-mini"):
+def gpt_generate_multi_summary(text, client: LLMClient, model="gpt-4o-mini"):
     messages = [
         {"role": "system", "content": prompts.MULTI_SUMMARY_SYSTEM_PROMPT},
         {"role": "user", "content": prompts.MULTI_SUMMARY_USER_PROMPT.format(text=text)}
@@ -432,7 +488,7 @@ def gpt_generate_multi_summary(text, client: OpenAIClient, model="gpt-4o-mini"):
     return {"input": text, "summaries": summaries}
 
 
-def gpt_user_profile_analysis(dialogs, client: OpenAIClient, model="gpt-4o-mini", existing_user_profile="None"):
+def gpt_user_profile_analysis(dialogs, client: LLMClient, model="gpt-4o-mini", existing_user_profile="None"):
     """
     Analyze and update user personality profile from dialogs
     结合现有画像和新对话，直接输出更新后的完整画像
@@ -450,7 +506,7 @@ def gpt_user_profile_analysis(dialogs, client: OpenAIClient, model="gpt-4o-mini"
     return result_text.strip() if result_text else "None"
 
 
-def gpt_knowledge_extraction(dialogs, client: OpenAIClient, model="gpt-4o-mini"):
+def gpt_knowledge_extraction(dialogs, client: LLMClient, model="gpt-4o-mini"):
     """Extract user private data and assistant knowledge from dialogs"""
     conversation = "\n".join([f"User: {d.get('user_input','')} (Timestamp: {d.get('timestamp', '')})\nAssistant: {d.get('agent_response','')} (Timestamp: {d.get('timestamp', '')})" for d in dialogs])
     messages = [
@@ -490,7 +546,7 @@ def gpt_knowledge_extraction(dialogs, client: OpenAIClient, model="gpt-4o-mini")
 
 
 # Keep the old function for backward compatibility, but mark as deprecated
-def gpt_personality_analysis(dialogs, client: OpenAIClient, model="gpt-4o-mini", known_user_traits="None"):
+def gpt_personality_analysis(dialogs, client: LLMClient, model="gpt-4o-mini", known_user_traits="None"):
     """
     DEPRECATED: Use gpt_user_profile_analysis and gpt_knowledge_extraction instead.
     This function is kept for backward compatibility only.
@@ -506,7 +562,7 @@ def gpt_personality_analysis(dialogs, client: OpenAIClient, model="gpt-4o-mini",
     }
 
 
-def gpt_update_profile(old_profile, new_analysis, client: OpenAIClient, model="gpt-4o-mini"):
+def gpt_update_profile(old_profile, new_analysis, client: LLMClient, model="gpt-4o-mini"):
     messages = [
         {"role": "system", "content": prompts.UPDATE_PROFILE_SYSTEM_PROMPT},
         {"role": "user", "content": prompts.UPDATE_PROFILE_USER_PROMPT.format(old_profile=old_profile, new_analysis=new_analysis)}
@@ -514,7 +570,7 @@ def gpt_update_profile(old_profile, new_analysis, client: OpenAIClient, model="g
     print("Calling LLM to update user profile...")
     return client.chat_completion(model=model, messages=messages)
 
-def gpt_extract_theme(answer_text, client: OpenAIClient, model="gpt-4o-mini"):
+def gpt_extract_theme(answer_text, client: LLMClient, model="gpt-4o-mini"):
     messages = [
         {"role": "system", "content": prompts.EXTRACT_THEME_SYSTEM_PROMPT},
         {"role": "user", "content": prompts.EXTRACT_THEME_USER_PROMPT.format(answer_text=answer_text)}

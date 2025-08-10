@@ -39,14 +39,23 @@ def init_memoryos(config_path: str) -> Memoryos:
     with open(config_path, 'r', encoding='utf-8') as f:
         config = json.load(f)
     
-    required_fields = ['user_id', 'openai_api_key', 'data_storage_path']
+    required_fields = ['user_id', 'data_storage_path']
     for field in required_fields:
         if field not in config:
             raise ValueError(f"配置文件缺少必需字段: {field}")
     
+    # Check that at least one API key is provided based on the provider
+    llm_provider = config.get('llm_provider', 'gemini')
+    if llm_provider == 'openai' and not (config.get('openai_api_key') or os.getenv('OPENAI_API_KEY')):
+        raise ValueError("OpenAI provider requires openai_api_key in config or OPENAI_API_KEY environment variable")
+    elif llm_provider == 'gemini' and not (config.get('gemini_api_key') or os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY')):
+        raise ValueError("Gemini provider requires gemini_api_key in config or GEMINI_API_KEY/GOOGLE_API_KEY environment variable")
+    
     return Memoryos(
         user_id=config['user_id'],
-        openai_api_key=os.getenv('OPENAI_API_KEY', config['openai_api_key']),
+        openai_api_key=os.getenv('OPENAI_API_KEY', config.get('openai_api_key', '')),
+        gemini_api_key=os.getenv('GEMINI_API_KEY', config.get('gemini_api_key', '')) or os.getenv('GOOGLE_API_KEY', ''),
+        llm_provider=config.get('llm_provider', 'openai'),
         data_storage_path=os.getenv('DATA_STORAGE_PATH', config['data_storage_path']),
         openai_base_url=os.getenv('OPENAI_BASE_URL', config.get('openai_base_url')),
         assistant_id=os.getenv('ASSISTANT_ID', config.get('assistant_id', 'default_assistant_profile')),
@@ -55,6 +64,7 @@ def init_memoryos(config_path: str) -> Memoryos:
         long_term_knowledge_capacity=config.get('long_term_knowledge_capacity', 100),
         retrieval_queue_capacity=config.get('retrieval_queue_capacity', 7),
         mid_term_heat_threshold=config.get('mid_term_heat_threshold', 5.0),
+        mid_term_similarity_threshold=config.get('mid_term_similarity_threshold', 0.85),
         llm_model=os.getenv('LLM_MODEL', config.get('llm_model', 'gpt-4o-mini')),
         embedding_model_name=os.getenv('EMBEDDING_MODEL_NAME', config.get('embedding_model_name', 'all-MiniLM-L6-v2'))
     )
