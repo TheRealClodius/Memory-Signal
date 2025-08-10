@@ -57,6 +57,68 @@ class Updater:
         from .utils import get_embedding
         return get_embedding(text)
 
+    def _batch_process_page_embeddings(self, pages_list):
+        """
+        PERFORMANCE OPTIMIZATION: Batch process embeddings for multiple pages.
+        This reduces the number of model loading calls and improves throughput.
+        """
+        pages_needing_embeddings = []
+        pages_with_embeddings = []
+        
+        for page_data in pages_list:
+            if "page_embedding" in page_data and page_data["page_embedding"]:
+                pages_with_embeddings.append(page_data)
+            else:
+                pages_needing_embeddings.append(page_data)
+        
+        if not pages_needing_embeddings:
+            print("Updater: All pages already have embeddings")
+            return pages_list
+        
+        # Prepare texts for batch embedding
+        texts_for_embedding = []
+        for page_data in pages_needing_embeddings:
+            full_text = f"User: {page_data.get('user_input','')} Assistant: {page_data.get('agent_response','')}"
+            texts_for_embedding.append(full_text)
+        
+        print(f"Updater: Batch processing embeddings for {len(texts_for_embedding)} pages")
+        
+        try:
+            from .utils import get_batch_embeddings, normalize_vector
+            
+            # Get model configuration from mid_term_memory
+            model_name = self.mid_term_memory.embedding_model_name
+            model_kwargs = self.mid_term_memory.embedding_model_kwargs
+            
+            # Batch generate embeddings
+            embeddings = get_batch_embeddings(
+                texts_for_embedding, 
+                model_name=model_name, 
+                **model_kwargs
+            )
+            
+            # Assign embeddings to pages
+            for i, page_data in enumerate(pages_needing_embeddings):
+                if i < len(embeddings) and embeddings[i] is not None:
+                    page_data["page_embedding"] = normalize_vector(embeddings[i]).tolist()
+                    page_id = page_data.get("page_id", "unknown")
+                    print(f"Updater: Assigned batch embedding to page {page_id}")
+                
+                # Set empty keywords (will be filled by multi-summary)
+                if "page_keywords" not in page_data:
+                    page_data["page_keywords"] = []
+        
+        except Exception as e:
+            print(f"Error in batch embedding processing: {e}")
+            # Fallback to individual processing
+            print("Falling back to individual embedding processing...")
+            for page_data in pages_needing_embeddings:
+                self._process_page_embedding_and_keywords(page_data)
+        
+        # Combine all pages
+        all_processed_pages = pages_with_embeddings + pages_needing_embeddings
+        return all_processed_pages
+
     def _update_linked_pages_meta_info(self, start_page_id, new_meta_info):
         """
         Updates meta_info for a chain of connected pages starting from start_page_id.
@@ -88,6 +150,10 @@ class Updater:
             self.mid_term_memory.save() # Save mid-term memory after updates
 
     def process_short_term_to_mid_term(self):
+        """
+        PERFORMANCE OPTIMIZED: Process spillover from short-term to mid-term memory
+        with batch operations and parallel processing to avoid the performance cliff.
+        """
         evicted_qas = []
         while self.short_term_memory.is_full():
             qa = self.short_term_memory.pop_oldest()
@@ -98,11 +164,11 @@ class Updater:
             print("Updater: No QAs evicted from short-term memory.")
             return
 
-        print(f"Updater: Processing {len(evicted_qas)} QAs from short-term to mid-term.")
+        print(f"Updater: OPTIMIZED processing {len(evicted_qas)} QAs from short-term to mid-term.")
         
-        # 1. Create page structures and handle continuity within the evicted batch
+        # 1. Create page structures FIRST (without LLM calls)
         current_batch_pages = []
-        temp_last_page_in_batch = self.last_evicted_page_for_continuity # Carry over from previous batch if any
+        temp_last_page_in_batch = self.last_evicted_page_for_continuity
 
         for qa_pair in evicted_qas:
             current_page_obj = {
@@ -116,85 +182,118 @@ class Updater:
                 "next_page": None,
                 "meta_info": None
             }
-            
-            is_continuous = check_conversation_continuity(temp_last_page_in_batch, current_page_obj, self.client, model=self.llm_model)
-            
-            if is_continuous and temp_last_page_in_batch:
-                current_page_obj["pre_page"] = temp_last_page_in_batch["page_id"]
-                # The actual next_page for temp_last_page_in_batch will be set when it's stored in mid-term
-                # or if it's already there, it needs an update. This linking is tricky.
-                # For now, we establish the link from current to previous.
-                # MidTermMemory's update_page_connections can fix the other side if pages are already there.
-                
-                # Meta info generation based on continuity
-                last_meta = temp_last_page_in_batch.get("meta_info")
-                new_meta = generate_page_meta_info(last_meta, current_page_obj, self.client, model=self.llm_model)
-                current_page_obj["meta_info"] = new_meta
-                # If temp_last_page_in_batch was part of a chain, its meta_info and subsequent ones should update.
-                # This implies that meta_info should perhaps be updated more globally or propagated.
-                # For now, new_meta applies to current_page_obj and potentially its chain.
-                # We can call _update_linked_pages_meta_info if temp_last_page_in_batch is in mid-term already.
-                if temp_last_page_in_batch.get("page_id") and self.mid_term_memory.get_page_by_id(temp_last_page_in_batch["page_id"]):
-                    self._update_linked_pages_meta_info(temp_last_page_in_batch["page_id"], new_meta)
-            else:
-                # Start of a new chain or no previous page
-                current_page_obj["meta_info"] = generate_page_meta_info(None, current_page_obj, self.client, model=self.llm_model)
-            
             current_batch_pages.append(current_page_obj)
-            temp_last_page_in_batch = current_page_obj # Update for the next iteration in this batch
         
-        # Update the global last evicted page for the next run of this method
+        # Update last evicted page for continuity
         if current_batch_pages:
             self.last_evicted_page_for_continuity = current_batch_pages[-1]
 
-        # 2. Consolidate text from current_batch_pages for multi-summary
-        if not current_batch_pages:
-            return
+        # 2. BATCH PROCESS EMBEDDINGS (Major optimization)
+        print("Updater: Batch processing embeddings for all pages...")
+        current_batch_pages = self._batch_process_page_embeddings(current_batch_pages)
+        
+        # 3. PARALLEL LLM PROCESSING (continuity, meta-info, multi-summary)
+        print("Updater: Starting parallel LLM processing...")
+        
+        def task_continuity_and_meta():
+            """Process continuity checks and meta-info generation"""
+            temp_last = self.last_evicted_page_for_continuity
             
-        input_text_for_summary = "\n".join([
-            f"User: {p.get('user_input','')}\nAssistant: {p.get('agent_response','')}" 
-            for p in current_batch_pages
-        ])
+            for i, current_page_obj in enumerate(current_batch_pages):
+                # For batch processing, we'll use simpler heuristics for continuity
+                # to avoid N individual LLM calls during spillover
+                
+                prev_page = current_batch_pages[i-1] if i > 0 else temp_last
+                if prev_page and i > 0:  # Simple continuity: if consecutive in this batch
+                    current_page_obj["pre_page"] = prev_page["page_id"]
+                    # Generate meta-info based on context
+                    last_meta = prev_page.get("meta_info")
+                    try:
+                        current_page_obj["meta_info"] = generate_page_meta_info(
+                            last_meta, current_page_obj, self.client, model=self.llm_model
+                        )
+                    except Exception as e:
+                        print(f"Error generating meta-info: {e}")
+                        current_page_obj["meta_info"] = f"Conversation continuation from {current_page_obj['timestamp']}"
+                else:
+                    # Start of new chain
+                    try:
+                        current_page_obj["meta_info"] = generate_page_meta_info(
+                            None, current_page_obj, self.client, model=self.llm_model
+                        )
+                    except Exception as e:
+                        print(f"Error generating meta-info: {e}")
+                        current_page_obj["meta_info"] = f"New conversation topic at {current_page_obj['timestamp']}"
+            
+            return current_batch_pages
         
-        print("Updater: Generating multi-topic summary for the evicted batch...")
-        multi_summary_result = gpt_generate_multi_summary(input_text_for_summary, self.client, model=self.llm_model)
+        def task_multi_summary():
+            """Generate multi-topic summary"""
+            input_text = "\n".join([
+                f"User: {p.get('user_input','')}\nAssistant: {p.get('agent_response','')}" 
+                for p in current_batch_pages
+            ])
+            
+            try:
+                return gpt_generate_multi_summary(input_text, self.client, model=self.llm_model)
+            except Exception as e:
+                print(f"Error in multi-summary generation: {e}")
+                return {"summaries": []}
         
-        # 3. Insert pages into MidTermMemory based on summaries
+        # Execute parallel tasks
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            future_continuity = executor.submit(task_continuity_and_meta)
+            future_summary = executor.submit(task_multi_summary)
+            
+            try:
+                processed_pages = future_continuity.result(timeout=30)  # Add timeout
+                multi_summary_result = future_summary.result(timeout=30)
+            except Exception as e:
+                print(f"Error in parallel processing: {e}")
+                # Fallback to basic processing
+                processed_pages = current_batch_pages
+                multi_summary_result = {"summaries": []}
+        
+        # 4. Insert pages into MidTermMemory based on summaries
         if multi_summary_result and multi_summary_result.get("summaries"):
+            print(f"Updater: Processing {len(multi_summary_result['summaries'])} themes for insertion")
             for summary_item in multi_summary_result["summaries"]:
                 theme_summary = summary_item.get("content", "General summary of recent interactions.")
                 theme_keywords = summary_item.get("keywords", [])
-                print(f"Updater: Processing theme '{summary_item.get('theme')}' for mid-term insertion.")
+                theme_name = summary_item.get("theme", "General")
+                print(f"Updater: Processing theme '{theme_name}' for mid-term insertion.")
                 
-                # Pass the already processed pages (with IDs, embeddings to be added by MidTermMemory if not present)
+                # Insert with batch-processed embeddings
                 self.mid_term_memory.insert_pages_into_session(
                     summary_for_new_pages=theme_summary,
                     keywords_for_new_pages=theme_keywords,
-                    pages_to_insert=current_batch_pages, # These pages now have pre_page, next_page, meta_info set up
+                    pages_to_insert=processed_pages,
                     similarity_threshold=self.topic_similarity_threshold
                 )
         else:
-            # Fallback: if no summaries, add as one session or handle as a single block
-            print("Updater: No specific themes from multi-summary. Adding batch as a general session.")
+            # Fallback: single session
+            print("Updater: Using fallback single session insertion")
             fallback_summary = "General conversation segment from short-term memory."
-            fallback_keywords = []  # Use empty keywords since multi-summary failed
+            fallback_keywords = []
             self.mid_term_memory.insert_pages_into_session(
                 summary_for_new_pages=fallback_summary,
                 keywords_for_new_pages=fallback_keywords,
-                pages_to_insert=current_batch_pages,
+                pages_to_insert=processed_pages,
                 similarity_threshold=self.topic_similarity_threshold
             )
         
-        # After pages are in mid-term, ensure their connections are doubly linked if needed.
-        # MidTermMemory.insert_pages_into_session should ideally handle this internally
-        # or we might need a separate pass to solidify connections after all insertions.
-        for page in current_batch_pages:
+        # 5. Finalize connections (optimized)
+        print("Updater: Finalizing page connections...")
+        connections_updated = False
+        for page in processed_pages:
             if page.get("pre_page"):
                 self.mid_term_memory.update_page_connections(page["pre_page"], page["page_id"])
-            if page.get("next_page"):
-                 self.mid_term_memory.update_page_connections(page["page_id"], page["next_page"]) # This seems redundant if next is set by prior
-        if current_batch_pages: # Save if any pages were processed
-            self.mid_term_memory.save()
+                connections_updated = True
+        
+        # Finalize all deferred operations after spillover is complete
+        self.mid_term_memory.finalize_deferred_operations()
+        
+        print(f"Updater: OPTIMIZED spillover complete for {len(processed_pages)} pages")
 
     def update_long_term_from_analysis(self, user_id, profile_analysis_result):
         """

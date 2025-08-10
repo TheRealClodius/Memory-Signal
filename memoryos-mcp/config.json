@@ -4,7 +4,7 @@
   "openai_base_url": "",
   "data_storage_path": "./memoryos_data",
   "assistant_id": "memoryos_assistant",
-  "short_term_capacity": 10,
+  "short_term_capacity": 9,
   "mid_term_capacity": 2000,
   "embedding_model_name": "all-MiniLM-L6-v2",
   "long_term_knowledge_capacity": 100,

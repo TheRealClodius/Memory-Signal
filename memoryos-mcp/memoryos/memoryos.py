@@ -1,5 +1,7 @@
 import os
 import json
+import asyncio
+import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Package imports
@@ -121,6 +123,11 @@ class Memoryos:
         
         self.mid_term_heat_threshold = mid_term_heat_threshold
 
+        # PERFORMANCE OPTIMIZATION: Background processing
+        self._background_executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="MemoryOS-BG")
+        self._background_tasks = []
+        self._shutdown_event = threading.Event()
+
         # Preload the embedding model to avoid delays on first use
         self._preload_embedding_model()
 
@@ -162,6 +169,9 @@ class Memoryos:
         Adapted from main_memoybank.py's update_user_profile_from_top_segment.
         Enhanced with parallel LLM processing for better performance.
         """
+        # Ensure heap is up to date before checking
+        self.mid_term_memory._ensure_heap_updated()
+        
         if not self.mid_term_memory.heap:
             return
 
@@ -254,7 +264,7 @@ class Memoryos:
 
     def add_memory(self, user_input: str, agent_response: str, timestamp: str = None, meta_data: dict = None):
         """
-        Adds a new QA pair (memory) to the system.
+        PERFORMANCE OPTIMIZED: Adds a new QA pair (memory) to the system with background processing.
         meta_data is not used in the current refactoring but kept for future use.
         """
         if not timestamp:
@@ -270,11 +280,71 @@ class Memoryos:
         print(f"Memoryos: Added QA to short-term. User: {user_input[:30]}...")
 
         if self.short_term_memory.is_full():
-            print("Memoryos: Short-term memory full. Processing to mid-term.")
+            print("Memoryos: Short-term memory full. Starting BACKGROUND spillover processing...")
+            # PERFORMANCE OPTIMIZATION: Process spillover in background to avoid blocking
+            self._schedule_background_spillover()
+        else:
+            # Quick check for profile updates without blocking
+            self._schedule_background_profile_check()
+
+    def _schedule_background_spillover(self):
+        """Schedule spillover processing in background to avoid blocking the main thread."""
+        if not self._shutdown_event.is_set():
+            future = self._background_executor.submit(self._background_spillover_task)
+            self._background_tasks.append(future)
+            print("Memoryos: Spillover scheduled in background")
+
+    def _schedule_background_profile_check(self):
+        """Schedule profile check in background."""
+        if not self._shutdown_event.is_set():
+            future = self._background_executor.submit(self._background_profile_check_task)
+            self._background_tasks.append(future)
+
+    def _background_spillover_task(self):
+        """Background task for spillover processing."""
+        try:
+            print("Memoryos: Executing background spillover...")
             self.updater.process_short_term_to_mid_term()
+            
+            # Also check for profile updates after spillover
+            self._trigger_profile_and_knowledge_update_if_needed()
+            print("Memoryos: Background spillover completed")
+        except Exception as e:
+            print(f"Error in background spillover: {e}")
+
+    def _background_profile_check_task(self):
+        """Background task for profile checking."""
+        try:
+            self._trigger_profile_and_knowledge_update_if_needed()
+        except Exception as e:
+            print(f"Error in background profile check: {e}")
+
+    def wait_for_background_tasks(self, timeout=30):
+        """Wait for all background tasks to complete (useful for testing)."""
+        print(f"Memoryos: Waiting for {len(self._background_tasks)} background tasks...")
+        completed = 0
+        for future in as_completed(self._background_tasks, timeout=timeout):
+            try:
+                future.result()  # This will raise any exceptions
+                completed += 1
+            except Exception as e:
+                print(f"Background task failed: {e}")
         
-        # After any memory addition that might impact mid-term, check for profile updates
-        self._trigger_profile_and_knowledge_update_if_needed()
+        # Clean up completed tasks
+        self._background_tasks = [f for f in self._background_tasks if not f.done()]
+        print(f"Memoryos: {completed} background tasks completed")
+
+    def shutdown(self):
+        """Shutdown background processing."""
+        print("Memoryos: Shutting down background processing...")
+        self._shutdown_event.set()
+        
+        # Wait for current tasks to complete
+        self.wait_for_background_tasks(timeout=10)
+        
+        # Shutdown executor
+        self._background_executor.shutdown(wait=True)
+        print("Memoryos: Background processing shutdown complete")
 
     def get_response(self, query: str, relationship_with_user="friend", style_hint="", user_conversation_meta_data: dict = None) -> str:
         """
@@ -390,6 +460,13 @@ class Memoryos:
         print("Memoryos: Force-triggering mid-term analysis...")
         self._trigger_profile_and_knowledge_update_if_needed()
         self.mid_term_heat_threshold = original_threshold # Restore original threshold
+
+    def __del__(self):
+        """Ensure cleanup on deletion."""
+        try:
+            self.shutdown()
+        except:
+            pass  # Ignore errors during cleanup
 
     def __repr__(self):
         return f"<Memoryos user_id='{self.user_id}' assistant_id='{self.assistant_id}' data_path='{self.data_storage_path}'>" 

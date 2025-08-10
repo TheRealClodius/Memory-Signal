@@ -208,11 +208,183 @@ def get_embedding(text, model_name="all-MiniLM-L6-v2", use_cache=True, **kwargs)
     return embedding
 
 
+def get_batch_embeddings(texts, model_name="all-MiniLM-L6-v2", use_cache=True, **kwargs):
+    """
+    PERFORMANCE OPTIMIZATION: Batch embedding generation for multiple texts.
+    This is significantly faster than calling get_embedding() multiple times.
+    
+    :param texts: List of input texts.
+    :param model_name: Hugging Face model name.
+    :param use_cache: Whether to use memory cache.
+    :param kwargs: Additional parameters for model.
+    :return: List of embedding vectors (numpy arrays).
+    """
+    if not texts:
+        return []
+    
+    model_config_key = json.dumps({"model_name": model_name, **kwargs}, sort_keys=True)
+    
+    # Check cache for all texts
+    cached_results = {}
+    texts_to_encode = []
+    text_indices = {}
+    
+    if use_cache:
+        for i, text in enumerate(texts):
+            cache_key = f"{model_config_key}::{hash(text)}"
+            if cache_key in _embedding_cache:
+                cached_results[i] = _embedding_cache[cache_key]
+            else:
+                texts_to_encode.append(text)
+                text_indices[len(texts_to_encode) - 1] = i
+    else:
+        texts_to_encode = texts
+        text_indices = {i: i for i in range(len(texts))}
+    
+    # Load model if needed
+    model_init_key = json.dumps({"model_name": model_name, **{k:v for k,v in kwargs.items() if k not in ['batch_size', 'max_length']}}, sort_keys=True)
+    if model_init_key not in _model_cache:
+        print(f"Loading model for batch processing: {model_name}...")
+        if 'bge-m3' in model_name.lower():
+            try:
+                from FlagEmbedding import BGEM3FlagModel
+                init_kwargs = _get_valid_kwargs(BGEM3FlagModel.__init__, kwargs)
+                _model_cache[model_init_key] = BGEM3FlagModel(model_name, **init_kwargs)
+            except ImportError:
+                raise ImportError("Please install FlagEmbedding: 'pip install -U FlagEmbedding' to use bge-m3 model.")
+        else:
+            try:
+                from sentence_transformers import SentenceTransformer
+                init_kwargs = _get_valid_kwargs(SentenceTransformer.__init__, kwargs)
+                _model_cache[model_init_key] = SentenceTransformer(model_name, **init_kwargs)
+            except ImportError:
+                raise ImportError("Please install sentence-transformers: 'pip install -U sentence-transformers' to use this model.")
+    
+    model = _model_cache[model_init_key]
+    
+    # Batch encode uncached texts
+    new_embeddings = []
+    if texts_to_encode:
+        print(f"Batch encoding {len(texts_to_encode)} texts with {model_name}")
+        if 'bge-m3' in model_name.lower():
+            encode_kwargs = _get_valid_kwargs(model.encode, kwargs)
+            result = model.encode(texts_to_encode, **encode_kwargs)
+            new_embeddings = result['dense_vecs']
+        else:
+            encode_kwargs = _get_valid_kwargs(model.encode, kwargs)
+            new_embeddings = model.encode(texts_to_encode, **encode_kwargs)
+        
+        # Cache new embeddings
+        if use_cache:
+            for i, embedding in enumerate(new_embeddings):
+                text = texts_to_encode[i]
+                cache_key = f"{model_config_key}::{hash(text)}"
+                _embedding_cache[cache_key] = embedding
+    
+    # Combine cached and new results
+    results = [None] * len(texts)
+    for i in range(len(texts)):
+        if i in cached_results:
+            results[i] = cached_results[i]
+        else:
+            # Find the corresponding new embedding
+            for new_idx, original_idx in text_indices.items():
+                if original_idx == i:
+                    results[i] = new_embeddings[new_idx]
+                    break
+    
+    # Clean cache if too large
+    if use_cache and len(_embedding_cache) > 10000:
+        keys_to_remove = list(_embedding_cache.keys())[:1000]
+        for key in keys_to_remove:
+            try:
+                del _embedding_cache[key]
+            except KeyError:
+                pass
+        print("Cleaned embedding cache to prevent memory overflow")
+    
+    return results
+
+
 def clear_embedding_cache():
     """清空embedding缓存"""
     global _embedding_cache
     _embedding_cache.clear()
     print("Embedding cache cleared")
+
+
+def compress_memory_data(data):
+    """
+    PERFORMANCE OPTIMIZATION: Compress memory data to reduce I/O overhead.
+    Uses gzip compression for JSON data.
+    """
+    import gzip
+    import pickle
+    
+    try:
+        # Convert to JSON string first, then compress
+        json_str = json.dumps(data, ensure_ascii=False)
+        compressed = gzip.compress(json_str.encode('utf-8'))
+        return compressed
+    except Exception as e:
+        print(f"Error compressing data: {e}")
+        return None
+
+
+def decompress_memory_data(compressed_data):
+    """
+    PERFORMANCE OPTIMIZATION: Decompress memory data.
+    """
+    import gzip
+    
+    try:
+        # Decompress and parse JSON
+        json_str = gzip.decompress(compressed_data).decode('utf-8')
+        return json.loads(json_str)
+    except Exception as e:
+        print(f"Error decompressing data: {e}")
+        return None
+
+
+def optimize_memory_structure(memory_data):
+    """
+    PERFORMANCE OPTIMIZATION: Optimize memory structure to reduce redundancy.
+    """
+    if not isinstance(memory_data, dict):
+        return memory_data
+    
+    # Remove redundant timestamp info if all entries have similar patterns
+    # Compress repeated strings
+    # Optimize embedding storage (can be converted to smaller data types)
+    
+    optimized_data = {}
+    for key, value in memory_data.items():
+        if key == "sessions" and isinstance(value, dict):
+            optimized_sessions = {}
+            for session_id, session_data in value.items():
+                if isinstance(session_data, dict):
+                    optimized_session = session_data.copy()
+                    
+                    # Optimize embeddings - convert to float16 for smaller storage
+                    if "details" in optimized_session:
+                        for page in optimized_session["details"]:
+                            if "page_embedding" in page and page["page_embedding"]:
+                                try:
+                                    import numpy as np
+                                    embedding = np.array(page["page_embedding"], dtype=np.float32)
+                                    # Convert to float16 for ~50% size reduction
+                                    page["page_embedding"] = embedding.astype(np.float16).tolist()
+                                except:
+                                    pass  # Keep original if conversion fails
+                    
+                    optimized_sessions[session_id] = optimized_session
+                else:
+                    optimized_sessions[session_id] = session_data
+            optimized_data[key] = optimized_sessions
+        else:
+            optimized_data[key] = value
+    
+    return optimized_data
 
 def normalize_vector(vec):
     vec = np.array(vec, dtype=np.float32)

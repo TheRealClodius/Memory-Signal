@@ -1,4 +1,5 @@
 import json
+import os
 import numpy as np
 from collections import defaultdict
 import faiss
@@ -40,6 +41,12 @@ class MidTermMemory:
 
         self.embedding_model_name = embedding_model_name
         self.embedding_model_kwargs = embedding_model_kwargs if embedding_model_kwargs is not None else {}
+        
+        # PERFORMANCE OPTIMIZATION: Deferred operations to reduce spillover blocking
+        self._heap_needs_rebuild = False
+        self._pending_saves = False
+        self._use_compression = True  # Enable compression for better I/O performance
+        
         self.load()
 
     def get_page_by_id(self, page_id):
@@ -170,14 +177,28 @@ class MidTermMemory:
         self.save()
         return session_id
 
-    def rebuild_heap(self):
+    def rebuild_heap(self, force=False):
+        """
+        PERFORMANCE OPTIMIZATION: Rebuild heap with optional deferred execution.
+        During spillover operations, heap rebuilds are deferred to avoid blocking.
+        """
+        if not force:
+            self._heap_needs_rebuild = True
+            return
+        
         self.heap = []
         for sid, session_data in self.sessions.items():
             # Ensure H_segment is up-to-date before rebuilding heap if necessary
             # session_data["H_segment"] = compute_segment_heat(session_data)
             heapq.heappush(self.heap, (-session_data["H_segment"], sid))
         # heapq.heapify(self.heap) # Not needed if pushing one by one
+        self._heap_needs_rebuild = False
         # No save here, it's an internal operation often followed by other ops that save
+
+    def _ensure_heap_updated(self):
+        """Ensure heap is up to date, rebuilding if necessary."""
+        if self._heap_needs_rebuild:
+            self.rebuild_heap(force=True)
 
     def insert_pages_into_session(self, summary_for_new_pages, keywords_for_new_pages, pages_to_insert, 
                                   similarity_threshold=0.6, keyword_similarity_alpha=1.0):
@@ -263,7 +284,7 @@ class MidTermMemory:
             target_session["L_interaction"] += len(pages_to_insert)
             target_session["last_visit_time"] = get_timestamp() # Update last visit time on modification
             target_session["H_segment"] = compute_segment_heat(target_session)
-            self.rebuild_heap() # Rebuild heap as heat has changed
+            self.rebuild_heap() # Mark heap for rebuild (deferred during spillover)
             self.save()
             return best_sid
         else:
@@ -340,7 +361,7 @@ class MidTermMemory:
                     session["access_count_lfu"] = session.get("access_count_lfu", 0) + 1
                     self.access_frequency[session_id] = session["access_count_lfu"]
                     session["H_segment"] = compute_segment_heat(session)
-                    self.rebuild_heap() # Heat changed
+                    self.rebuild_heap() # Mark heap for rebuild (deferred)
                     
                     results.append({
                         "session_id": session_id,
@@ -349,11 +370,22 @@ class MidTermMemory:
                         "matched_pages": sorted(matched_pages_in_session, key=lambda x: x["score"], reverse=True) # Sort pages by score
                     })
         
-        self.save() # Save changes from access updates
+        self.save(force=True) # Force save changes from access updates (this is a read operation)
         # Sort final results by session_relevance_score
         return sorted(results, key=lambda x: x["session_relevance_score"], reverse=True)
 
-    def save(self):
+    def save(self, force=False):
+        """
+        PERFORMANCE OPTIMIZATION: Save with optional deferred execution.
+        During spillover operations, saves can be deferred to avoid blocking I/O.
+        """
+        if not force:
+            self._pending_saves = True
+            return
+        
+        # Ensure heap is updated before saving
+        self._ensure_heap_updated()
+        
         # Make a copy for saving to avoid modifying heap during iteration if it happens
         # Though current heap is list of tuples, so direct modification risk is low
         # sessions_to_save = {sid: data for sid, data in self.sessions.items()}
@@ -363,23 +395,93 @@ class MidTermMemory:
             # Heap is derived, no need to save typically, but can if desired for faster load
             # "heap_snapshot": self.heap 
         }
+        
         try:
-            with open(self.file_path, "w", encoding="utf-8") as f:
-                json.dump(data_to_save, f, ensure_ascii=False, indent=2)
+            if self._use_compression:
+                # PERFORMANCE OPTIMIZATION: Use compression to reduce I/O overhead
+                from .utils import optimize_memory_structure, compress_memory_data
+                
+                # Optimize structure first
+                optimized_data = optimize_memory_structure(data_to_save)
+                
+                # Compress and save
+                compressed_data = compress_memory_data(optimized_data)
+                if compressed_data:
+                    with open(self.file_path + ".gz", "wb") as f:
+                        f.write(compressed_data)
+                    print(f"MidTermMemory: Saved compressed data to {self.file_path}.gz")
+                else:
+                    # Fallback to uncompressed
+                    with open(self.file_path, "w", encoding="utf-8") as f:
+                        json.dump(data_to_save, f, ensure_ascii=False, indent=2)
+            else:
+                # Standard JSON save
+                with open(self.file_path, "w", encoding="utf-8") as f:
+                    json.dump(data_to_save, f, ensure_ascii=False, indent=2)
+            
+            self._pending_saves = False
         except IOError as e:
             print(f"Error saving MidTermMemory to {self.file_path}: {e}")
 
+    def _ensure_saved(self):
+        """Ensure pending saves are completed."""
+        if self._pending_saves:
+            self.save(force=True)
+
+    def finalize_deferred_operations(self):
+        """
+        PERFORMANCE OPTIMIZATION: Complete any deferred operations.
+        Call this after spillover operations are complete.
+        """
+        self._ensure_heap_updated()
+        self._ensure_saved()
+        print("MidTermMemory: Deferred operations finalized")
+
     def load(self):
-        try:
-            with open(self.file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                self.sessions = data.get("sessions", {})
-                self.access_frequency = defaultdict(int, data.get("access_frequency", {}))
-                self.rebuild_heap() # Rebuild heap from loaded sessions
-            print(f"MidTermMemory: Loaded from {self.file_path}. Sessions: {len(self.sessions)}.")
-        except FileNotFoundError:
-            print(f"MidTermMemory: No history file found at {self.file_path}. Initializing new memory.")
-        except json.JSONDecodeError:
-            print(f"MidTermMemory: Error decoding JSON from {self.file_path}. Initializing new memory.")
-        except Exception as e:
-            print(f"MidTermMemory: An unexpected error occurred during load from {self.file_path}: {e}. Initializing new memory.") 
+        # Try compressed file first, then fallback to uncompressed
+        compressed_path = self.file_path + ".gz"
+        data_loaded = False
+        
+        if self._use_compression and os.path.exists(compressed_path):
+            try:
+                from .utils import decompress_memory_data
+                with open(compressed_path, "rb") as f:
+                    compressed_data = f.read()
+                
+                data = decompress_memory_data(compressed_data)
+                if data:
+                    self.sessions = data.get("sessions", {})
+                    self.access_frequency = defaultdict(int, data.get("access_frequency", {}))
+                    
+                    # Convert float16 embeddings back to float32 for computation
+                    for session_data in self.sessions.values():
+                        if "details" in session_data:
+                            for page in session_data["details"]:
+                                if "page_embedding" in page and page["page_embedding"]:
+                                    try:
+                                        import numpy as np
+                                        embedding = np.array(page["page_embedding"], dtype=np.float16)
+                                        page["page_embedding"] = embedding.astype(np.float32).tolist()
+                                    except:
+                                        pass  # Keep original if conversion fails
+                    
+                    self.rebuild_heap(force=True) # Rebuild heap from loaded sessions
+                    data_loaded = True
+                    print(f"MidTermMemory: Loaded compressed data from {compressed_path}. Sessions: {len(self.sessions)}.")
+            except Exception as e:
+                print(f"MidTermMemory: Error loading compressed data: {e}. Trying uncompressed...")
+        
+        if not data_loaded:
+            try:
+                with open(self.file_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    self.sessions = data.get("sessions", {})
+                    self.access_frequency = defaultdict(int, data.get("access_frequency", {}))
+                    self.rebuild_heap(force=True) # Rebuild heap from loaded sessions
+                print(f"MidTermMemory: Loaded from {self.file_path}. Sessions: {len(self.sessions)}.")
+            except FileNotFoundError:
+                print(f"MidTermMemory: No history file found at {self.file_path}. Initializing new memory.")
+            except json.JSONDecodeError:
+                print(f"MidTermMemory: Error decoding JSON from {self.file_path}. Initializing new memory.")
+            except Exception as e:
+                print(f"MidTermMemory: An unexpected error occurred during load from {self.file_path}: {e}. Initializing new memory.") 
