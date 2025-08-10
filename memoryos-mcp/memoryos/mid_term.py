@@ -47,6 +47,11 @@ class MidTermMemory:
         self._pending_saves = False
         self._use_compression = True  # Enable compression for better I/O performance
         
+        # CRITICAL PERFORMANCE FIX: FAISS index caching to prevent rebuilding on every search
+        self._faiss_index = None
+        self._faiss_session_ids = []  # Track which sessions are in the index
+        self._index_needs_rebuild = True
+        
         self.load()
 
     def get_page_by_id(self, page_id):
@@ -81,6 +86,9 @@ class MidTermMemory:
         
         session_to_delete = self.sessions.pop(lfu_sid) # Remove from sessions
         del self.access_frequency[lfu_sid] # Remove from LFU tracking
+        
+        # Mark FAISS index for rebuild due to session removal
+        self._index_needs_rebuild = True
 
         # Clean up page connections if this session's pages were linked
         for page in session_to_delete.get("details", []):
@@ -172,6 +180,10 @@ class MidTermMemory:
         heapq.heappush(self.heap, (-session_obj["H_segment"], session_id)) # Use negative heat for max-heap behavior
         
         print(f"MidTermMemory: Added new session {session_id}. Initial heat: {session_obj['H_segment']:.2f}.")
+        
+        # Mark FAISS index for rebuild due to new session
+        self._index_needs_rebuild = True
+        
         if len(self.sessions) > self.max_capacity:
             self.evict_lfu()
         self.save()
@@ -199,6 +211,35 @@ class MidTermMemory:
         """Ensure heap is up to date, rebuilding if necessary."""
         if self._heap_needs_rebuild:
             self.rebuild_heap(force=True)
+    
+    def _rebuild_faiss_index(self):
+        """PERFORMANCE CRITICAL: Rebuild FAISS index only when needed."""
+        if not self.sessions:
+            self._faiss_index = None
+            self._faiss_session_ids = []
+            return
+        
+        session_ids = list(self.sessions.keys())
+        summary_embeddings_list = [self.sessions[s]["summary_embedding"] for s in session_ids]
+        summary_embeddings_np = np.array(summary_embeddings_list, dtype=np.float32)
+        
+        dim = summary_embeddings_np.shape[1]
+        self._faiss_index = faiss.IndexFlatIP(dim)
+        self._faiss_index.add(summary_embeddings_np)
+        self._faiss_session_ids = session_ids.copy()
+        self._index_needs_rebuild = False
+        
+        print(f"MidTermMemory: FAISS index rebuilt with {len(session_ids)} sessions")
+    
+    def _ensure_faiss_index_updated(self):
+        """Ensure FAISS index is current, rebuilding only if sessions changed."""
+        current_session_ids = list(self.sessions.keys())
+        
+        # Check if we need to rebuild (new sessions, removed sessions, or first time)
+        if (self._index_needs_rebuild or 
+            self._faiss_index is None or 
+            set(current_session_ids) != set(self._faiss_session_ids)):
+            self._rebuild_faiss_index()
 
     def insert_pages_into_session(self, summary_for_new_pages, keywords_for_new_pages, pages_to_insert, 
                                   similarity_threshold=0.85, keyword_similarity_alpha=1.0):
@@ -305,18 +346,17 @@ class MidTermMemory:
         query_keywords = set()  # Keywords extraction removed, relying on semantic similarity
 
         candidate_sessions = []
-        session_ids = list(self.sessions.keys())
-        if not session_ids: return []
+        if not self.sessions: 
+            return []
 
-        summary_embeddings_list = [self.sessions[s]["summary_embedding"] for s in session_ids]
-        summary_embeddings_np = np.array(summary_embeddings_list, dtype=np.float32)
-
-        dim = summary_embeddings_np.shape[1]
-        index = faiss.IndexFlatIP(dim) # Inner product for similarity
-        index.add(summary_embeddings_np)
+        # PERFORMANCE FIX: Use cached FAISS index instead of rebuilding every search
+        self._ensure_faiss_index_updated()
+        
+        if self._faiss_index is None:
+            return []
         
         query_arr_np = np.array([query_vec], dtype=np.float32)
-        distances, indices = index.search(query_arr_np, min(top_k_sessions, len(session_ids)))
+        distances, indices = self._faiss_index.search(query_arr_np, min(top_k_sessions, len(self._faiss_session_ids)))
 
         results = []
         current_time_str = get_timestamp()
@@ -324,7 +364,7 @@ class MidTermMemory:
         for i, idx in enumerate(indices[0]):
             if idx == -1: continue
             
-            session_id = session_ids[idx]
+            session_id = self._faiss_session_ids[idx]
             session = self.sessions[session_id]
             semantic_sim_score = float(distances[0][i]) # This is the dot product
 
