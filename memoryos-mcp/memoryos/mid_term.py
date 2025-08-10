@@ -52,6 +52,12 @@ class MidTermMemory:
         self._faiss_session_ids = []  # Track which sessions are in the index
         self._index_needs_rebuild = True
         
+        # SPILLOVER PERFORMANCE FIX: Page-level FAISS index caching
+        self._page_faiss_index = None
+        self._page_session_map = {}  # Map page index to session_id
+        self._page_ids = []  # Track which pages are in the page index
+        self._page_index_needs_rebuild = True
+        
         self.load()
 
     def get_page_by_id(self, page_id):
@@ -87,8 +93,9 @@ class MidTermMemory:
         session_to_delete = self.sessions.pop(lfu_sid) # Remove from sessions
         del self.access_frequency[lfu_sid] # Remove from LFU tracking
         
-        # Mark FAISS index for rebuild due to session removal
+        # Mark FAISS indices for rebuild due to session removal
         self._index_needs_rebuild = True
+        self._page_index_needs_rebuild = True
 
         # Clean up page connections if this session's pages were linked
         for page in session_to_delete.get("details", []):
@@ -181,8 +188,9 @@ class MidTermMemory:
         
         print(f"MidTermMemory: Added new session {session_id}. Initial heat: {session_obj['H_segment']:.2f}.")
         
-        # Mark FAISS index for rebuild due to new session
+        # Mark FAISS indices for rebuild due to new session
         self._index_needs_rebuild = True
+        self._page_index_needs_rebuild = True
         
         if len(self.sessions) > self.max_capacity:
             self.evict_lfu()
@@ -240,6 +248,89 @@ class MidTermMemory:
             self._faiss_index is None or 
             set(current_session_ids) != set(self._faiss_session_ids)):
             self._rebuild_faiss_index()
+    
+    def _rebuild_page_faiss_index(self):
+        """SPILLOVER PERFORMANCE CRITICAL: Rebuild page-level FAISS index only when needed."""
+        if not self.sessions:
+            self._page_faiss_index = None
+            self._page_session_map = {}
+            self._page_ids = []
+            return
+        
+        page_embeddings = []
+        page_ids = []
+        page_session_map = {}
+        
+        for session_id, session in self.sessions.items():
+            for page in session.get("details", []):
+                if "page_embedding" in page and page["page_embedding"]:
+                    page_embeddings.append(np.array(page["page_embedding"], dtype=np.float32))
+                    page_id = page.get("page_id")
+                    page_ids.append(page_id)
+                    page_session_map[len(page_embeddings) - 1] = session_id  # Map index to session_id
+        
+        if not page_embeddings:
+            self._page_faiss_index = None
+            self._page_session_map = {}
+            self._page_ids = []
+            return
+        
+        page_embeddings_np = np.array(page_embeddings, dtype=np.float32)
+        dim = page_embeddings_np.shape[1]
+        self._page_faiss_index = faiss.IndexFlatIP(dim)
+        self._page_faiss_index.add(page_embeddings_np)
+        self._page_session_map = page_session_map
+        self._page_ids = page_ids
+        self._page_index_needs_rebuild = False
+        
+        print(f"MidTermMemory: Page FAISS index rebuilt with {len(page_embeddings)} pages")
+    
+    def _ensure_page_faiss_index_updated(self):
+        """Ensure page FAISS index is current, rebuilding only if pages changed."""
+        # Simple check: if page index needs rebuild flag is set, rebuild
+        if (self._page_index_needs_rebuild or 
+            self._page_faiss_index is None):
+            self._rebuild_page_faiss_index()
+    
+    def _fast_search_pages_in_session(self, session_id, query_vec, page_similarity_threshold):
+        """SPILLOVER PERFORMANCE CRITICAL: Fast page search using FAISS index."""
+        # Ensure page FAISS index is ready
+        self._ensure_page_faiss_index_updated()
+        
+        if self._page_faiss_index is None or not self._page_session_map:
+            return []
+        
+        # Get all pages for this session from FAISS index
+        session_page_indices = [idx for idx, sid in self._page_session_map.items() if sid == session_id]
+        
+        if not session_page_indices:
+            return []
+        
+        # Search all session pages at once using FAISS
+        query_arr_np = np.array([query_vec], dtype=np.float32)
+        # Search more pages than we need to ensure we get all relevant ones
+        search_k = min(len(session_page_indices), 50)  # Reasonable upper limit
+        distances, indices = self._page_faiss_index.search(query_arr_np, search_k)
+        
+        matched_pages = []
+        for i, page_idx in enumerate(indices[0]):
+            if page_idx == -1:
+                continue
+                
+            # Check if this page belongs to our target session
+            if page_idx in self._page_session_map and self._page_session_map[page_idx] == session_id:
+                page_sim_score = float(distances[0][i])
+                
+                if page_sim_score >= page_similarity_threshold:
+                    # Find the actual page data
+                    page_id = self._page_ids[page_idx]
+                    session = self.sessions[session_id]
+                    for page in session.get("details", []):
+                        if page.get("page_id") == page_id:
+                            matched_pages.append({"page_data": page, "score": page_sim_score})
+                            break
+        
+        return matched_pages
 
     def insert_pages_into_session(self, summary_for_new_pages, keywords_for_new_pages, pages_to_insert, 
                                   similarity_threshold=0.85, keyword_similarity_alpha=1.0):
@@ -383,16 +474,10 @@ class MidTermMemory:
             session_relevance_score =  (semantic_sim_score + keyword_alpha * s_topic_keywords)
 
             if session_relevance_score >= segment_similarity_threshold:
-                matched_pages_in_session = []
-                for page in session.get("details", []):
-                    page_embedding = np.array(page["page_embedding"], dtype=np.float32)
-                    # page_keywords = set(page.get("page_keywords", []))
-                    
-                    page_sim_score = float(np.dot(page_embedding, query_vec))
-                    # Can also add keyword sim for pages if needed, but keeping it simpler for now
-
-                    if page_sim_score >= page_similarity_threshold:
-                        matched_pages_in_session.append({"page_data": page, "score": page_sim_score})
+                # SPILLOVER PERFORMANCE FIX: Use page-level FAISS index for fast page search
+                matched_pages_in_session = self._fast_search_pages_in_session(
+                    session_id, query_vec, page_similarity_threshold
+                )
                 
                 if matched_pages_in_session:
                     # Update session access stats

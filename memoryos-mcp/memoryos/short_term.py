@@ -7,7 +7,7 @@ class ShortTermMemory:
         self.max_capacity = max_capacity
         self.file_path = file_path
         ensure_directory_exists(self.file_path)
-        self.memory = deque(maxlen=max_capacity)
+        self.memory = deque()  # Remove maxlen to prevent auto-eviction
         self.load()
 
     def add_qa_pair(self, qa_pair):
@@ -15,6 +15,7 @@ class ShortTermMemory:
         if 'timestamp' not in qa_pair or not qa_pair['timestamp']:
             qa_pair["timestamp"] = get_timestamp()
         
+        # Add without auto-eviction - spillover will handle capacity in background
         self.memory.append(qa_pair)
         print(f"ShortTermMemory: Added QA. User: {qa_pair.get('user_input','')[:30]}...")
         self.save()
@@ -46,16 +47,16 @@ class ShortTermMemory:
                 data = json.load(f)
                 # Ensure items are loaded correctly, especially if file was empty or malformed
                 if isinstance(data, list):
-                    self.memory = deque(data, maxlen=self.max_capacity)
+                    self.memory = deque(data)  # Load without maxlen
                 else:
-                    self.memory = deque(maxlen=self.max_capacity)
+                    self.memory = deque()
             print(f"ShortTermMemory: Loaded from {self.file_path}.")
         except FileNotFoundError:
-            self.memory = deque(maxlen=self.max_capacity)
+            self.memory = deque()
             print(f"ShortTermMemory: No history file found at {self.file_path}. Initializing new memory.")
         except json.JSONDecodeError:
-            self.memory = deque(maxlen=self.max_capacity)
+            self.memory = deque()
             print(f"ShortTermMemory: Error decoding JSON from {self.file_path}. Initializing new memory.")
         except Exception as e:
-            self.memory = deque(maxlen=self.max_capacity)
+            self.memory = deque()
             print(f"ShortTermMemory: An unexpected error occurred during load from {self.file_path}: {e}. Initializing new memory.") 

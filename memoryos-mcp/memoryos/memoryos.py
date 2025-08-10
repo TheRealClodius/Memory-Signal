@@ -276,11 +276,11 @@ class Memoryos:
             "timestamp": timestamp
             # meta_data can be added here if it needs to be stored with the QA pair
         }
-        # CRITICAL FIX: Check if spillover needed BEFORE adding to prevent auto-eviction
+        # BACKGROUND SPILLOVER: Check if spillover needed and schedule it asynchronously
         if self.short_term_memory.is_full():
-            print("Memoryos: Short-term memory full. Processing spillover BEFORE adding new memory...")
-            # Process spillover synchronously to ensure memories aren't lost
-            self.updater.process_short_term_to_mid_term()
+            print("Memoryos: Short-term memory full. Scheduling background spillover...")
+            self._schedule_background_spillover()
+            # Continue adding - short-term memory will handle capacity gracefully
 
         self.short_term_memory.add_qa_pair(qa_pair)
         print(f"Memoryos: Added QA to short-term. User: {user_input[:30]}...")
